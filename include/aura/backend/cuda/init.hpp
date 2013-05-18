@@ -1,4 +1,4 @@
-#ifdef AURA_BACKEND_CUDA_INIT_HPP
+#ifndef AURA_BACKEND_CUDA_INIT_HPP
 #define AURA_BACKEND_CUDA_INIT_HPP
 
 #include <cuda.h>
