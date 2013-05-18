@@ -1,0 +1,7 @@
+#ifdef AURA_BACKEND_CUDA_CALL_HPP
+#define AURA_BACKEND_CUDA_CALL_HPP
+
+#define AURA_CUDA_SAFE_CALL(call) call;
+
+#endif // AURA_BACKEND_CUDA_CALL_HPP
+
