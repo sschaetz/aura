@@ -3,7 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 # configuration #####
 
 # choose CUDA, OPENCL
-SET(AURA_BACKEND CUDA)
+SET(AURA_BACKEND OPENCL)
 
 
 # make additional modules available
@@ -25,7 +25,6 @@ FIND_PACKAGE(OpenCL)
 
 
 # sanity check found libraries and selected backend
-
 IF(${AURA_BACKEND} STREQUAL CUDA)
   IF(NOT ${CUDA_FOUND})
     MESSAGE(FATAL_ERROR "CUDA backend selected but CUDA could not be found")
@@ -45,5 +44,5 @@ ENDIF()
 
 MESSAGE(STATUS "Using ${AURA_BACKEND} backend")
 
-
-
+# add subdirectories
+ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/experiment/)

@@ -11,3 +11,11 @@
 *.lai
 *.la
 *.a
+
+# qtcreator files
+*.config
+*.creator
+*.creator.user
+*.files
+*.includes
+

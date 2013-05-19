@@ -7,6 +7,7 @@ namespace aura {
 // owns a default stream
 // creates new streams on device
 // copy semantics are still unclear
+// is an execution environment
 class device {
 
 

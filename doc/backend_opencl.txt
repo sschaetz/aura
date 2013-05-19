@@ -1,0 +1,13 @@
+opencl:
+
+0) opencl has platforms (since there can exist Intel, AMD and Nvidia cards in the same system
+1) device is created from id (or whatever) and platform
+2) a context is created from a device
+3) a queue is created from context and device
+4) after that, opencl commands can be launched in the queue
+
+devices can share a context
+devices can not share a command queue
+this slidedeck [0] shows some advantages of 1 context per device over multiple devices in context so maybe we should do that 
+[0] https://www.cvg.ethz.ch/teaching/2011spring/gpgpu/GPU-multi-device.pdf
+

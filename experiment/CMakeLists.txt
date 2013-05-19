@@ -1,0 +1,7 @@
+
+IF(${AURA_BACKEND} STREQUAL OPENCL)
+  INCLUDE_DIRECTORIES("${AURA_BACKEND_INCLUDE_DIRS}")
+  ADD_EXECUTABLE(experiment.context_opencl context_opencl.cpp)
+  TARGET_LINK_LIBRARIES(experiment.context_opencl ${AURA_BACKEND_LIBRARIES})
+ENDIF()
+
