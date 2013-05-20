@@ -1,0 +1,12 @@
+OpenCL has command queues, CUDA has streams
+
+I need a new word that encompasses both
+The word should generalize on execution path (German: Ausfuehrungspfad),
+or execution environment or execution envelope or something like this.
+The word must be the name of the template argument for all library functions
+that require an execution environment. Some options:
+
+fiber: this would be kind of a new concept but maybe it makes sense, since
+it is not a thread but a concurrent environment
+execution path: to long
+ 
