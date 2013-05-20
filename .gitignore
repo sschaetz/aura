@@ -19,3 +19,6 @@
 *.files
 *.includes
 
+# vim files
+*.swp
+

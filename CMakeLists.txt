@@ -11,9 +11,9 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 
 # find Boost libraries #####
-#SET(Boost_USE_STATIC_LIBS ON)
-#SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0")
-#FIND_PACKAGE(Boost 1.45.0 COMPONENTS thread unit_test_framework)
+SET(Boost_USE_STATIC_LIBS ON)
+SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0")
+FIND_PACKAGE(Boost 1.45.0 COMPONENTS thread system)
 
 
 # find CUDA libraries #####
