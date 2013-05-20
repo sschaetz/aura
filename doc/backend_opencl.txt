@@ -11,3 +11,7 @@ devices can not share a command queue
 this slidedeck [0] shows some advantages of 1 context per device over multiple devices in context so maybe we should do that 
 [0] https://www.cvg.ethz.ch/teaching/2011spring/gpgpu/GPU-multi-device.pdf
 
+let's ignore platforms for now, let's offer all available devices
+devices are created and contain a context each and a default command queue (a stream)
+streams are additional command queues
+devices and command queues can be set as defaults per thread
