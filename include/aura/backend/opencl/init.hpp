@@ -7,7 +7,7 @@ namespace opencl {
 
 inline void init() {}
 
-} // cuda
+} // opencl 
 } // backend
 } // aura
 
