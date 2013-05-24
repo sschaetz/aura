@@ -19,6 +19,7 @@ it is not a thread but a concurrent environment
 * command stream
 * domain
 * execution site
+* execution context, exec_context, execution_context
 
 
 The concept I am trying to name is in essence concurrency. It is an independent
@@ -28,4 +29,7 @@ in parallel.
 
 The concept encompasses both a location of execution (accelerator) but also a 
 logical group of execution (concurrency).
+
+I think execution context might be the correct phrase, it can be either a 
+device or a stream.
 

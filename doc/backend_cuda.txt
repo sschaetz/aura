@@ -8,3 +8,12 @@ right away)
 created from a device/context
 
 streams and events are per device
+
+Devices, Streams, and Events
+* CUDA streams and events are per device 
+    Determined by the GPU that’s current at the time of their creation
+    Each device has its own default stream (aka 0- or NULL-stream)
+* Using streams and events 
+    Calls to a stream can be issued only when its device is current
+    Event can be recorded only to a stream of the same device
+
