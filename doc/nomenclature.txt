@@ -12,4 +12,20 @@ it is not a thread but a concurrent environment
 * task queue
 * spark: a concept from haskell 
 * transaction
+* coroutine: a concept from concurrency research
+* channel
+* execution stream
+* instruction stream
+* command stream
+* domain
+* execution site
+
+
+The concept I am trying to name is in essence concurrency. It is an independent
+stream of instructions. The programmer explicitly marks theses instructions
+as independent. If the hardware is capable, these instructions can be executed
+in parallel.
+
+The concept encompasses both a location of execution (accelerator) but also a 
+logical group of execution (concurrency).
 
