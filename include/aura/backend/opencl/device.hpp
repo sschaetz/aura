@@ -20,7 +20,7 @@ typedef cl_device_id device;
  * @param ordinal device number to get handle from
  * @return the device handle
  */
-inline device create_device(int ordinal) {
+inline device device_create(int ordinal) {
   // get platforms
   unsigned int num_platforms = 0;
   AURA_OPENCL_SAFE_CALL(clGetPlatformIDs(NULL, NULL, &num_platforms));

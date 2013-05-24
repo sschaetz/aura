@@ -18,10 +18,17 @@ typedef CUcontext context;
  * @param d the device handle 
  * @return the context handle
  */
-inline context create_context(device d) {
+inline context context_create(device d) {
   context c;
   AURA_CUDA_SAFE_CALL(cuCtxCreate(&c, 0, d));
   return c;
+}
+
+/**
+ * destroy context
+ */
+inline void context_destroy(context c) {
+  AURA_CUDA_SAFE_CALL(cuCtxDestroy(c));
 }
 
 } // cuda

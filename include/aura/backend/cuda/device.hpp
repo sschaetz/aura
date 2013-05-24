@@ -19,7 +19,7 @@ typedef CUdevice device;
  * @param ordinal device number to get handle for
  * @return the device handle
  */
-inline device create_device(int ordinal) {
+inline device device_create(int ordinal) {
   device d;
   AURA_CUDA_SAFE_CALL(cuDeviceGet(&d, ordinal));
   return d;

@@ -19,11 +19,18 @@ typedef cl_context context;
  * @param d the device handle 
  * @return the context handle
  */
-inline context create_context(device d) {
+inline context context_create(device d) {
   int errorcode = 0;
   context c = clCreateContext(NULL, 1, &d, NULL, NULL, &errorcode);
   AURA_OPENCL_CHECK_ERROR(errorcode);
   return c;
+}
+
+/**
+ * destroy context
+ */
+inline void context_destroy(context c) {
+  AURA_OPENCL_SAFE_CALL(clReleaseContext(c));
 }
 
 } // opencl 
