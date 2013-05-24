@@ -6,14 +6,14 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 SET(AURA_BACKEND OPENCL)
 
 
-# make additional modules available
+# make additional modules available and source custom functions 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-
+INCLUDE(cmake/functions.cmake)
 
 # find Boost libraries #####
 SET(Boost_USE_STATIC_LIBS ON)
-SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0")
-FIND_PACKAGE(Boost 1.45.0 COMPONENTS thread system)
+SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0" "1.48" "1.48.0")
+FIND_PACKAGE(Boost 1.45.0 COMPONENTS thread)
 
 
 # find CUDA libraries #####
@@ -43,6 +43,9 @@ IF(${AURA_BACKEND} STREQUAL OPENCL)
 ENDIF()
 
 MESSAGE(STATUS "Using ${AURA_BACKEND} backend")
+
+# set global include directory for project 
+INCLUDE_DIRECTORIES("${AURA_BACKEND_INCLUDE_DIRS}")
 
 # add subdirectories
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/experiment/)
