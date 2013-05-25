@@ -7,7 +7,7 @@
 #include <aura/backend/cuda/device.hpp>
 
 namespace aura {
-namespace backend {
+namespace backend_detail {
 namespace cuda {
 
 /// device handle
@@ -49,7 +49,7 @@ inline void stream_destroy(stream s) {
 }
 
 } // cuda
-} // backend
+} // backend_detail
 } // aura
 
 #endif // AURA_BACKEND_CUDA_STREAM_HPP

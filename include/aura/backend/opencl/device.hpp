@@ -5,7 +5,7 @@
 #include <CL/cl.h>
 
 namespace aura {
-namespace backend {
+namespace backend_detail {
 namespace opencl {
 
 /// device handle
@@ -46,7 +46,7 @@ inline device device_create(int ordinal) {
 }
 
 } // opencl 
-} // backend
+} // backend_detail
 } // aura
 
 

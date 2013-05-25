@@ -7,7 +7,7 @@
 #include <aura/backend/opencl/device.hpp>
 
 namespace aura {
-namespace backend {
+namespace backend_detail {
 namespace opencl {
 
 /// device handle
@@ -44,11 +44,11 @@ inline stream stream_create_default(device d, context c) {
  * @param stream stream that should be destroyed
  */
 inline void stream_destroy(stream s) {
-  AURA_CUDA_SAFE_CALL(clReleaseCommandQueue(s));
+  AURA_OPENCL_SAFE_CALL(clReleaseCommandQueue(s));
 }
 
 } // opencl 
-} // backend
+} // backend_detail
 } // aura
 
 #endif // AURA_BACKEND_OPENCL_STREAM_HPP

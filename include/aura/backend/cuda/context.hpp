@@ -6,7 +6,7 @@
 #include <aura/backend/cuda/device.hpp>
 
 namespace aura {
-namespace backend {
+namespace backend_detail {
 namespace cuda {
 
 /// context handle
@@ -32,7 +32,7 @@ inline void context_destroy(context c) {
 }
 
 } // cuda
-} // backend
+} // backend_detail
 } // aura
 
 

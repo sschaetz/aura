@@ -1,0 +1,2 @@
+We require CUDA 5.0 due to 
+ * CU_STREAM_NON_BLOCKING during stream creation

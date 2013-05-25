@@ -1,0 +1,15 @@
+
+#ifndef AURA_CONFIG_HPP
+#define AURA_CONFIG_HPP
+
+/// the backend used by Aura
+#define AURA_BACKEND @AURA_BACKEND@
+
+/// the backend used by Aura (lowercase)
+#define AURA_BACKEND_LC @AURA_BACKEND_LC@
+
+#cmakedefine01 AURA_BACKEND_CUDA 
+#cmakedefine01 AURA_BACKEND_OPENCL 
+
+#endif // AURA_CONFIG_HPP 
+

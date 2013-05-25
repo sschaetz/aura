@@ -5,7 +5,7 @@
 #include <aura/backend/cuda/call.hpp>
 
 namespace aura {
-namespace backend {
+namespace backend_detail {
 namespace cuda {
 
 inline void init() {
@@ -13,7 +13,7 @@ inline void init() {
 }
 
 } // cuda
-} // backend
+} // backend_detail
 } // aura
 
 #endif // AURA_BACKEND_CUDA_INIT_HPP

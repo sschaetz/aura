@@ -2,7 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-//#include <aura/backend.hpp>
+#include <aura/backend.hpp>
 
 // basic
 // _____________________________________________________________________________

@@ -7,7 +7,7 @@
 #include <aura/backend/cuda/call.hpp>
 
 namespace aura {
-namespace backend {
+namespace backend_detail {
 namespace cuda {
 
 /// device handle
@@ -26,7 +26,7 @@ inline device device_create(int ordinal) {
 }
 
 } // cuda
-} // backend
+} // backend_detail
 } // aura
 
 #endif // AURA_BACKEND_CUDA_DEVICE_HPP

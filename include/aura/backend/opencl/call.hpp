@@ -3,5 +3,7 @@
 
 #define AURA_OPENCL_SAFE_CALL(call) call;
 
+#define AURA_OPENCL_CHECK_ERROR(err) ;
+
 #endif // AURA_BACKEND_OPENCL_CALL_HPP
 

@@ -6,7 +6,7 @@
 #include <aura/backend/opencl/device.hpp>
 
 namespace aura {
-namespace backend {
+namespace backend_detail {
 namespace opencl {
 
 /// context handle
@@ -34,7 +34,7 @@ inline void context_destroy(context c) {
 }
 
 } // opencl 
-} // backend
+} // backend_detail
 } // aura
 
 #endif // AURA_BACKEND_OPENCL_CONTEXT_HPP

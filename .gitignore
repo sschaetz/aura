@@ -22,3 +22,6 @@
 # vim files
 *.swp
 
+# project files
+include/aura/config.hpp
+
