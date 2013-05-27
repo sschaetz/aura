@@ -52,11 +52,12 @@ MESSAGE(STATUS "Using ${AURA_BACKEND} backend")
 
 # configuration file
 CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/include/aura/config.hpp.template"
-  "${PROJECT_SOURCE_DIR}/include/aura/config.hpp")
+  "${CMAKE_BINARY_DIR}/aura/config.hpp")
 
 # set global include directories for project 
 INCLUDE_DIRECTORIES("${AURA_BACKEND_INCLUDE_DIRS}")
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/include/")
+INCLUDE_DIRECTORIES("${PROJECT_BINARY_DIR}/")
 
 # enable testing
 ENABLE_TESTING()
