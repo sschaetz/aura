@@ -25,6 +25,18 @@ inline device device_create(int ordinal) {
   return d;
 }
 
+/**
+ * get number of devices available
+ *
+ * @return number of devices
+ */
+inline int device_get_count() {
+  int num_devices;
+  AURA_CUDA_SAFE_CALL(cuDeviceGetCount(&num_devices));
+  return num_devices;
+}
+
+
 } // cuda
 } // backend_detail
 } // aura

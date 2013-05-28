@@ -1,1 +1,1 @@
-AURA_ADD_TEST(backend/basic.cpp)
+AURA_ADD_TEST(backend/basic.cpp ${AURA_BACKEND_LIBRARIES})

@@ -22,7 +22,7 @@ typedef cl_command_queue stream;
  */
 inline stream stream_create(device d, context c) {
   int errorcode = 0;
-  stream s = clCreateCommandQueue(c, d, NULL, &errorcode);
+  stream s = clCreateCommandQueue(c, d, 0, &errorcode);
   AURA_OPENCL_CHECK_ERROR(errorcode);
   return s;
 }

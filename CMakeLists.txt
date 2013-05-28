@@ -15,7 +15,7 @@ INCLUDE(cmake/functions.cmake)
 # find Boost libraries #####
 SET(Boost_USE_STATIC_LIBS ON)
 SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0" "1.48" "1.48.0")
-FIND_PACKAGE(Boost 1.45.0 COMPONENTS thread unit_test_framework)
+FIND_PACKAGE(Boost 1.45.0 COMPONENTS system thread unit_test_framework)
 
 
 # find CUDA libraries #####
