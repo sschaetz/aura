@@ -38,6 +38,18 @@ inline stream stream_create_default(device d, context c) {
   return stream_create(d, c);
 }
 
+
+/**
+ * wait (block) until all operations in the stream are finished
+ *
+ * @param s stream
+ */
+inline void stream_synchronize(stream s) {
+  cl_event event;
+  AURA_OPENCL_SAFE_CALL(clEnqueueMarker(s, &event));
+  AURA_OPENCL_SAFE_CALL(clEnqueueWaitForEvents(s, 1, &event));
+}
+
 /**
  * destroy stream
  *
