@@ -43,11 +43,7 @@ BOOST_AUTO_TEST_CASE(memorypingpong)
     device_free(m);
     stream_destroy(s);
     context_destroy(c);
-    printf("%f\n", a2[0]);
-    if(std::equal(a1.begin(), a1.end(), a2.begin())) {
-      printf("Copy test ok.\n");
-    } else {
-      fprintf(stderr, "Copy test not ok.\n");
-    }
+    BOOST_CHECK(std::equal(a1.begin(), a1.end(), a2.begin())); 
   }
 }
+

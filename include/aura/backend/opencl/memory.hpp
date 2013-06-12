@@ -54,7 +54,7 @@ inline void device_free(memory m) {
 inline void copy(memory dst, const void * src, std::size_t size, 
   stream s, std::size_t offset=0) {
   AURA_OPENCL_SAFE_CALL(clEnqueueWriteBuffer(s,
-  	dst, CL_FALSE, offset, size, dst, 0, 0, 0))
+  	dst, CL_TRUE, offset, size, src, 0, NULL, NULL))
 } 
 
 
@@ -70,7 +70,7 @@ inline void copy(memory dst, const void * src, std::size_t size,
 inline void copy(void * dst, memory src, std::size_t size, 
   stream s, std::size_t offset=0) {
   AURA_OPENCL_SAFE_CALL(clEnqueueReadBuffer(s,
-  	src, CL_FALSE, offset, size, dst, 0, 0, 0));
+  	src, CL_TRUE, offset, size, dst, 0, NULL, NULL));
 }
 
 
