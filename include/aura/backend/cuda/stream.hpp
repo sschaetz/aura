@@ -23,7 +23,7 @@ typedef CUstream stream;
 inline stream stream_create(device d, context c) {
   stream s; 
   AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(c));
-  AURA_CUDA_SAFE_CALL(cuStreamCreate(&s, CU_STREAM_NON_BLOCKING));
+  AURA_CUDA_SAFE_CALL(cuStreamCreate(&s, 0/*, CU_STREAM_NON_BLOCKING*/));
   AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
   return s;
 }
@@ -37,6 +37,15 @@ inline stream stream_create(device d, context c) {
  */
 inline stream stream_create_default(device d, context c) {
   return 0; // the CUDA default stream is simply 0
+}
+
+/**
+ * wait (block) until all operations in the stream are finished
+ *
+ * @param s stream
+ */
+inline void stream_synchronize(stream s) {
+  AURA_CUDA_SAFE_CALL(cuStreamSynchronize(s));
 }
 
 /**

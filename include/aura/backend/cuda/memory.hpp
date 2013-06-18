@@ -1,19 +1,19 @@
-#ifndef AURA_BACKEND_OPENCL_MEMORY_HPP
-#define AURA_BACKEND_OPENCL_MEMORY_HPP
+#ifndef AURA_BACKEND_CUDA_MEMORY_HPP
+#define AURA_BACKEND_CUDA_MEMORY_HPP
 
 #include <CL/cl.h>
-#include <aura/backend/opencl/call.hpp>
-#include <aura/backend/opencl/context.hpp>
-#include <aura/backend/opencl/stream.hpp>
+#include <aura/backend/cuda/call.hpp>
+#include <aura/backend/cuda/context.hpp>
+#include <aura/backend/cuda/stream.hpp>
 
 
 namespace aura {
 namespace backend_detail {
-namespace opencl {
+namespace cuda {
 
 
 /// memory handle
-typedef cl_mem memory;
+typedef CUdeviceptr memory;
 
 
 /**
@@ -24,10 +24,10 @@ typedef cl_mem memory;
  * @return a device pointer
  */
 inline memory device_malloc(std::size_t size, context c) {
-  int errorcode = 0;
-  memory m = clCreateBuffer(c, CL_MEM_READ_WRITE, 
-    size, 0, &errorcode);
-  AURA_OPENCL_CHECK_ERROR(errorcode);
+  AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(c));
+  memory m;
+  AURA_CUDA_SAFE_CALL(cuMemAlloc(&m, size));
+  AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
   return m;
 }
 
@@ -38,7 +38,7 @@ inline memory device_malloc(std::size_t size, context c) {
  * @param m memory that should be freed
  */
 inline void device_free(memory m) {
-  AURA_OPENCL_SAFE_CALL(clReleaseMemObject(m));
+  AURA_CUDA_SAFE_CALL(cuMemFree(m));
 }
 
 
@@ -53,8 +53,7 @@ inline void device_free(memory m) {
  */
 inline void copy(memory dst, const void * src, std::size_t size, 
   stream s, std::size_t offset=0) {
-  AURA_OPENCL_SAFE_CALL(clEnqueueWriteBuffer(s,
-  	dst, CL_FALSE, offset, size, src, 0, NULL, NULL))
+  AURA_CUDA_SAFE_CALL(cuMemcpyHtoDAsync(dst+offset, src, size, s));
 } 
 
 
@@ -69,8 +68,7 @@ inline void copy(memory dst, const void * src, std::size_t size,
  */
 inline void copy(void * dst, memory src, std::size_t size, 
   stream s, std::size_t offset=0) {
-  AURA_OPENCL_SAFE_CALL(clEnqueueReadBuffer(s,
-  	src, CL_FALSE, offset, size, dst, 0, NULL, NULL));
+  AURA_CUDA_SAFE_CALL(cuMemcpyDtoHAsync(dst, src+offset, size, s));
 }
 
 
@@ -85,14 +83,14 @@ inline void copy(void * dst, memory src, std::size_t size,
  */
 inline void copy(memory dst, memory src, std::size_t size, 
   stream s, std::size_t dst_offset=0, std::size_t src_offset=0) {
-  AURA_OPENCL_SAFE_CALL(clEnqueueCopyBuffer(s,
-    src, dst, src_offset, dst_offset, size, 0, 0, 0)); 	
+  AURA_CUDA_SAFE_CALL(cuMemcpyDtoDAsync(dst+dst_offset, 
+    src+src_offset, size, s));
 }
 
 
-} // opencl 
+} // cuda 
 } // backend_detail
 } // aura
 
-#endif // AURA_BACKEND_OPENCL_MEMORY_HPP
+#endif // AURA_BACKEND_CUDA_MEMORY_HPP
 
