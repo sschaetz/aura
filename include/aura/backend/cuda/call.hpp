@@ -2,10 +2,21 @@
 #define AURA_BACKEND_CUDA_CALL_HPP
 
 /// check if a call returned error and throw exception if it did
-#define AURA_CUDA_SAFE_CALL(call) call;
+#define AURA_CUDA_SAFE_CALL(call) { \
+  CUresult err = call; \
+  if (err != CUDA_SUCCESS) { \
+    printf("CUDA error %d\n", err); \
+  } \
+} \
+/**/
 
 /// check for error and throw exception if true 
-#define AURA_OPENCL_CHECK_ERROR(error) ;
+#define AURA_CUDA_CHECK_ERROR(error) { \
+  if (err != CUDA_SUCCESS) { \
+    printf("CUDA error %d\n", err); \
+  } \
+} \
+/**/
 
 #endif // AURA_BACKEND_CUDA_CALL_HPP
 

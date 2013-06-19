@@ -17,3 +17,6 @@ Devices, Streams, and Events
     Calls to a stream can be issued only when its device is current
     Event can be recorded only to a stream of the same device
 
+For peer 2 peer communication, which context needs to be specified (source or
+destination)?
+

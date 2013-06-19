@@ -21,6 +21,20 @@ it is not a thread but a concurrent environment
 * execution site
 * execution context, exec_context, execution_context
 * activity stream
+* sequence
+* isolate (from google dart)
+* command set
+* creek
+* flood
+* torrent
+* pipeline 
+* beam
+* ray
+* flurry
+* breeze (this is nice and fits Aura)
+* squall
+* wave
+* current (this is also nice)
 
 
 The concept I am trying to name is in essence concurrency. It is an independent
@@ -33,4 +47,17 @@ logical group of execution (concurrency).
 
 I think execution context might be the correct phrase, it can be either a 
 device or a stream.
+
+Actually no. There should be just 2 concepts: a device (execution site) and 
+an execution stream allowing some form of concurrency. The question now is, 
+how should they be interlinked and do they have to be interlinked. If they
+should be interlinked, this will certainly have to be done with thread-safe
+data structures that could degrade performance and increase complexity at
+an already very low level. So maybe this can be avoided. Once concsequence is
+that we can not have a device_synchronize(device) functin because neither 
+OpenCL nor CUDA actually provide that. If we wanted to do that we would need
+to store all streams and and command queues somewhere. So we only provide
+stream synchronization.
+
+Let's call it breeze.
 
