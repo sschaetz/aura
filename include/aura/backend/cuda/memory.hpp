@@ -3,8 +3,7 @@
 
 #include <CL/cl.h>
 #include <aura/backend/cuda/call.hpp>
-#include <aura/backend/cuda/context.hpp>
-#include <aura/backend/cuda/stream.hpp>
+#include <aura/backend/cuda/feed.hpp>
 
 
 namespace aura {
@@ -23,11 +22,11 @@ typedef CUdeviceptr memory;
  * @param c the context the memory should be allocated in
  * @return a device pointer
  */
-inline memory device_malloc(std::size_t size, context c) {
-  AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(c));
+inline memory device_malloc(std::size_t size, feed & f) {
+  f.set();
   memory m;
   AURA_CUDA_SAFE_CALL(cuMemAlloc(&m, size));
-  AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
+  f.unset();
   return m;
 }
 
@@ -52,8 +51,11 @@ inline void device_free(memory m) {
  * @param offset offset in bytes of the device memory
  */
 inline void copy(memory dst, const void * src, std::size_t size, 
-  stream s, std::size_t offset=0) {
-  AURA_CUDA_SAFE_CALL(cuMemcpyHtoDAsync(dst+offset, src, size, s));
+  feed & f, std::size_t offset=0) {
+  f.set(); 
+  AURA_CUDA_SAFE_CALL(cuMemcpyHtoDAsync(dst+offset, src, 
+    size, f.get_stream()));
+  f.unset();
 } 
 
 
@@ -67,8 +69,11 @@ inline void copy(memory dst, const void * src, std::size_t size,
  * @param offset offset in bytes of the device memory
  */
 inline void copy(void * dst, memory src, std::size_t size, 
-  stream s, std::size_t offset=0) {
-  AURA_CUDA_SAFE_CALL(cuMemcpyDtoHAsync(dst, src+offset, size, s));
+  feed & f, std::size_t offset=0) {
+  f.set();
+  AURA_CUDA_SAFE_CALL(cuMemcpyDtoHAsync(dst, src+offset, 
+    size, f.get_stream()));
+  f.unset();
 }
 
 
@@ -82,9 +87,11 @@ inline void copy(void * dst, memory src, std::size_t size,
  * @param offset offset in bytes of the device memory
  */
 inline void copy(memory dst, memory src, std::size_t size, 
-  stream s, std::size_t dst_offset=0, std::size_t src_offset=0) {
+  feed & f, std::size_t dst_offset=0, std::size_t src_offset=0) {
+  f.set();
   AURA_CUDA_SAFE_CALL(cuMemcpyDtoDAsync(dst+dst_offset, 
-    src+src_offset, size, s));
+    src+src_offset, size, f.get_stream()));
+  f.unset();
 }
 
 

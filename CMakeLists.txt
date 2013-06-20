@@ -50,6 +50,9 @@ ENDIF()
 STRING(TOLOWER "${AURA_BACKEND}" AURA_BACKEND_LC)
 MESSAGE(STATUS "Using ${AURA_BACKEND} backend")
 
+# compiler settings
+SET(CMAKE_CXX_FLAGS "-Wall")
+
 # configuration file
 CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/include/aura/config.hpp.template"
   "${CMAKE_BINARY_DIR}/aura/config.hpp")

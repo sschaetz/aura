@@ -7,11 +7,10 @@
 #if AURA_BACKEND_CUDA
 
 #include <aura/backend/cuda/call.hpp>
-#include <aura/backend/cuda/context.hpp>
 #include <aura/backend/cuda/device.hpp>
 #include <aura/backend/cuda/init.hpp>
 #include <aura/backend/cuda/memory.hpp>
-#include <aura/backend/cuda/stream.hpp>
+#include <aura/backend/cuda/feed.hpp>
 
 #elif AURA_BACKEND_OPENCL
 

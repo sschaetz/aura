@@ -35,6 +35,8 @@ it is not a thread but a concurrent environment
 * squall
 * wave
 * current (this is also nice)
+* batch
+* feed (wow, feed it nice)
 
 
 The concept I am trying to name is in essence concurrency. It is an independent
@@ -59,5 +61,6 @@ OpenCL nor CUDA actually provide that. If we wanted to do that we would need
 to store all streams and and command queues somewhere. So we only provide
 stream synchronization.
 
-Let's call it breeze.
+Let's call it breeze. Well, breeze fits the Aura metaphor nicely but I
+think feed is a more accurate word for it. A device feed. Nice. 
 

@@ -7,6 +7,7 @@
   if (err != CUDA_SUCCESS) { \
     printf("CUDA error %d\n", err); \
   } \
+  else { printf(" no error! %s %s:%d\n ", #call, __FILE__, __LINE__); } \
 } \
 /**/
 
