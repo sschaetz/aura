@@ -20,3 +20,6 @@ Devices, Streams, and Events
 For peer 2 peer communication, which context needs to be specified (source or
 destination)?
 
+Popping the context every time ca be a bad idea when doing low level
+programming. A tool should be provided to make a feed permanent.
+

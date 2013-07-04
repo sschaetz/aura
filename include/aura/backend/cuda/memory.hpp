@@ -1,6 +1,7 @@
 #ifndef AURA_BACKEND_CUDA_MEMORY_HPP
 #define AURA_BACKEND_CUDA_MEMORY_HPP
 
+#include <cstddef>
 #include <CL/cl.h>
 #include <aura/backend/cuda/call.hpp>
 #include <aura/backend/cuda/feed.hpp>

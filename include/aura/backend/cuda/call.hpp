@@ -7,12 +7,21 @@
   if (err != CUDA_SUCCESS) { \
     printf("CUDA error %d\n", err); \
   } \
-  else { printf(" no error! %s %s:%d\n ", #call, __FILE__, __LINE__); } \
 } \
 /**/
 
+/// check if a call returned error and throw exception if it did
+#define AURA_CUFFT_SAFE_CALL(call) { \
+  cufftResult err = call; \
+  if (err != CUFFT_SUCCESS) { \
+    printf("CUFFT error %d\n", err); \
+  } \
+} \
+/**/
+
+
 /// check for error and throw exception if true 
-#define AURA_CUDA_CHECK_ERROR(error) { \
+#define AURA_CUDA_CHECK_ERROR(err) { \
   if (err != CUDA_SUCCESS) { \
     printf("CUDA error %d\n", err); \
   } \
