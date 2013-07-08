@@ -10,7 +10,7 @@ using namespace aura::backend;
 // number of ffts in parallel
 #define batch_size 3
 // first fft size
-#define start_size 256
+#define start_size 256 
 // last fft size
 #define end_size 1024
 // step size between sizes
@@ -44,7 +44,12 @@ void run_test(int size, feed & f) {
     min, max, mean, stdev, num);
 
   // print result
-  printf("%d: [%1.2f %1.2f] %1.2f %1.2f %d\n", size, min, max, mean, stdev, num); 
+  printf("%d: [%1.2f %1.2f] %1.2f %1.2f %d\n", 
+    size, min, max, mean, stdev, num);
+  fflush(stdout); 
+  AURA_CUFFT_SAFE_CALL(cufftDestroy(plan));
+  device_free(m1);
+  device_free(m2);
 }
 
 
@@ -55,7 +60,7 @@ int main(void) {
     printf("no devices found\n"); exit(0);
   }
   device d0(0);
-  device d1(1);
+  device d1(4);
   feed f0(d0);
   feed f1(d1);
 
