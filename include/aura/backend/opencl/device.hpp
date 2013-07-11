@@ -35,14 +35,13 @@ public:
     
     // find device 
     unsigned int num_devices = 0;
-    cl_platform_id p;
     for(unsigned int i=0; i<num_platforms; i++) {
       unsigned int num_devices_platform = 0;
       AURA_OPENCL_SAFE_CALL(clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_ALL, 
         0, 0, &num_devices_platform));
       
       // check if we found the device we want
-      if(num_devices+num_devices_platform > ordinal) {
+      if(num_devices+num_devices_platform > (unsigned)ordinal) {
         std::vector<cl_device_id> devices(num_devices_platform);
         AURA_OPENCL_SAFE_CALL(clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_ALL, 
           num_devices_platform, &devices[0], 0));

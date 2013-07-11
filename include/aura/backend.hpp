@@ -15,11 +15,10 @@
 #elif AURA_BACKEND_OPENCL
 
 #include <aura/backend/opencl/call.hpp>
-#include <aura/backend/opencl/context.hpp>
 #include <aura/backend/opencl/device.hpp>
 #include <aura/backend/opencl/init.hpp>
 #include <aura/backend/opencl/memory.hpp>
-#include <aura/backend/opencl/stream.hpp>
+#include <aura/backend/opencl/feed.hpp>
 
 #endif
 

@@ -73,6 +73,16 @@ public:
     pinned_ = false;
     unset();
   }
+ 
+  /// get device 
+  inline const CUdevice & get_device() const {
+    return device_;
+  }
+
+  /// get context 
+  inline const CUcontext & get_context() const {
+    return context_;
+  }
 
   /// get stream
   inline const CUstream & get_stream() const {

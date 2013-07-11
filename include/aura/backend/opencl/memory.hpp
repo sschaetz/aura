@@ -3,8 +3,7 @@
 
 #include <CL/cl.h>
 #include <aura/backend/opencl/call.hpp>
-#include <aura/backend/opencl/context.hpp>
-#include <aura/backend/opencl/stream.hpp>
+#include <aura/backend/opencl/feed.hpp>
 
 
 namespace aura {
@@ -23,9 +22,9 @@ typedef cl_mem memory;
  * @param c the context the memory should be allocated in
  * @return a device pointer
  */
-inline memory device_malloc(std::size_t size, context c) {
+inline memory device_malloc(std::size_t size, feed & f) {
   int errorcode = 0;
-  memory m = clCreateBuffer(c, CL_MEM_READ_WRITE, 
+  memory m = clCreateBuffer(f.get_context(), CL_MEM_READ_WRITE, 
     size, 0, &errorcode);
   AURA_OPENCL_CHECK_ERROR(errorcode);
   return m;
@@ -37,7 +36,7 @@ inline memory device_malloc(std::size_t size, context c) {
  *
  * @param m memory that should be freed
  */
-inline void device_free(memory m) {
+inline void device_free(memory m, feed &) {
   AURA_OPENCL_SAFE_CALL(clReleaseMemObject(m));
 }
 
@@ -52,8 +51,8 @@ inline void device_free(memory m) {
  * @param offset offset in bytes of the device memory
  */
 inline void copy(memory dst, const void * src, std::size_t size, 
-  stream s, std::size_t offset=0) {
-  AURA_OPENCL_SAFE_CALL(clEnqueueWriteBuffer(s,
+  feed & f, std::size_t offset=0) {
+  AURA_OPENCL_SAFE_CALL(clEnqueueWriteBuffer(f.get_stream(),
   	dst, CL_FALSE, offset, size, src, 0, NULL, NULL))
 } 
 
@@ -68,8 +67,8 @@ inline void copy(memory dst, const void * src, std::size_t size,
  * @param offset offset in bytes of the device memory
  */
 inline void copy(void * dst, memory src, std::size_t size, 
-  stream s, std::size_t offset=0) {
-  AURA_OPENCL_SAFE_CALL(clEnqueueReadBuffer(s,
+  feed & f, std::size_t offset=0) {
+  AURA_OPENCL_SAFE_CALL(clEnqueueReadBuffer(f.get_stream(),
   	src, CL_FALSE, offset, size, dst, 0, NULL, NULL));
 }
 
@@ -84,8 +83,8 @@ inline void copy(void * dst, memory src, std::size_t size,
  * @param offset offset in bytes of the device memory
  */
 inline void copy(memory dst, memory src, std::size_t size, 
-  stream s, std::size_t dst_offset=0, std::size_t src_offset=0) {
-  AURA_OPENCL_SAFE_CALL(clEnqueueCopyBuffer(s,
+  feed & f, std::size_t dst_offset=0, std::size_t src_offset=0) {
+  AURA_OPENCL_SAFE_CALL(clEnqueueCopyBuffer(f.get_stream(),
     src, dst, src_offset, dst_offset, size, 0, 0, 0)); 	
 }
 

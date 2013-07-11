@@ -2,7 +2,7 @@
 #define AURA_BACKEND_OPENCL_FEED_HPP
 
 #include <boost/noncopyable.hpp>
-#include <opencl.h>
+#include <CL/cl.h>
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/device.hpp>
 
@@ -32,7 +32,7 @@ public:
    * destroy feed
    */
   inline ~feed() {
-    AURA_OPENCL_SAFE_CALL(cuStreamDestroy(stream_));
+    AURA_OPENCL_SAFE_CALL(clReleaseCommandQueue(stream_)); 
   }
   
   /**
@@ -40,7 +40,7 @@ public:
    */
   inline void synchronize() {
     cl_event event;
-    AURA_OPENCL_SAFE_CALL(clEnqueueMarker(s, &event));
+    AURA_OPENCL_SAFE_CALL(clEnqueueMarker(stream_, &event));
     AURA_OPENCL_SAFE_CALL(clEnqueueWaitForEvents(stream_, 1, &event));
   }
   
@@ -60,15 +60,27 @@ public:
   inline void unpin() {
   }
 
+  /// get device 
+  inline const cl_device_id & get_device() const {
+    return device_;
+  }
+
+  /// get context 
+  inline const cl_context & get_context() const {
+    return context_;
+  }
+
   /// get stream
   inline const cl_command_queue & get_stream() const {
     return stream_;
   }
 
+
 private:
-  const CUdevice & device_;
-  const CUcontext & context_;
+  const cl_device_id & device_;
+  const cl_context & context_;
   cl_command_queue stream_;
+  bool pinned_;
 
 };
 
