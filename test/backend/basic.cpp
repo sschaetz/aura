@@ -36,7 +36,8 @@ BOOST_AUTO_TEST_CASE(memorypingpong) {
     copy(m, &a1[0], testsize*sizeof(float), f); 
     copy(&a2[0], m, testsize*sizeof(float), f);
     f.synchronize();
-    BOOST_CHECK(std::equal(a1.begin(), a1.end(), a2.begin())); 
+    BOOST_CHECK(std::equal(a1.begin(), a1.end(), a2.begin()));
+    device_free(m, f);
   }
 }
 
