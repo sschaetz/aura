@@ -37,8 +37,10 @@ inline memory device_malloc(std::size_t size, feed & f) {
  *
  * @param m memory that should be freed
  */
-inline void device_free(memory m) {
+inline void device_free(memory m, feed & f) {
+  f.set();
   AURA_CUDA_SAFE_CALL(cuMemFree(m));
+  f.unset();
 }
 
 

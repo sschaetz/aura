@@ -23,3 +23,5 @@ destination)?
 Popping the context every time ca be a bad idea when doing low level
 programming. A tool should be provided to make a feed permanent.
 
+For CUDA to release memory, the correct context must be set first.
+

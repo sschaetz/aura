@@ -161,6 +161,52 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
 }                                                                              \
 /**/
 
+/**
+ * @brief macro to benchmark an asynchronous expression
+ *
+ * @param expression the expression that should be benchmarked
+ * @param sync epxression that should be used to synchronize 
+ *   asynchronous expression
+ * @param duration the amount of time the expression should execute
+ * @param min min of test 
+ * @param max max of test 
+ * @param mean mean of test 
+ * @param stdev standard deviation of test 
+ * @param number of test runs
+ */
+#define MGPU_BENCHMARK_ASYNC(expression, sync, duration,                       \
+    min, max, mean, stdev, num) {                                              \
+  std::vector<double> measurements;                                            \
+  double elapsed_time(0.), d2(0.);                                             \
+  /* until time is not elapsed */                                              \
+  num = 0;                                                                     \
+  while(elapsed_time < duration) {                                             \
+    double d1 = aura::now();                                                   \
+    {                                                                          \
+      d2 = aura::now();                                                        \
+      expression;                                                              \
+      sync;                                                                    \
+      d2 = aura::now() - d2;                                                   \
+      num++;                                                                   \
+    }                                                                          \
+    d1 = aura::now() - d1;                                                     \
+    if(d2 > 0 && d1 > 0) {                                                     \
+      measurements.push_back(d2*1000*1000*1000);                               \
+      elapsed_time += d1;                                                      \
+    }                                                                          \
+  }                                                                            \
+  double sum = std::accumulate(measurements.begin(), measurements.end(), 0.0); \
+  mean = sum / measurements.size();                                            \
+  double sq_sum = std::inner_product(measurements.begin(), measurements.end(), \
+    measurements.begin(), 0.0);                                                \
+  stdev = std::sqrt(sq_sum / measurements.size() - mean * mean);               \
+  std::sort(measurements.begin(), measurements.end());                         \
+  min = measurements[0];                                                       \
+  max = measurements[measurements.size()-1];                                   \
+}                                                                              \
+/**/
+
+
 
 /**
  * @brief macro to benchmark an expression with histogram output

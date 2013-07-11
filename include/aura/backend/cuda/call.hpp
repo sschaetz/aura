@@ -5,7 +5,7 @@
 #define AURA_CUDA_SAFE_CALL(call) { \
   CUresult err = call; \
   if (err != CUDA_SUCCESS) { \
-    printf("CUDA error %d\n", err); \
+    printf("CUDA error %d at %s:%d\n", err, __FILE__, __LINE__ ); \
   } \
 } \
 /**/
@@ -14,7 +14,7 @@
 #define AURA_CUFFT_SAFE_CALL(call) { \
   cufftResult err = call; \
   if (err != CUFFT_SUCCESS) { \
-    printf("CUFFT error %d\n", err); \
+    printf("CUFFT error %d at %s:%d\n", err, __FILE__, __LINE__ ); \
   } \
 } \
 /**/
@@ -23,7 +23,7 @@
 /// check for error and throw exception if true 
 #define AURA_CUDA_CHECK_ERROR(err) { \
   if (err != CUDA_SUCCESS) { \
-    printf("CUDA error %d\n", err); \
+    printf("CUDA error %d at %s:%d\n", err, __FILE__, __LINE__ ); \
   } \
 } \
 /**/

@@ -51,6 +51,7 @@ public:
     if(pinned_) {
       return;
     }
+    printf(">> ctxt %d\n", context_);
     AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(context_));
   }
   
@@ -59,6 +60,7 @@ public:
     if(pinned_) {
       return;
     }
+    printf("<< ctxt %d\n", context_);
     AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
   }
 
@@ -71,6 +73,7 @@ public:
   /// pin (make pinned, deactivate set/unset)
   inline void unpin() {
     pinned_ = false;
+    unset();
   }
 
   /// get stream
