@@ -51,7 +51,6 @@ public:
     if(pinned_) {
       return;
     }
-    printf(">> ctxt %d\n", context_);
     AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(context_));
   }
   
@@ -60,7 +59,6 @@ public:
     if(pinned_) {
       return;
     }
-    printf("<< ctxt %d\n", context_);
     AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
   }
 
