@@ -56,7 +56,7 @@ public:
   inline void pin() {
   }
   
-  /// pin (make pinned, deactivate set/unset)
+  /// unpin (make unpinned, activate set/unset)
   inline void unpin() {
   }
 
