@@ -61,6 +61,22 @@ public:
   inline ~device() {
     AURA_OPENCL_SAFE_CALL(clReleaseContext(context_));
   }
+
+  /// make device active
+  inline void set() {
+  }
+  
+  /// undo make device active
+  inline void unset() {
+  }
+
+  /// pin (make pinned, deactivate set/unset)
+  inline void pin() {
+  }
+  
+  /// unpin (make unpinned, activate set/unset)
+  inline void unpin() {
+  } 
   
   inline const cl_device_id & get_device() const {
     return device_; 

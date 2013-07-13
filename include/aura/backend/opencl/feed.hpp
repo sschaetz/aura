@@ -77,9 +77,13 @@ public:
 
 
 private:
+  /// reference to device handle
   const cl_device_id & device_;
+  /// reference to context handle
   const cl_context & context_;
+  /// stream handle
   cl_command_queue stream_;
+  /// flag indicating pinned or unpinned context
   bool pinned_;
 
 };
