@@ -24,7 +24,7 @@ public:
    *
    * @param ordinal device number
    */
-  inline device(int ordinal) {
+  inline device(int ordinal) : pinned_(false) {
     AURA_CUDA_SAFE_CALL(cuDeviceGet(&device_, ordinal));
     AURA_CUDA_SAFE_CALL(cuCtxCreate(&context_, 0, device_));
   }
@@ -35,7 +35,35 @@ public:
   inline ~device() {
     AURA_CUDA_SAFE_CALL(cuCtxDestroy(context_));
   }
+ 
+  /// make device active
+  inline void set() {
+    if(pinned_) {
+      return;
+    }
+    AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(context_));
+  }
   
+  /// undo make device active
+  inline void unset() {
+    if(pinned_) {
+      return;
+    }
+    AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
+  }
+
+  /// pin (make pinned, deactivate set/unset)
+  inline void pin() {
+    set();
+    pinned_ = true;
+  }
+  
+  /// unpin (make unpinned, activate set/unset)
+  inline void unpin() {
+    pinned_ = false;
+    unset();
+  } 
+
   inline const CUdevice & get_device() const {
     return device_; 
   }
@@ -49,7 +77,8 @@ private:
   CUdevice device_;
   /// context handle 
   CUcontext context_;
-
+  /// flag indicating pinned or unpinned context
+  bool pinned_;
 };
   
 /**

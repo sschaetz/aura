@@ -68,7 +68,7 @@ public:
     pinned_ = true;
   }
   
-  /// pin (make pinned, deactivate set/unset)
+  /// unpin (make unpinned, activate set/unset)
   inline void unpin() {
     pinned_ = false;
     unset();
@@ -90,9 +90,13 @@ public:
   }
 
 private:
+  /// reference to device handle
   const CUdevice & device_;
+  /// reference to context handle
   const CUcontext & context_;
+  /// stream handle
   CUstream stream_;
+  /// flag indicating pinned or unpinned context
   bool pinned_;
 
 };

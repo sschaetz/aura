@@ -64,3 +64,6 @@ stream synchronization.
 Let's call it breeze. Well, breeze fits the Aura metaphor nicely but I
 think feed is a more accurate word for it. A device feed. Nice. 
 
+Memory is allocated on a feed. Memory can however move between feeds that 
+reference the same device. This is somewhat illogical. Memory should be 
+allocated on a device, not on a feed.

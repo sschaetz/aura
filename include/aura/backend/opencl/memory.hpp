@@ -4,6 +4,7 @@
 #include <CL/cl.h>
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/feed.hpp>
+#include <aura/backend/opencl/device.hpp>
 
 
 namespace aura {
@@ -22,9 +23,9 @@ typedef cl_mem memory;
  * @param c the context the memory should be allocated in
  * @return a device pointer
  */
-inline memory device_malloc(std::size_t size, feed & f) {
+inline memory device_malloc(std::size_t size, device & d) {
   int errorcode = 0;
-  memory m = clCreateBuffer(f.get_context(), CL_MEM_READ_WRITE, 
+  memory m = clCreateBuffer(d.get_context(), CL_MEM_READ_WRITE, 
     size, 0, &errorcode);
   AURA_OPENCL_CHECK_ERROR(errorcode);
   return m;
@@ -36,7 +37,7 @@ inline memory device_malloc(std::size_t size, feed & f) {
  *
  * @param m memory that should be freed
  */
-inline void device_free(memory m, feed &) {
+inline void device_free(memory m, device &) {
   AURA_OPENCL_SAFE_CALL(clReleaseMemObject(m));
 }
 

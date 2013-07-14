@@ -10,7 +10,7 @@ using namespace aura::backend;
 // number of ffts in parallel
 #define batch_size 3
 // first fft size
-#define start_size 270 
+#define start_size 256
 // last fft size
 #define end_size 1024 
 // step size between sizes
@@ -19,10 +19,10 @@ using namespace aura::backend;
 #define runtime 10 
 
 
-void run_test(int size, feed & f) {
+void run_test(int size, device & d, feed & f) {
   // allocate memory
-  memory m1 = device_malloc(size*size*sizeof(float)*2*batch_size, f);
-  memory m2 = device_malloc(size*size*sizeof(float)*2*batch_size, f);
+  memory m1 = device_malloc(size*size*sizeof(float)*2*batch_size, d);
+  memory m2 = device_malloc(size*size*sizeof(float)*2*batch_size, d);
  
   // allocate fft handle
   cufftHandle plan;
@@ -39,8 +39,8 @@ void run_test(int size, feed & f) {
   double min, max, mean, stdev;
   int num;
   MGPU_BENCHMARK_ASYNC(cufftExecC2C(plan, (cufftComplex *)m1,
-    (cufftComplex *)m2, CUFFT_FORWARD), ;, size/runtime/10, 
-    min, max, mean, stdev, num);
+    (cufftComplex *)m2, CUFFT_FORWARD), f.synchronize();, 
+    size/runtime/10, min, max, mean, stdev, num);
  
   // print result
   printf("%d: [%1.2f %1.2f] %1.2f %1.2f %d\n", 
@@ -48,8 +48,8 @@ void run_test(int size, feed & f) {
   f.synchronize();
   AURA_CUFFT_SAFE_CALL(cufftDestroy(plan));
   
-  device_free(m1, f);
-  device_free(m2, f);
+  device_free(m1, d);
+  device_free(m2, d);
 }
 
 
@@ -70,17 +70,17 @@ int main(void) {
     {
       if(0 != first) {
         first = 0;
-        f1.unpin();
-        f0.pin();
+        d1.unpin();
+        d0.pin();
       }
-      run_test(i, f0);
+      run_test(i, d0, f0);
     } else {
       if(1 != first) {
         first = 1;
-        f0.unpin();
-        f1.pin();
+        d0.unpin();
+        d1.pin();
       }
-      run_test(i, f1);
+      run_test(i, d1, f1);
     }
   }
 }

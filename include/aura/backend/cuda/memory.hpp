@@ -5,6 +5,7 @@
 #include <CL/cl.h>
 #include <aura/backend/cuda/call.hpp>
 #include <aura/backend/cuda/feed.hpp>
+#include <aura/backend/cuda/device.hpp>
 
 
 namespace aura {
@@ -23,11 +24,11 @@ typedef CUdeviceptr memory;
  * @param c the context the memory should be allocated in
  * @return a device pointer
  */
-inline memory device_malloc(std::size_t size, feed & f) {
-  f.set();
+inline memory device_malloc(std::size_t size, device & d) {
+  d.set();
   memory m;
   AURA_CUDA_SAFE_CALL(cuMemAlloc(&m, size));
-  f.unset();
+  d.unset();
   return m;
 }
 
@@ -37,10 +38,10 @@ inline memory device_malloc(std::size_t size, feed & f) {
  *
  * @param m memory that should be freed
  */
-inline void device_free(memory m, feed & f) {
-  f.set();
+inline void device_free(memory m, device & d) {
+  d.set();
   AURA_CUDA_SAFE_CALL(cuMemFree(m));
-  f.unset();
+  d.unset();
 }
 
 

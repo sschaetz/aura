@@ -44,11 +44,11 @@ BOOST_AUTO_TEST_CASE(multiple) {
     device d1(1);  
     feed f1(d1);
 
-    memory m0 = device_malloc(testsize*sizeof(float), f0);
-    memory m1 = device_malloc(testsize*sizeof(float), f1);
+    memory m0 = device_malloc(testsize*sizeof(float), d0);
+    memory m1 = device_malloc(testsize*sizeof(float), d1);
 
-    device_free(m0, f0);
-    device_free(m1, f1);
+    device_free(m0, d0);
+    device_free(m1, d1);
 
   }
 }
