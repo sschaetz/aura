@@ -38,9 +38,6 @@ public:
  
   /// make device active
   inline void set() {
-    if(pinned_) {
-      return;
-    }
     AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(context_));
   }
   
@@ -52,13 +49,13 @@ public:
     AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
   }
 
-  /// pin (make pinned, deactivate set/unset)
+  /// pin (make pinned, deactivate unset)
   inline void pin() {
     set();
     pinned_ = true;
   }
   
-  /// unpin (make unpinned, activate set/unset)
+  /// unpin (make unpinned, activate unset)
   inline void unpin() {
     pinned_ = false;
     unset();

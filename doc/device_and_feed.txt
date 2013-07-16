@@ -1,0 +1,9 @@
+Having proper device and feed semantics is imporant. There are subtile problems
+if the context is not set and external libraries are used because the 
+implicitly expect a context (like CUFFT).
+
+Should memory be a tuple of pointer and context?
+Setting context should only  be allowed by the device which owns the context.
+This context can be pinned, if a feed wants to set/unset a context it has to
+go through the device which knows if a context was pinned.
+

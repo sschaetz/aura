@@ -17,11 +17,12 @@ using namespace aura::backend;
 #define runtime 10 
 
 
-void run_test(int size, feed & f) {
+void run_test(int size, device & d, feed & f) {
   // allocate memory
-  memory m1 = device_malloc(size*size*sizeof(float)*2*batch_size, f);
-  memory m2 = device_malloc(size*size*sizeof(float)*2*batch_size, f);
+  memory m1 = device_malloc(size*size*sizeof(float)*2*batch_size, d);
+  memory m2 = device_malloc(size*size*sizeof(float)*2*batch_size, d);
  
+  f.set(); 
   // allocate fft handle
   cufftHandle plan;
   int dims[2] = { size, size };
@@ -44,10 +45,10 @@ void run_test(int size, feed & f) {
   printf("%d: [%1.2f %1.2f] %1.2f %1.2f %d\n", 
     size, min, max, mean, stdev, num);
   f.synchronize();
+  f.set(); 
   AURA_CUFFT_SAFE_CALL(cufftDestroy(plan));
-  
-  device_free(m1, f);
-  device_free(m2, f);
+  device_free(m1, d);
+  device_free(m2, d);
 }
 
 
@@ -57,21 +58,47 @@ int main(void) {
   if(1 >= num) {
     printf("no devices found\n"); exit(0);
   }
-
+  int size = 486;
   std::vector<device *> devices;
   std::vector<feed *> feeds;
+  std::vector<cufftHandle> plans;
+  std::vector<memory> memories1;
+  std::vector<memory> memories2;
   for(int i=0; i<num; i++) {
     devices.push_back(new device(i)); 
+    cufftHandle plan;
+    int dims[2] = { size, size };
+    int embed[2] = { size * size, size };
+    devices[devices.size()-1]->set();
+    AURA_CUFFT_SAFE_CALL(cufftPlanMany(&plan, 2, dims, embed, 1, size * size, 
+      embed, 1, size * size, CUFFT_C2C, batch_size));
+    devices[devices.size()-1]->unset();
+    plans.push_back(plan); 
     feeds.push_back(new feed(*devices[devices.size()-1])); 
+    memory m1 = device_malloc(size*size*sizeof(float)*2*batch_size, 
+      *devices[devices.size()-1]);
+    memory m2 = device_malloc(size*size*sizeof(float)*2*batch_size, 
+      *devices[devices.size()-1]);
+    memories1.push_back(m1);
+    memories2.push_back(m2);
   }
 
   int dev = 0;
+  int it = 0;
   while(true) {
-    feeds[dev]->pin();
-    run_test(486, *feeds[dev]);
-    feeds[dev]->unpin();
-    dev = (dev+1)%8;
+    devices[dev]->set(); 
+    AURA_CUFFT_SAFE_CALL(cufftExecC2C(plans[dev], 
+      (cufftComplex *)memories1[dev],
+      (cufftComplex *)memories2[dev], CUFFT_FORWARD));
+    dev = (dev+1)%num; 
+    it++;
+    // synchronize every 3 calls
+    if((it-dev)%3==0) {
+      AURA_CUDA_SAFE_CALL(cuCtxSynchronize()); 
+    }
+    printf("%d\r", it);
   }
+
 }
 
 

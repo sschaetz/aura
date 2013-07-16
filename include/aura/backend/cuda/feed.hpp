@@ -21,11 +21,10 @@ public:
    *
    * @param d device to create feed for
    */
-  inline feed(const device & d) : 
-    device_(d.get_device()), context_(d.get_context()), pinned_(false) {
+  inline feed(const device & d) : device_(d), pinned_(false) {
     set();
     AURA_CUDA_SAFE_CALL(cuStreamCreate(&stream_, 0 /*CU_STREAM_NON_BLOCKING*/));
-    unset();
+    unset(); 
   }
 
   /**
@@ -48,40 +47,22 @@ public:
   
   /// make feed active
   inline void set() {
-    if(pinned_) {
-      return;
-    }
-    AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(context_));
+    device_.set(); 
   }
   
   /// undo make feed active
   inline void unset() {
-    if(pinned_) {
-      return;
-    }
-    AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
-  }
-
-  /// pin (make pinned, deactivate set/unset)
-  inline void pin() {
-    set();
-    pinned_ = true;
-  }
-  
-  /// unpin (make unpinned, activate set/unset)
-  inline void unpin() {
-    pinned_ = false;
-    unset();
+    device_.unset(); 
   }
  
   /// get device 
   inline const CUdevice & get_device() const {
-    return device_;
+    return device_.get_device();
   }
 
   /// get context 
   inline const CUcontext & get_context() const {
-    return context_;
+    return device_.get_context();
   }
 
   /// get stream
@@ -90,10 +71,8 @@ public:
   }
 
 private:
-  /// reference to device handle
-  const CUdevice & device_;
-  /// reference to context handle
-  const CUcontext & context_;
+  /// reference to device the feed was created for
+  const device & device_;
   /// stream handle
   CUstream stream_;
   /// flag indicating pinned or unpinned context
