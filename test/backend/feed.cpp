@@ -19,14 +19,14 @@ BOOST_AUTO_TEST_CASE(pin_unpin) {
     device d1(1);  
     feed f1(d1);
 
-    f0.pin();
+    d0.pin();
     f0.unset();
 #if AURA_BACKEND_CUDA
     CUdevice dev;
     AURA_CUDA_SAFE_CALL(cuCtxGetDevice(&dev));
     BOOST_CHECK(dev == d0.get_device());
 #endif
-    f0.unpin();
+    d0.unpin();
   }
 }
 

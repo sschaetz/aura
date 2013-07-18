@@ -37,34 +37,41 @@ public:
   }
  
   /// make device active
-  inline void set() {
+  inline void set() const {
     AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(context_));
   }
   
   /// undo make device active
-  inline void unset() {
+  inline void unset() const {
     if(pinned_) {
       return;
     }
     AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
   }
 
-  /// pin (make pinned, deactivate unset)
+  /**
+   * pin 
+   *
+   * disable unset, device context stays associated with current thread
+   * usefull for interoperability with other libraries that use a context
+   * explicitly
+   */
   inline void pin() {
     set();
     pinned_ = true;
   }
   
-  /// unpin (make unpinned, activate unset)
+  /// unpin (reenable unset)
   inline void unpin() {
     pinned_ = false;
-    unset();
   } 
 
+  /// access the device handle
   inline const CUdevice & get_device() const {
     return device_; 
   }
   
+  /// access the context handle
   inline const CUcontext & get_context() const {
     return context_; 
   }

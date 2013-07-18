@@ -1,3 +1,5 @@
+Nomenclature (feed)
+
 OpenCL has command queues, CUDA has streams
 
 I need a new word that encompasses both

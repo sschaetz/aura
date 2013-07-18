@@ -25,7 +25,6 @@ BOOST_AUTO_TEST_CASE(basic) {
 BOOST_AUTO_TEST_CASE(memorypingpong) {
   init();
   int num = device_get_count();
-  printf("%d\n", num);
   if(0 < num) {
     device d(0);  
     feed f(d);

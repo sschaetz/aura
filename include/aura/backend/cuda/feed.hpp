@@ -21,37 +21,37 @@ public:
    *
    * @param d device to create feed for
    */
-  inline feed(const device & d) : device_(d), pinned_(false) {
-    set();
+  inline feed(const device & d) : device_(d) {
+    device_.set();
     AURA_CUDA_SAFE_CALL(cuStreamCreate(&stream_, 0 /*CU_STREAM_NON_BLOCKING*/));
-    unset(); 
+    device_.unset(); 
   }
 
   /**
    * destroy feed
    */
   inline ~feed() {
-    set();
+    device_.set();
     AURA_CUDA_SAFE_CALL(cuStreamDestroy(stream_));
-    unset();
+    device_.unset(); 
   }
   
   /**
    * wait until all commands in the feed have finished
    */
-  inline void synchronize() {
-    set();
+  inline void synchronize() const {
+    device_.set();
     AURA_CUDA_SAFE_CALL(cuStreamSynchronize(stream_));
-    unset();
+    device_.unset();
   }
   
   /// make feed active
-  inline void set() {
+  inline void set() const {
     device_.set(); 
   }
   
   /// undo make feed active
-  inline void unset() {
+  inline void unset() const {
     device_.unset(); 
   }
  

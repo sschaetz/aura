@@ -26,7 +26,7 @@ public:
    *
    * @param ordinal device number
    */
-  inline device(int ordinal) {
+  inline device(int ordinal) : pinned_(false) {
     // get platforms
     unsigned int num_platforms = 0;
     AURA_OPENCL_SAFE_CALL(clGetPlatformIDs(0, 0, &num_platforms));
@@ -63,25 +63,29 @@ public:
   }
 
   /// make device active
-  inline void set() {
+  inline void set() const {
   }
   
   /// undo make device active
-  inline void unset() {
+  inline void unset() const {
   }
 
-  /// pin (make pinned, deactivate set/unset)
+  /// pin
   inline void pin() {
+    pinned_ = true;
   }
   
-  /// unpin (make unpinned, activate set/unset)
+  /// unpin 
   inline void unpin() {
+    pinned_ = false;
   } 
   
+  /// access the device handle
   inline const cl_device_id & get_device() const {
     return device_; 
   }
   
+  /// access the context handle
   inline const cl_context & get_context() const {
     return context_; 
   }
@@ -91,6 +95,8 @@ private:
   cl_device_id device_;
   /// context handle
   cl_context context_;
+  /// flag indicating pinned or unpinned context
+  bool pinned_;
 };
  
 

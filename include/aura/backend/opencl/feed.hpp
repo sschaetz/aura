@@ -21,10 +21,10 @@ public:
    *
    * @param d device to create feed for
    */
-  inline feed(const device & d) : 
-    device_(d.get_device()), context_(d.get_context()), pinned_(false) {
+  inline feed(const device & d) : device_(d) {
     int errorcode = 0;
-    stream_ = clCreateCommandQueue(context_, device_, 0, &errorcode);
+    stream_ = clCreateCommandQueue(device_.get_context(), 
+      device_.get_device(), 0, &errorcode);
     AURA_OPENCL_CHECK_ERROR(errorcode);
   }
 
@@ -38,36 +38,29 @@ public:
   /**
    * wait until all commands in the feed have finished
    */
-  inline void synchronize() {
+  inline void synchronize() const {
     cl_event event;
-    AURA_OPENCL_SAFE_CALL(clEnqueueMarker(stream_, &event));
-    AURA_OPENCL_SAFE_CALL(clEnqueueWaitForEvents(stream_, 1, &event));
+    AURA_OPENCL_SAFE_CALL(clFinish(stream_));
   }
   
   /// make feed active
-  inline void set() {
+  inline void set() const {
+    device_.set();
   }
   
   /// undo make feed active
-  inline void unset() {
-  }
-
-  /// pin (make pinned, deactivate set/unset)
-  inline void pin() {
-  }
-  
-  /// unpin (make unpinned, activate set/unset)
-  inline void unpin() {
+  inline void unset() const {
+    device_.unset();
   }
 
   /// get device 
   inline const cl_device_id & get_device() const {
-    return device_;
+    return device_.get_device();
   }
 
   /// get context 
   inline const cl_context & get_context() const {
-    return context_;
+    return device_.get_context();;
   }
 
   /// get stream
@@ -77,14 +70,10 @@ public:
 
 
 private:
-  /// reference to device handle
-  const cl_device_id & device_;
-  /// reference to context handle
-  const cl_context & context_;
+  /// reference to device the feed was created for
+  const device & device_;
   /// stream handle
   cl_command_queue stream_;
-  /// flag indicating pinned or unpinned context
-  bool pinned_;
 
 };
 

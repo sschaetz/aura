@@ -1,4 +1,4 @@
-opencl:
+Backend OpenCL
 
 0) opencl has platforms (since there can exist Intel, AMD and Nvidia cards in 
 the same system
