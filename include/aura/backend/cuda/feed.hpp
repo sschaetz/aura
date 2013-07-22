@@ -75,8 +75,6 @@ private:
   const device & device_;
   /// stream handle
   CUstream stream_;
-  /// flag indicating pinned or unpinned context
-  bool pinned_;
 
 };
 
