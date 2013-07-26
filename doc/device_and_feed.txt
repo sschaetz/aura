@@ -1,4 +1,5 @@
 Device and Feed
+===============
 
 Having proper device and feed semantics is imporant. There are subtile problems
 if the context is not set and external libraries are used because the 

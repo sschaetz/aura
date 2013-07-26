@@ -1,0 +1,67 @@
+Kernels
+=======
+
+What is a good interface to launch kernels?
+
+    CUDA has modules and functions, functions are part of modules, modules
+can be a cubin file, a PTX file or a fatbin file.
+
+the paremters are (driver API):
+* kernel function pointer
+* cache configuration: prefer none, prefer shared, prefer L1, prefer equal
+* shared memory configuration: default, 4 byte bank size, 8 byte bank size
+* grid-dim and block-dim (both 3 dimensional)
+* amount of dynamic shared memory for each block
+* kernel parameters
+* stream the kernel should be launched in
+* kernel that should be launched
+
+
+    OpenCL has programs and kernels, kernels are part of programs, program
+contain 1...N kernels. Programs are built for devices and since there are
+different devices, a program must be built multiple times if CPU and GPU
+should be used.
+
+the parameters are:
+* kernel that should be launched
+* stream the kernel should be launched in
+* global work size and local work size
+* list of events that need to occur befor kernel starts
+* kernel arguments
+
+
+    The interface of this mechanism is important.It would be really nice if 
+we could register a kernel and then call it as a regular free function - this
+would have to be done by the pre-processor though. Maybe not so nice.
+
+What about:
+
+feed.invoke(kernel, grid(10,10), block(20,40), shared(512), 
+  arg1, arg2, arg3, arg4);
+
+or
+
+feed << invoke(kernel, grid(10,10), block(20,40), shared(512), 
+  arg1, arg2, arg3, arg4);
+
+or
+
+invoke(kernel, grid(10,10), block(20,40), shared(512), 
+  arg1, arg2, arg3, arg4, feed);
+
+    If we use a member function, everything must be a member function so
+the latter is probably best. Or the "<<" version where we could do something
+like
+
+feed << copy(A, B, size) 
+     << invoke(kernel, grid(10,10), block(20,40), args(A, B)) 
+     << copy(B, A, size); 
+
+    I like the "args" parameter, this give a nice structure to the call, we may
+need to take care to avoid copying of parameters. Invoke should be callable 
+with an optional feed argument though, to not enforce the above interface. I 
+wonder if the "<<" version should be a higher level abstraction or if it should
+be provided by the backend implementations.
+
+
+
