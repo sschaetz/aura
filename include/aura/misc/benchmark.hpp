@@ -129,7 +129,7 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
  * @param max max of test 
  * @param mean mean of test 
  * @param stdev standard deviation of test 
- * @param number of test runs
+ * @param num number of test runs
  */
 #define MGPU_BENCHMARK(expression, duration, min, max, mean, stdev, num) {     \
   std::vector<double> measurements;                                            \
@@ -172,7 +172,7 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
  * @param max max of test 
  * @param mean mean of test 
  * @param stdev standard deviation of test 
- * @param number of test runs
+ * @param num number of test runs
  */
 #define MGPU_BENCHMARK_ASYNC(expression, sync, duration,                       \
     min, max, mean, stdev, num) {                                              \

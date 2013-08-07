@@ -17,7 +17,7 @@ the paremters are (driver API):
 * kernel that should be launched
 
 
-    OpenCL has programs and kernels, kernels are part of programs, program
+    OpenCL has programs and kernels, kernels are part of programs, programs
 contain 1...N kernels. Programs are built for devices and since there are
 different devices, a program must be built multiple times if CPU and GPU
 should be used.
@@ -30,7 +30,7 @@ the parameters are:
 * kernel arguments
 
 
-    The interface of this mechanism is important.It would be really nice if 
+    The interface of this mechanism is important. It would be really nice if 
 we could register a kernel and then call it as a regular free function - this
 would have to be done by the pre-processor though. Maybe not so nice.
 
@@ -57,11 +57,19 @@ feed << copy(A, B, size)
      << invoke(kernel, grid(10,10), block(20,40), args(A, B)) 
      << copy(B, A, size); 
 
-    I like the "args" parameter, this give a nice structure to the call, we may
+    I like the "args" parameter, this gives a nice structure to the call, we may
 need to take care to avoid copying of parameters. Invoke should be callable 
 with an optional feed argument though, to not enforce the above interface. I 
 wonder if the "<<" version should be a higher level abstraction or if it should
 be provided by the backend implementations.
 
+The latter call could, in theory, implicitly build a double-buffered mechanism,
+since kernel call and copy are coupled together. Something like:
 
+feed << buffered_copy(A, B, size) 
+     << invoke(kernel, grid(10,10), block(20,40), args(A, B)) 
+     << buffered_copy(B, A, size); 
+
+Hm, the latter is missing a lot to work, a loop construct for example, a way to
+iterate over a buffer etc.
 
