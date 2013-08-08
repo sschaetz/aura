@@ -12,28 +12,34 @@ using namespace aura;
 // _____________________________________________________________________________
 
 void runner0(profile::memory_sink & s) {
-  profile::start(s, "foo");
-  usleep(100000);
-  profile::stop(s, "foo");
+  for(int i=0; i<10; i++) {
+    profile::start(s, "foo");
+    usleep(10000);
+    profile::stop(s, "foo");
+    usleep(1000);
+  }
 }
 
 void runner1(profile::memory_sink & s) {
   AURA_PROFILE_FUNCTION(profile::memory_sink, s);
-  usleep(200000);
+  usleep(20000);
 }
 
 BOOST_AUTO_TEST_CASE(basic) {
   profile::memory_sink s;
-  profile::start(s, "basic");
-  profile::stop(s, "basic");
-  std::thread t0(runner0, std::ref(s));
-  profile::start(s, "basic");
-  profile::stop(s, "basic");
-  std::thread t1(runner1, std::ref(s));
-  profile::start(s, "basic");
-  profile::stop(s, "basic");
-  t0.join();
-  t1.join();
+  {
+    AURA_PROFILE_FUNCTION(profile::memory_sink, s);
+    profile::start(s, "basic");
+    profile::stop(s, "basic");
+    std::thread t0(runner0, std::ref(s));
+    profile::start(s, "basic");
+    profile::stop(s, "basic");
+    std::thread t1(runner1, std::ref(s));
+    profile::start(s, "basic");
+    profile::stop(s, "basic");
+    t0.join();
+    t1.join();
+  }
   s.dump("/tmp/profile.log");
-  profile::dump_svg(s, "/home/sschaet/profile.svg");
+  profile::dump_svg(s, "profile.svg");
 }

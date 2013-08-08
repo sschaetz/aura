@@ -14,7 +14,7 @@ namespace aura {
 namespace profile {
 
 const char * svg_header = "<?xml version=\"1.0\" standalone=\"no\"?>" 
-  "<svg viewBox=\"0 0 800 400\" "
+  "<svg viewBox=\"0 0 1002 400\" "
   "xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" "
   "xmlns:xlink=\"http://www.w3.org/1999/xlink\">";
 const char * svg_footer = "</svg>";
@@ -25,21 +25,28 @@ inline void dump_svg(memory_sink & sink, const char * filename) {
   if(sink.data_.size() < 1) {
     return;
   }
-  
+ 
+  int graph_width = 1000; 
   int box_height = 20;
   int level_height = 30;
-  double scale = 100;
 
   std::lock_guard<std::mutex> guard(sink.mtx_);
   
-  // find minimum
+  // find minimum and maximum
   double min = sink.data_[0].timestamp;
+  double max = min;
   for(std::size_t i=0; i<sink.data_.size(); i++) {
-    if(min > sink.data_[0].timestamp) {
-      min = sink.data_[0].timestamp;
+    if(min > sink.data_[i].timestamp) {
+      min = sink.data_[i].timestamp;
+    }
+    if(max < sink.data_[i].timestamp) {
+      max = sink.data_[i].timestamp;
     }
   }
-
+  double scale = (double)graph_width / (max-min);
+  
+  //printf("max %f min %f range %f scale %f\n", max, min, max-min, scale);
+  
   // hashmap for levels
   typedef std::pair<std::size_t, const char *> key;
   typedef std::map<key, unsigned int> level_map;
@@ -73,13 +80,13 @@ inline void dump_svg(memory_sink & sink, const char * filename) {
     }
 
     // find the stop value
-    for(std::size_t j = i+1; i<sink.data_.size(); j++) {
+    for(std::size_t j = i+1; j<sink.data_.size(); j++) {
       if(sink.data_[j].thread_id == sink.data_[i].thread_id && 
         0 == strcmp(sink.data_[j].name, sink.data_[i].name) &&
         false == sink.data_[j].start)
       {
         fprintf(f, "<rect x=\"%f\" y=\"%d\" width=\"%f\" height=\"%d\" " 
-          "fill=\"yellow\" stroke=\"black\" stroke-width=\"3\" />\n",
+          "fill=\"yellow\" stroke=\"black\" stroke-width=\"1\" />\n",
           (sink.data_[i].timestamp - min)*scale, level*level_height,
           (sink.data_[j].timestamp - sink.data_[i].timestamp) * scale,
           box_height);
