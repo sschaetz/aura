@@ -46,19 +46,41 @@ inline void dump_svg(memory_sink & sink, const char * filename) {
   double scale = (double)graph_width / (max-min);
   
   //printf("max %f min %f range %f scale %f\n", max, min, max-min, scale);
-  
-  // hashmap for levels
-  typedef std::pair<std::size_t, const char *> key;
-  typedef std::map<key, unsigned int> level_map;
-  level_map levels;
-  
+
+  // map function name to level in thread
+  typedef std::map<const char *, std::size_t> l0_map;
+  // for each thread hold a map of function names 
+  typedef std::map<std::size_t, l0_map> l1_map;
+  typedef std::map<std::size_t, std::size_t> l2_map;
+
+  l1_map levels;
+  for(std::size_t i=0; i<sink.data_.size(); i++) {
+    // check if thread exists
+    if(0 == levels.count(sink.data_[i].thread_id)) {
+      levels.insert(l0_map(), levels.size());
+    }
+    // check if function exists
+    if(0 == levels[sink.data_[i].thread_id].count(sink.data_[i].name)) {
+       levels[sink.data_[i].thread_id].insert(
+         sink.data_[i].name, levels[sink.data_[i].thread_id].size());
+    }
+  }
+
+  // now calculate the offset
+  typedef l1_map::iterator l1_map_it;
+  std::size_t level_offset = 0;
+  l2_map level_offsets;
+  for (l1_map_it iter = levels.begin(); iter != levels.end(); ++iter) {
+    level_offsets.insert(iter->first, level_offset); 
+    level_offset += iter->second.size(); 
+  }
+
   FILE * f = fopen(filename, "w");
   if(f == NULL) {
     AURA_ERROR("Unable to open file.");
   }
   fprintf(f, "%s\n", svg_header);
 
-  unsigned int level_counter = 0;
   for(std::size_t i=0; i<sink.data_.size(); i++) {
     // only print if there is a start value
     if(!sink.data_[i].start) {
@@ -66,18 +88,9 @@ inline void dump_svg(memory_sink & sink, const char * filename) {
     }
 
     // find the current level
-    unsigned int level = level_counter;
-    level_map::const_iterator got = 
-      levels.find(key(sink.data_[i].thread_id, sink.data_[i].name));
-    if(got == levels.end()) {
-      levels.insert(
-        std::pair<key, unsigned int>(
-          key(sink.data_[i].thread_id, sink.data_[i].name), 
-          level_counter));
-      level_counter++;
-    } else {
-      level = got->second;
-    }
+    unsigned int level = levels[sink.data_[i].thread_id][sink.data_[i].name] +
+     level_offsets[sink.data_[i].thread_id]; 
+    
 
     // find the stop value
     for(std::size_t j = i+1; j<sink.data_.size(); j++) {
