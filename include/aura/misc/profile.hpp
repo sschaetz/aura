@@ -49,6 +49,11 @@ struct file_sink {
  * memory sink to store profile in memory
  */
 struct memory_sink {
+  /// constructor reserving some initial size for the data store
+  memory_sink(std::size_t initial_size = 10000) {
+    data.reserve(initial_size);
+  }
+
   /// vector to store profile
   std::vector<entry> data;
   
