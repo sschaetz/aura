@@ -51,16 +51,14 @@ struct file_sink {
 struct memory_sink {
   /// constructor reserving some initial size for the data store
   memory_sink(std::size_t initial_size = 10000) {
-    data.reserve(initial_size);
+    data_.reserve(initial_size);
   }
 
-  /// vector to store profile
-  std::vector<entry> data;
   
   /// record profile data
   void record(const entry & e) { 
     std::lock_guard<std::mutex> guard(mtx_);
-    data.push_back(e); 
+    data_.push_back(e); 
   }
   
   /// dump profile data to file
@@ -70,18 +68,22 @@ struct memory_sink {
       AURA_ERROR("Unable to open file.");
     }
     std::lock_guard<std::mutex> guard(mtx_);
-    for(std::size_t i=0; i<data.size(); i++) {
+    for(std::size_t i=0; i<data_.size(); i++) {
       fprintf(f, "%s, %ld, %.17g %d\n", 
-        data[i].name, data[i].thread_id, 
-        data[i].timestamp, data[i].start);
+        data_[i].name, data_[i].thread_id, 
+        data_[i].timestamp, data_[i].start);
     }
     if(0 != fclose(f)) {
       AURA_ERROR("Unable to close file.");
     }
   }
+  
+  /// vector to store profile
+  std::vector<entry> data_;
 
-  private:
-    std::mutex mtx_;
+  /// mutex to protect data
+  std::mutex mtx_;
+
 };
 
 /**
