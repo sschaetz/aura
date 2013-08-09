@@ -47,33 +47,43 @@ inline void dump_svg(memory_sink & sink, const char * filename) {
   
   //printf("max %f min %f range %f scale %f\n", max, min, max-min, scale);
 
-  // map function name to level in thread
-  typedef std::map<const char *, std::size_t> l0_map;
-  // for each thread hold a map of function names 
-  typedef std::map<std::size_t, l0_map> l1_map;
-  typedef std::map<std::size_t, std::size_t> l2_map;
-
-  l1_map levels;
+  // map thread_id to [0 ... N]
+  // store for each thread_id the number of levels in a vector
+  // store for each (thread_id, function) the current level in the thread
+ 
+  typedef std::map<std::size_t, std::size_t> t_threadmap;
+  typedef std::pair<std::size_t, const char *> t_funckey;
+  typedef std::map<t_funckey, unsigned int> t_funcmap;
+ 
+  t_threadmap threadmap;
+  std::vector<std::size_t> threadlevels;
+  t_funcmap funcmap;
+  
+  std::size_t level_counter = 0;
   for(std::size_t i=0; i<sink.data_.size(); i++) {
-    // check if thread exists
-    if(0 == levels.count(sink.data_[i].thread_id)) {
-      levels.insert(l0_map(), levels.size());
+    // only print if there is a start value
+    if(!sink.data_[i].start) {
+      continue;
     }
-    // check if function exists
-    if(0 == levels[sink.data_[i].thread_id].count(sink.data_[i].name)) {
-       levels[sink.data_[i].thread_id].insert(
-         sink.data_[i].name, levels[sink.data_[i].thread_id].size());
+    t_threadmap::const_iterator tmgot = 
+      threadmap.find(sink.data_[i].thread_id);
+    if(tmgot == threadmap.end()) {
+      threadmap.insert(std::pair<std::size_t, std::size_t>(
+        sink.data_[i].thread_id, threadmap.size()));
+      threadlevels.push_back(0);
+    }
+
+    t_funcmap::const_iterator fmgot = 
+      funcmap.find(t_funckey(sink.data_[i].thread_id, sink.data_[i].name));
+    if(fmgot == funcmap.end()) {
+      funcmap.insert(
+        std::pair<t_funckey, std::size_t>(
+          t_funckey(sink.data_[i].thread_id, sink.data_[i].name), level_counter));
+      level_counter++;
     }
   }
 
-  // now calculate the offset
-  typedef l1_map::iterator l1_map_it;
-  std::size_t level_offset = 0;
-  l2_map level_offsets;
-  for (l1_map_it iter = levels.begin(); iter != levels.end(); ++iter) {
-    level_offsets.insert(iter->first, level_offset); 
-    level_offset += iter->second.size(); 
-  }
+  
 
   FILE * f = fopen(filename, "w");
   if(f == NULL) {
@@ -88,9 +98,11 @@ inline void dump_svg(memory_sink & sink, const char * filename) {
     }
 
     // find the current level
-    unsigned int level = levels[sink.data_[i].thread_id][sink.data_[i].name] +
-     level_offsets[sink.data_[i].thread_id]; 
+    std::size_t tid = threadmap[sink.data_[i].thread_id];
     
+    t_funcmap::const_iterator fmgot = 
+      funcmap.find(t_funckey(sink.data_[i].thread_id, sink.data_[i].name));
+    std::size_t level = fmgot->second + tid;
 
     // find the stop value
     for(std::size_t j = i+1; j<sink.data_.size(); j++) {
@@ -98,18 +110,18 @@ inline void dump_svg(memory_sink & sink, const char * filename) {
         0 == strcmp(sink.data_[j].name, sink.data_[i].name) &&
         false == sink.data_[j].start)
       {
-        fprintf(f, "<rect x=\"%f\" y=\"%d\" width=\"%f\" height=\"%d\" " 
-          "fill=\"yellow\" stroke=\"black\" stroke-width=\"1\" />\n",
+        fprintf(f, "<rect x=\"%f\" y=\"%ld\" width=\"%f\" height=\"%d\" " 
+          "fill=\"yellow\" stroke=\"black\" stroke-width=\"1\" " 
+          "ap_name=\"%s\"/>\n",
           (sink.data_[i].timestamp - min)*scale, level*level_height,
           (sink.data_[j].timestamp - sink.data_[i].timestamp) * scale,
-          box_height);
+          box_height, sink.data_[i].name);
         break;
       }
     }
   }
 
   fprintf(f, "%s\n", svg_footer);
-
   if(0 != fclose(f)) {
     AURA_ERROR("Unable to close file.");
   }

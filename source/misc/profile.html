@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>profile viewer</title>
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>  
+    </head>
+    <body>
+        <script type="text/javascript">
+          function startRead(files) {  
+            // obtain input element through DOM 
+            
+            var file = files[0];
+            if(file){
+              getAsText(file);
+            }
+          }
+
+          function getAsText(readFile) {
+            var reader = new FileReader();
+            
+            // Read file into memory as UTF-16      
+            reader.readAsText(readFile);
+            
+            // Handle progress, success, and errors
+            reader.onload = loaded;
+          }
+
+          function loaded(evt) {  
+            // Obtain the read file data    
+            var fileString = evt.target.result;
+            var parsed = new DOMParser().parseFromString(fileString, "text/xml");
+            var importedNode = document.importNode(parsed.documentElement, true);
+            document.body.appendChild(importedNode);
+            d3.selectAll("rect").on("mouseover", function(d, i){
+              d3.select("#ap_name").text(d3.select(this).attr("ap_name"));
+            });
+
+          }
+        
+        </script>
+        <input type="file" multiple onchange="startRead(this.files)">
+        <div id="ap_name"></div>
+
+    </body>
+</html>

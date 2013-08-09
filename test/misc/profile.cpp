@@ -41,5 +41,5 @@ BOOST_AUTO_TEST_CASE(basic) {
     t1.join();
   }
   s.dump("/tmp/profile.log");
-  profile::dump_svg(s, "profile.svg");
+  profile::dump_svg(s, "/home/sschaet/profile.svg");
 }
