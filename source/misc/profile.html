@@ -3,7 +3,13 @@
     <head>
         <meta charset="utf-8">
         <title>profile viewer</title>
-        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>  
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script> 
+        <style>
+          .overlay {
+            fill: none;
+            pointer-events: all;
+          }
+        </style>        
     </head>
     <body>
         <script type="text/javascript">
@@ -31,16 +37,27 @@
             var fileString = evt.target.result;
             var parsed = new DOMParser().parseFromString(fileString, "text/xml");
             var importedNode = document.importNode(parsed.documentElement, true);
-            document.body.appendChild(importedNode);
+            //document.body.appendChild(importedNode);
+            document.getElementById("profile").appendChild(importedNode);
             d3.selectAll("rect").on("mouseover", function(d, i){
               d3.select("#ap_name").text(d3.select(this).attr("ap_name"));
             });
-
+            var zoom = d3.behavior.zoom()
+              .translate([0, 0])
+              .scale(1)
+              .scaleExtent([1, 8])
+              .on("zoom", zoomed);
+            var svg = d3.select("svg").call(zoom);
+              
           }
-        
+
+          function zoomed() {
+            d3.selectAll("rect").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+          } 
         </script>
         <input type="file" multiple onchange="startRead(this.files)">
-        <div id="ap_name"></div>
+        <div id="ap_name">#</div>
+        <div id="profile"></div>
 
     </body>
 </html>
