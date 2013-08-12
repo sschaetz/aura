@@ -9,6 +9,10 @@
             fill: none;
             pointer-events: all;
           }
+          body {
+            background-color: #fdf6e3;
+            font-family: sans;
+          }
         </style>        
     </head>
     <body>
@@ -35,12 +39,17 @@
           function loaded(evt) {  
             // Obtain the read file data    
             var fileString = evt.target.result;
-            var parsed = new DOMParser().parseFromString(fileString, "text/xml");
-            var importedNode = document.importNode(parsed.documentElement, true);
+            var parsed = 
+              new DOMParser().parseFromString(fileString, "text/xml");
+            var importedNode = 
+              document.importNode(parsed.documentElement, true);
             //document.body.appendChild(importedNode);
             document.getElementById("profile").appendChild(importedNode);
-            d3.selectAll("rect").on("mouseover", function(d, i){
-              d3.select("#ap_name").text(d3.select(this).attr("ap_name"));
+            d3.selectAll(".m").on("mouseover", function(d, i){
+              d3.select("#ap_name").text("t" + 
+                d3.select(this).attr("ap_tid") + " " + 
+                d3.select(this).attr("ap_name") + " (" +
+                d3.select(this).attr("ap_dur") +"ms)");
             });
             var zoom = d3.behavior.zoom()
               .translate([0, 0])
@@ -52,12 +61,14 @@
           }
 
           function zoomed() {
-            d3.selectAll("rect").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            d3.selectAll("rect").
+              attr("transform", "translate(" + d3.event.translate[0] + 
+                  ", 0)scale(" + d3.event.scale + ", 1)");
           } 
         </script>
         <input type="file" multiple onchange="startRead(this.files)">
         <div id="ap_name">#</div>
-        <div id="profile"></div>
+        <div style="border: 1px solid black;" id="profile"></div>
 
     </body>
 </html>

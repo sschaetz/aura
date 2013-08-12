@@ -22,6 +22,12 @@ void runner0(profile::memory_sink & s) {
 
 void runner1(profile::memory_sink & s) {
   AURA_PROFILE_FUNCTION(profile::memory_sink, s);
+  profile::start(s, "runner1 subtask");
+  usleep(20000);
+  profile::start(s, "runner1 subsubtask");
+  usleep(20000);
+  profile::stop(s, "runner1 subsubtask");
+  profile::stop(s, "runner1 subtask");
   usleep(20000);
 }
 
