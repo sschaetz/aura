@@ -1,5 +1,7 @@
-#include <aura/misc/cprofile.h>
 
+#include <aura/misc/profile.hpp>
+#include <aura/misc/profile_svg.hpp>
+#include <aura/misc/cprofile.h>
 namespace aura {
 
 namespace profile {
@@ -10,6 +12,10 @@ cprofile_sink cprofile_create_sink(unsigned long int initial_size) {
 
 void cprofile_dump_sink(cprofile_sink sink, const char * filename) {
   ((memory_sink*)sink)->dump(filename);
+}
+
+void cprofile_dump_sink_svg(cprofile_sink sink, const char * filename) {
+  dump_svg(*((memory_sink*)sink), filename);
 }
 
 void cprofile_delete_sink(cprofile_sink sink) {

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <map>
 #include <utility>
+#include <cstring>
 
 #include <aura/misc/now.hpp>
 #include <aura/error.hpp>
@@ -51,12 +52,10 @@ const int svg_num_thread_colors = 2;
 
 /// dump profile data to file
 inline void dump_svg(memory_sink & sink, const char * filename) {
+  std::lock_guard<std::mutex> guard(sink.mtx_);
   if(sink.data_.size() < 1) {
     return;
   }
- 
-
-  std::lock_guard<std::mutex> guard(sink.mtx_);
   
   // find minimum and maximum
   double min = sink.data_[0].timestamp;
@@ -114,7 +113,11 @@ inline void dump_svg(memory_sink & sink, const char * filename) {
     }
   }
 
-  
+  typedef std::pair<std::size_t, double> t_statval;
+  typedef std::map<t_funckey, t_statval> t_statmap;
+
+  t_statmap statmap;
+
 
   FILE * f = fopen(filename, "w");
   if(f == NULL) {
@@ -178,6 +181,20 @@ inline void dump_svg(memory_sink & sink, const char * filename) {
           /*ap_stop:  */ (sink.data_[j].timestamp-min)*1000,
           /*ap_dur:   */ ((sink.data_[j].timestamp) -
                            (sink.data_[i].timestamp))*1000);
+        // add to stat map
+        t_statmap::const_iterator sgot = 
+          statmap.find(t_funckey(sink.data_[i].thread_id, sink.data_[i].name));
+        if(sgot == statmap.end()) {
+          statmap[t_funckey(sink.data_[i].thread_id, sink.data_[i].name)] = 
+            t_statval(0, sink.data_[j].timestamp - sink.data_[i].timestamp);
+        } else {
+          t_statval tmp = 
+            statmap[t_funckey(sink.data_[i].thread_id, sink.data_[i].name)];
+          tmp.first++;
+          tmp.second += sink.data_[j].timestamp - sink.data_[i].timestamp;
+          statmap[t_funckey(sink.data_[i].thread_id, 
+            sink.data_[i].name)] = tmp; 
+        }
         break;
       }
     }
@@ -187,6 +204,16 @@ inline void dump_svg(memory_sink & sink, const char * filename) {
   if(0 != fclose(f)) {
     AURA_ERROR("Unable to close file.");
   }
+
+  for(t_statmap::iterator smit = statmap.begin(); 
+    smit != statmap.end(); ++smit) {
+    printf("t%d %s: %0.9f (%d)\n", 
+      threadmap[smit->first.first], 
+      smit->first.second,
+      smit->second.second,
+      smit->second.first);
+  }
+
 }
   
 

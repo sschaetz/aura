@@ -3,7 +3,6 @@
 
 #ifdef __cplusplus
 
-#include <aura/misc/profile.hpp>
 
 namespace aura {
 
@@ -16,6 +15,7 @@ extern "C" void cprofile_delete_sink(cprofile_sink sink);
 extern "C" void cprofile_start(cprofile_sink sink, const char * name);
 extern "C" void cprofile_stop(cprofile_sink sink, const char * name);
 extern "C" void cprofile_dump_sink(cprofile_sink sink, const char * filename);
+extern "C" void cprofile_dump_sink_svg(cprofile_sink sink, const char * filename);
 
 #else
 
@@ -26,6 +26,7 @@ void cprofile_delete_sink(cprofile_sink sink);
 void cprofile_start(cprofile_sink sink, const char * name);
 void cprofile_stop(cprofile_sink sink, const char * name);
 void cprofile_dump_sink(cprofile_sink sink, const char * filename);
+void cprofile_dump_sink_svg(cprofile_sink sink, const char * filename);
 
 #endif
 

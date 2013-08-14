@@ -51,6 +51,7 @@ struct file_sink {
 struct memory_sink {
   /// constructor reserving some initial size for the data store
   memory_sink(std::size_t initial_size = 10000) {
+    std::lock_guard<std::mutex> guard(mtx_);
     data_.reserve(initial_size);
   }
 
@@ -63,11 +64,11 @@ struct memory_sink {
   
   /// dump profile data to file
   void dump(const char * filename) {
+    std::lock_guard<std::mutex> guard(mtx_);
     FILE * f = fopen(filename, "w");
     if(f == NULL) {
       AURA_ERROR("Unable to open file.");
     }
-    std::lock_guard<std::mutex> guard(mtx_);
     for(std::size_t i=0; i<data_.size(); i++) {
       fprintf(f, "%s, %ld, %.17g %d\n", 
         data_[i].name, data_[i].thread_id, 
