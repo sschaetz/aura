@@ -27,6 +27,9 @@ void runner1(profile::memory_sink & s) {
   profile::start(s, "runner1 subsubtask");
   usleep(20000);
   profile::stop(s, "runner1 subsubtask");
+  profile::start(s, "runner2 subsubtask");
+  usleep(20000);
+  profile::stop(s, "runner2 subsubtask");
   profile::stop(s, "runner1 subtask");
   usleep(20000);
 }
