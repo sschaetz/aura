@@ -5,6 +5,7 @@
 #include <map>
 #include <utility>
 #include <cstring>
+#include <tuple>
 
 #include <aura/misc/now.hpp>
 #include <aura/error.hpp>
@@ -50,6 +51,16 @@ const int svg_num_thread_colors = 2;
 
 } // namespace constants
 
+struct func_entry {
+  func_entry(const char * name, std::size_t thread_id, double timestamp,
+    double duration, std::size_t depth) : name(name), thread_id(thread_id), 
+      timestamp(timestamp), duration(duration), depth(depth) {}
+  const char * name;
+  std::size_t thread_id;
+  double timestamp;
+  double duration;
+  std::size_t depth;
+};
 
 inline void dump_svg(memory_sink & sink, const char * filename) {
 std::lock_guard<std::mutex> guard(sink.mtx_);
@@ -75,19 +86,13 @@ std::lock_guard<std::mutex> guard(sink.mtx_);
   std::vector<std::size_t> num_unique_funcs;
 
   // field of functions
-  struct func_entry {
-    func_entry(const char * name, std::size_t thread_id, double timestamp,
-      double duration, std::size_t depth) : name(name), thread_id(thread_id), 
-        timestamp(timestamp), duration(duration), depth(depth) {}
-    const char * name;
-    std::size_t thread_id;
-    double timestamp;
-    double duration;
-    std::size_t depth;
-  };
+  
 
   std::vector<func_entry> funcs;
   funcs.reserve(sink.data_.size()/2);
+
+  // overall statistics: map function -> (calls, duration)
+  std::map<const char *, std::pair<std::size_t, double> > overall_stats;
 
   for(std::size_t i=0; i<sink.data_.size(); i++) {
 
@@ -123,7 +128,8 @@ std::lock_guard<std::mutex> guard(sink.mtx_);
 
     // find the stop value and build funcs
     if(sink.data_[i].start) {
-      for(std::size_t j = i+1; j<sink.data_.size(); j++) {
+      std::size_t j = i+1;
+      for(; j<sink.data_.size(); j++) {
         if(sink.data_[j].thread_id == sink.data_[i].thread_id && 
           0 == strcmp(sink.data_[j].name, sink.data_[i].name) &&
           false == sink.data_[j].start) {
@@ -144,8 +150,30 @@ std::lock_guard<std::mutex> guard(sink.mtx_);
           t_unique_funcs_key(tid, func_depths[tid], 
             sink.data_[i].name), num_unique_funcs[tid]));
       }
+      // add overall statistics information
+      std::map<const char *, std::pair<std::size_t, double> >::iterator 
+        sgot = overall_stats.find(sink.data_[i].name);
+      if(sgot == overall_stats.end()) {
+        overall_stats.insert(
+          std::pair<const char *, std::pair<std::size_t, double> >(
+            sink.data_[i].name, std::pair<std::size_t, double>(1, 
+              sink.data_[j].timestamp-sink.data_[i].timestamp)));
+      } else {
+        sgot->second.first++;
+        sgot->second.second+=sink.data_[j].timestamp-sink.data_[i].timestamp;
+      }
+
     }
   }
+
+  // print stats
+  for(std::map<const char *, std::pair<std::size_t, double> >::iterator 
+    smit = overall_stats.begin(); 
+    smit != overall_stats.end(); ++smit) {
+    printf("%s: %0.9f (%d)\n", 
+      smit->first, smit->second.second, smit->second.first);
+  }
+
 
   // postprocess max_depth field to calculate base offset for entry
   std::vector<size_t> max_depths_bk = max_depths;

@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <thread>
 #include <mutex>
+#include <sys/types.h>
+#include <sys/syscall.h>
 
 #include <aura/misc/now.hpp>
 #include <aura/error.hpp>
@@ -27,7 +29,7 @@ namespace profile {
 struct entry { 
   entry(const char * name, std::thread::id thread_id, 
     double timestamp, bool start) : 
-    name(name), thread_id(std::hash<std::thread::id>()(thread_id)), 
+    name(name), thread_id(syscall(SYS_gettid)/*std::hash<std::thread::id>()(thread_id)*/), 
     timestamp(timestamp), start(start) 
   {}
 
@@ -102,7 +104,7 @@ void start(sink & s, const char * name) {
 template <typename sink>
 void stop(sink & s, const char * name) {
   s.record(entry(name, std::this_thread::get_id(), 
-    aura::now(), false));  
+    aura::now(), false));
 }
 
 /**
