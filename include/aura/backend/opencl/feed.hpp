@@ -39,7 +39,6 @@ public:
    * wait until all commands in the feed have finished
    */
   inline void synchronize() const {
-    cl_event event;
     AURA_OPENCL_SAFE_CALL(clFinish(stream_));
   }
   

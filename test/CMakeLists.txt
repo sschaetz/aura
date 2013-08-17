@@ -1,6 +1,7 @@
 MESSAGE(${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/basic.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/feed.cpp ${AURA_BACKEND_LIBRARIES})
+AURA_ADD_TEST(backend/kernel.cpp ${AURA_BACKEND_LIBRARIES})
 
 AURA_ADD_TEST(misc/profile.cpp pthread)
 

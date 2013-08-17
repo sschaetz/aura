@@ -1,0 +1,33 @@
+Feed
+====
+
+The C++ interface of a feed could allow something like this:
+
+feed feed0(device0);
+
+event e = feed0 << copy (A, B);
+await(e);
+
+
+Or even fancier:
+
+feed feed1(device1);
+event e0;
+event e1;
+
+feed0 << copy(A, B)
+      << invoke(kernel, ...)
+      << e0
+      << copy(B, A)
+      << await(e1)
+      << invoke(kernel, ...);
+
+event e2 = 
+feed1 << invoke(kernel, ...)
+      << e1
+      << copy(C, D);
+
+await(e2);
+
+Deadlocks could be a problem here.
+

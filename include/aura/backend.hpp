@@ -16,9 +16,10 @@
 
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/device.hpp>
-#include <aura/backend/opencl/init.hpp>
-#include <aura/backend/opencl/memory.hpp>
 #include <aura/backend/opencl/feed.hpp>
+#include <aura/backend/opencl/init.hpp>
+#include <aura/backend/opencl/kernel.hpp>
+#include <aura/backend/opencl/memory.hpp>
 
 #endif
 
