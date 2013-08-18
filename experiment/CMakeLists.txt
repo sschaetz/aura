@@ -12,3 +12,4 @@ IF(${AURA_BACKEND} STREQUAL CUDA)
     ${AURA_BACKEND_LIBRARIES} ${CUDA_CUFFT_LIBRARIES})
 ENDIF()
 
+AURA_ADD_TARGET(exp.namespace_alias namespace_alias.cpp)
