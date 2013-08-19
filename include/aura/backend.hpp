@@ -14,10 +14,14 @@
 
 #elif AURA_BACKEND_OPENCL
 
+#include <aura/backend/opencl/args.hpp>
+#include <aura/backend/opencl/block.hpp>
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/device.hpp>
 #include <aura/backend/opencl/feed.hpp>
+#include <aura/backend/opencl/grid.hpp>
 #include <aura/backend/opencl/init.hpp>
+#include <aura/backend/opencl/invoke.hpp>
 #include <aura/backend/opencl/kernel.hpp>
 #include <aura/backend/opencl/memory.hpp>
 

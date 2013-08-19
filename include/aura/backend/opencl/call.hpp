@@ -4,14 +4,14 @@
 #define AURA_OPENCL_SAFE_CALL(call) { \
   int err = call; \
   if (err != CL_SUCCESS) { \
-    printf("OpenCL error %d\n", err); \
+    printf("OpenCL error %d at %s:%d\n", err, __FILE__, __LINE__ ); \
   } \
 } \
 /**/
 
 #define AURA_OPENCL_CHECK_ERROR(err) { \
   if (err != CL_SUCCESS) { \
-    printf("OpenCL error %d\n", err); \
+    printf("OpenCL error %d at %s:%d\n", err, __FILE__, __LINE__ ); \
   } \
 } \
 /**/
