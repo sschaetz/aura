@@ -1,4 +1,8 @@
 // test how namespace aliases work
+//
+// can we have a namespace alias and a namespace with the same name?
+// the answer is no, removing the #if 0 #endif lines, this code does not
+// compile 
 
 namespace level1 {
 namespace level2 {
@@ -13,7 +17,7 @@ namespace level1 {
 namespace shortcut = level2::level3;
 }
 
-#ifdef 0
+#if 0
 namespace level1 {
 namespace shortcut { // this does not work
   struct bar{};
@@ -23,7 +27,8 @@ namespace shortcut { // this does not work
 
 int main(void) {
   level1::shortcut::foo f;
-#ifdef 0
+  (void)f;
+#if 0
   level1::shortcut::bar b;
 #endif
 }

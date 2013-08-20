@@ -1,4 +1,4 @@
-#ifndef AURA_BACKEND_SHARED_BLOCk_HPP_GUARD
+#ifndef AURA_BACKEND_SHARED_BLOCK_HPP_GUARD
 #error "Shared file can not be included"
 #endif // AURA_BACKEND_SHARED_BLOCK_HPP_GUARD
 

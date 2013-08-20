@@ -1,13 +1,13 @@
-#ifndef AURA_BACKEND_OPENCL_KERNEL_HPP
-#define AURA_BACKEND_OPENCL_KERNEL_HPP
+#ifndef AURA_BACKEND_CUDA_KERNEL_HPP
+#define AURA_BACKEND_CUDA_KERNEL_HPP
 
 #include <CL/cl.h>
-#include <aura/backend/opencl/call.hpp>
-#include <aura/backend/opencl/device.hpp>
+#include <aura/backend/cuda/call.hpp>
+#include <aura/backend/cuda/device.hpp>
 
 namespace aura {
 namespace backend_detail {
-namespace opencl {
+namespace cuda {
 
 /// module handle
 typedef cl_program module;
@@ -25,14 +25,13 @@ typedef cl_kernel kernel;
  *
  * @return module reference to compiled module
  */
-module create_module_from_file(const char * filename, device & d, 
-  const char * build_options=NULL) {
+module build_module_from_source(const char * source, 
+    std::size_t length, device & d, const char * build_options=NULL) {
   int errorcode = 0;
-  // load file
   module m = clCreateProgramWithSource(d.get_context(), 1, 
     &source, &length, &errorcode);
-  AURA_OPENCL_CHECK_ERROR(errorcode);
-  AURA_OPENCL_SAFE_CALL(clBuildProgram(m, 1, &d.get_device(), 
+  AURA_CUDA_CHECK_ERROR(errorcode);
+  AURA_CUDA_SAFE_CALL(clBuildProgram(m, 1, &d.get_device(), 
     build_options, NULL, NULL));
   return m;
 }
@@ -47,7 +46,7 @@ module create_module_from_file(const char * filename, device & d,
 kernel create_kernel(module m, const char * kernel_name) {
   int errorcode = 0;
   kernel k = clCreateKernel(m, kernel_name, &errorcode);
-  AURA_OPENCL_CHECK_ERROR(errorcode);
+  AURA_CUDA_CHECK_ERROR(errorcode);
   return k;
 }
 
@@ -76,9 +75,9 @@ void print_module_build_log(module m, device & d) {
   free(log);
 }
 
-} // opencl
+} // cuda
 } // backend_detail
 } // aura
 
-#endif // AURA_BACKEND_OPENCL_KERNEL_HPP
+#endif // AURA_BACKEND_CUDA_KERNEL_HPP
 

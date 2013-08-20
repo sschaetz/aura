@@ -67,3 +67,13 @@ stream synchronization.
 Let's call it breeze. Well, breeze fits the Aura metaphor nicely but I
 think feed is a more accurate word for it. A device feed. Nice. 
 
+
+
+The type representing a file containing kernel code (fatbin, ptx, cl-source)
+requires a name.
+
+kernel_code_file
+kernel_file
+module_file
+backend_file
+

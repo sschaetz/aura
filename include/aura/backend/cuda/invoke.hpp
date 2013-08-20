@@ -1,18 +1,18 @@
-#ifndef AURA_BACKEND_OPENCL_INVOKE_HPP
-#define AURA_BACKEND_OPENCL_INVOKE_HPP
+#ifndef AURA_BACKEND_CUDA_INVOKE_HPP
+#define AURA_BACKEND_CUDA_INVOKE_HPP
 
 #include <cstddef>
 #include <CL/cl.h>
-#include <aura/backend/opencl/kernel.hpp>
-#include <aura/backend/opencl/call.hpp>
-#include <aura/backend/opencl/feed.hpp>
-#include <aura/backend/opencl/grid.hpp>
-#include <aura/backend/opencl/block.hpp>
-#include <aura/backend/opencl/args.hpp>
+#include <aura/backend/cuda/kernel.hpp>
+#include <aura/backend/cuda/call.hpp>
+#include <aura/backend/cuda/feed.hpp>
+#include <aura/backend/cuda/grid.hpp>
+#include <aura/backend/cuda/block.hpp>
+#include <aura/backend/cuda/args.hpp>
 
 namespace aura {
 namespace backend_detail {
-namespace opencl {
+namespace cuda {
 
 namespace detail {
 
@@ -22,9 +22,9 @@ void invoke_impl(kernel & k, typename grid_t<N0>::type g,
   
   // set parameters
   for(std::size_t i=0; i<N2; i++) {
-    AURA_OPENCL_SAFE_CALL(clSetKernelArg(k, i, a[i].second, a[i].first));
+    AURA_CUDA_SAFE_CALL(clSetKernelArg(k, i, a[i].second, a[i].first));
   }
-#ifdef AURA_KERNEL_THREAD_LAYOUT_CUDA
+#ifdef AURA_KERNEL_THREAD_LAYOUT_OPENCL
   std::array<std::size_t, N0+N1> g_, b_;
   for(std::size_t i=0; i<N0; i++) {
     g_[i] = g[i];
@@ -36,12 +36,12 @@ void invoke_impl(kernel & k, typename grid_t<N0>::type g,
   }
 
   // call kernel
-  AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(
+  AURA_CUDA_SAFE_CALL(clEnqueueNDRangeKernel(
     f.get_stream(), k, g_.size(), NULL, &g_[0], &b_[0], 0, NULL, NULL)); 
 #else
   assert(g.size() == b.size());
   // call kernel
-  AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(
+  AURA_CUDA_SAFE_CALL(clEnqueueNDRangeKernel(
     f.get_stream(), k, g.size(), NULL, &g[0], &b[0], 0, NULL, NULL)); 
 #endif
 }
@@ -640,6 +640,6 @@ void invoke(kernel & k, typename grid_t<3>::type g,
 
 } // namespace aura
 } // namespace backend_detail
-} // namespace opencl
+} // namespace cuda
 
-#endif // AURA_BACKEND_OPENCL_INVOKE_HPP
+#endif // AURA_BACKEND_CUDA_INVOKE_HPP
