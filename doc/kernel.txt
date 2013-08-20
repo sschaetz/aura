@@ -1,6 +1,13 @@
 Kernel
 ======
 
+A big difference betwen OpenCL and CUDA in terms of how kernels are
+launched is:
+
+in CUDA grid * block = number of threads running
+in OpenCL grid = number of thread running
+and block is a way of partitioning the number of threads
+
 What is a good interface to launch kernels?
 
     CUDA has modules and functions, functions are part of modules, modules

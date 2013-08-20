@@ -22,8 +22,8 @@ const char * kernel_code =
 "__kernel void simple_add(__global float * A)"
 "{"
 "    int id = get_global_id(0) * get_global_size(0) + "
-"      get_local_size(0);"
-"    A[id] = (float)id;"
+"      get_local_id(1);"
+"    A[id] += 1.0;"
 "}";
 
 #elif AURA_BACKEND_CUDA
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(basic) {
     device d(0); 
     module m = build_module_from_source(kernel_code, strlen(kernel_code), d);
     kernel k = create_kernel(m, "dataParallel");
-    k = 0;
+    (void)k; 
   }
 }
 
