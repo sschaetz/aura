@@ -1,6 +1,8 @@
 #ifndef AURA_BACKEND_CUDA_CALL_HPP
 #define AURA_BACKEND_CUDA_CALL_HPP
 
+#include <stdio.h>
+
 /// check if a call returned error and throw exception if it did
 #define AURA_CUDA_SAFE_CALL(call) { \
   CUresult err = call; \

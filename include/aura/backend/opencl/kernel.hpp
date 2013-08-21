@@ -4,39 +4,14 @@
 #include <CL/cl.h>
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/device.hpp>
+#include <aura/backend/opencl/module.hpp>
 
 namespace aura {
 namespace backend_detail {
 namespace opencl {
 
-/// module handle
-typedef cl_program module;
-
 /// kernel handle
 typedef cl_kernel kernel;
-
-/**
- * @brief build a kernel module from a source string
- *
- * @param source source string
- * @param length length of the source string
- * @param device device the module is built for
- * @param build_options options for the compiler (optional)
- *
- * @return module reference to compiled module
- */
-module create_module_from_file(const char * filename, device & d, 
-  const char * build_options=NULL) {
-  int errorcode = 0;
-  // load file
-  module m = clCreateProgramWithSource(d.get_context(), 1, 
-    &source, &length, &errorcode);
-  AURA_OPENCL_CHECK_ERROR(errorcode);
-  AURA_OPENCL_SAFE_CALL(clBuildProgram(m, 1, &d.get_device(), 
-    build_options, NULL, NULL));
-  return m;
-}
-
 
 /**
  * @brief create a kernel

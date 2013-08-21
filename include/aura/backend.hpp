@@ -24,8 +24,11 @@
 #include <aura/backend/opencl/invoke.hpp>
 #include <aura/backend/opencl/kernel.hpp>
 #include <aura/backend/opencl/memory.hpp>
+#include <aura/backend/opencl/module.hpp>
 
 #endif
+
+#include <aura/backend/shared/call.hpp>
 
 namespace aura {
 

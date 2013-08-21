@@ -6,8 +6,6 @@
 // it must not be in a namespace, each backend
 // includes this file within its own namespace
 
-#include <array>
-
 // type to hold the block size
 template <std::size_t N>
 struct block_t {
