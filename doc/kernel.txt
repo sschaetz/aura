@@ -8,6 +8,15 @@ in CUDA grid * block = number of threads running
 in OpenCL grid = number of thread running
 and block is a way of partitioning the number of threads
 
+in CUDA, the .cu file must be compiled to cubin, fatbin or ptx.
+to then load the ptx file in an application, you have to declare the
+kernel to be extern "C", losing all template and namespace information.
+CUDA probably does this internally in their compiler toolchain. Quite complex
+what they built. I got the hint about this problem from 
+http://stackoverflow.com/questions/11759972/
+
+
+
 What is a good interface to launch kernels?
 
     CUDA has modules and functions, functions are part of modules, modules

@@ -2,7 +2,7 @@
 #define AURA_BACKEND_CUDA_MEMORY_HPP
 
 #include <cstddef>
-#include <CL/cl.h>
+#include <cuda.h>
 #include <aura/backend/cuda/call.hpp>
 #include <aura/backend/cuda/feed.hpp>
 #include <aura/backend/cuda/device.hpp>

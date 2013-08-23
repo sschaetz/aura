@@ -2,7 +2,7 @@
 #define AURA_BACKEND_CUDA_INVOKE_HPP
 
 #include <cstddef>
-#include <CL/cl.h>
+#include <cuda.h>
 #include <aura/backend/cuda/kernel.hpp>
 #include <aura/backend/cuda/call.hpp>
 #include <aura/backend/cuda/feed.hpp>
@@ -19,31 +19,26 @@ namespace detail {
 template <std::size_t N0, std::size_t N1, std::size_t N2>
 void invoke_impl(kernel & k, typename grid_t<N0>::type g, 
   typename block_t<N1>::type b, typename args_t<N2>::type a, feed & f) {
-  
-  // set parameters
-  for(std::size_t i=0; i<N2; i++) {
-    AURA_CUDA_SAFE_CALL(clSetKernelArg(k, i, a[i].second, a[i].first));
+  // handling for non 3-dimensional grid and block sizes
+  std::size_t gridx = g[0], gridy = 1, gridz = 1;
+  std::size_t blockx = b[0], blocky = 1, blockz = 1;
+  if(N0 > 1) {
+    gridy = g[1];
   }
-#ifdef AURA_KERNEL_THREAD_LAYOUT_OPENCL
-  std::array<std::size_t, N0+N1> g_, b_;
-  for(std::size_t i=0; i<N0; i++) {
-    g_[i] = g[i];
-    b_[i] = 1;
+  if(N0 > 2) {
+    gridy = g[2];
   }
-  for(std::size_t i=N0; i<N0+N1; i++) {
-    g_[i] = b[i-N0];
-    b_[i] = b[i-N0];
+  if(N1 > 1) {
+    blocky = b[1];
+  }
+  if(N1 > 2) {
+    blocky = b[2];
   }
 
-  // call kernel
-  AURA_CUDA_SAFE_CALL(clEnqueueNDRangeKernel(
-    f.get_stream(), k, g_.size(), NULL, &g_[0], &b_[0], 0, NULL, NULL)); 
-#else
-  assert(g.size() == b.size());
-  // call kernel
-  AURA_CUDA_SAFE_CALL(clEnqueueNDRangeKernel(
-    f.get_stream(), k, g.size(), NULL, &g[0], &b[0], 0, NULL, NULL)); 
-#endif
+  f.set();
+  AURA_CUDA_SAFE_CALL(cuLaunchKernel(k, gridx, gridy, gridz, 
+    blockx, blocky, blockz, 0, f.get_stream(), &a[0], NULL)); 
+  f.unset();
 }
 
 } // namespace detail

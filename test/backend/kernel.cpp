@@ -10,18 +10,16 @@
 
 using namespace aura::backend;
 
-#ifdef AURA_BACKEND_OPENCL
+#if AURA_BACKEND_OPENCL
 
 const char * kernel_file = "test/kernel.cl"; 
 
 #elif AURA_BACKEND_CUDA
 
-const char * kernel_file = ""; 
+const char * kernel_file = "test/kernel.ptx"; 
 
 #endif
 
-/*
-// basic
 // _____________________________________________________________________________
 
 BOOST_AUTO_TEST_CASE(basic) {
@@ -30,10 +28,12 @@ BOOST_AUTO_TEST_CASE(basic) {
   if(0 < num) {
     device d(0); 
     module m = create_module_from_file(kernel_file, d);
-    kernel k = create_kernel(m, "simple_add");
+    kernel k = create_kernel(m, "noarg");
     (void)k; 
   }
 }
+
+// basic
 
 // invoke_
 // _____________________________________________________________________________
@@ -83,4 +83,3 @@ BOOST_AUTO_TEST_CASE(invoke_noarg) {
     f.synchronize();
   }
 }
-*/

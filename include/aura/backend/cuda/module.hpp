@@ -1,18 +1,19 @@
-#ifndef AURA_BACKEND_OPENCL_MODULE_HPP
-#define AURA_BACKEND_OPENCL_MODULE_HPP
+#ifndef AURA_BACKEND_CUDA_MODULE_HPP
+#define AURA_BACKEND_CUDA_MODULE_HPP
 
 #include <fstream>
 #include <string>
+#include <cuda.h>
 #include <aura/backend/shared/call.hpp>
-#include <aura/backend/opencl/call.hpp>
-#include <aura/backend/opencl/device.hpp>
+#include <aura/backend/cuda/call.hpp>
+#include <aura/backend/cuda/device.hpp>
 
 namespace aura {
 namespace backend_detail {
-namespace opencl {
+namespace cuda {
 
 /// module handle
-typedef cl_program module;
+typedef CUmodule module;
 
 /**
  * @brief build a kernel module from a source file 
@@ -25,7 +26,6 @@ typedef cl_program module;
  */
 module create_module_from_file(const char * filename, device & d, 
   const char * build_options=NULL) {
-  
   std::ifstream in(filename, std::ios::in);
   AURA_CHECK_ERROR(in);
   in.seekg(0, std::ios::end);
@@ -34,23 +34,30 @@ module create_module_from_file(const char * filename, device & d,
   in.seekg(0, std::ios::beg);
   in.read(&data[0], data.size());
   in.close();
-
-  int errorcode = 0;
-  const char * cdata = data.c_str();
-  const std::size_t size = data.size();
   
-  module m = clCreateProgramWithSource(d.get_context(), 1, 
-    &cdata, &size, &errorcode);
-  AURA_OPENCL_CHECK_ERROR(errorcode);
-  AURA_OPENCL_SAFE_CALL(clBuildProgram(m, 1, &d.get_device(), 
-    build_options, NULL, NULL));
+  // build for device by setting context and JIT argument
+  d.set();
+ 
+  const std::size_t num_options = 1;  
+  CUjit_option options[num_options];
+  void * values[num_options];
+
+  // set jit target from context (which we got by setting the device)
+  options[0] = CU_JIT_TARGET_FROM_CUCONTEXT;
+  values[0] = NULL;
+  
+  module m;
+  AURA_CUDA_SAFE_CALL(cuModuleLoadDataEx(&m, data.c_str(), 
+    num_options, options, values));
+  d.unset();
+
   return m;
 }
 
-} // opencl
+} // cuda
 } // backend_detail
 } // aura
 
 
-#endif // AURA_BACKEND_OPENCL_MODULE_HPP
+#endif // AURA_BACKEND_CUDA_MODULE_HPP
 

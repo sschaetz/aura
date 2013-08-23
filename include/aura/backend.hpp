@@ -6,11 +6,17 @@
 
 #if AURA_BACKEND_CUDA
 
+#include <aura/backend/cuda/args.hpp>
+#include <aura/backend/cuda/block.hpp>
 #include <aura/backend/cuda/call.hpp>
 #include <aura/backend/cuda/device.hpp>
-#include <aura/backend/cuda/init.hpp>
-#include <aura/backend/cuda/memory.hpp>
 #include <aura/backend/cuda/feed.hpp>
+#include <aura/backend/cuda/grid.hpp>
+#include <aura/backend/cuda/init.hpp>
+#include <aura/backend/cuda/invoke.hpp>
+#include <aura/backend/cuda/kernel.hpp>
+#include <aura/backend/cuda/memory.hpp>
+#include <aura/backend/cuda/module.hpp>
 
 #elif AURA_BACKEND_OPENCL
 
