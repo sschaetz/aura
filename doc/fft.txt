@@ -1,0 +1,37 @@
+FFT
+===
+
+  We should support 2 FFT libraries (at least), one for CUDA and one for 
+OpenCL. For CUDA we can use CUFFT and for OpenCL we can use clFFT.
+
+  clFFT builds kernels on demand and even runs performance benchmarks. This
+is potentially a problem for real-time applications. A function to store and
+load kernels to an from the file-system would be nice. I wonder if OpenCL
+has mechanisms for that.
+
+  Is an FFT plan per devive or per feed? CUFFT seems to allocate memory for
+each plan (texture memory), so this might mean a plan is per feed? Not sure.
+
+
+  The interface of clFFT is a little bulky, maybe it can be simplified:
+
+// maybe this is not required? CUFFT does not need it, clFFT seems to to 
+// only trivial things with shis
+fft_setup();
+
+// should probably bake already and create forward+backward for 
+// in-place and out of place
+fft_plan plan = fft_plan(dimensions, strides, device/feed, parameters);
+
+// this can be done with opencl, we need to find a good mechanism to do that
+// some kind of serialization file format that contains information about the
+// device a kernel was built for as well as the parameters that were used
+dump_fft_plan(plan, filename);
+plan = load_fft_plan(filename, feed);
+
+fft_forward(source, target, plan, feed);
+fft_inverse(source, target, plan, feed);
+
+
+
+
