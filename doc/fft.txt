@@ -11,17 +11,23 @@ has mechanisms for that.
 
   Is an FFT plan per devive or per feed? CUFFT seems to allocate memory for
 each plan (texture memory), so this might mean a plan is per feed? Not sure.
+CUFFT plans are executed in streams. I'm not sure if streams can be from
+different devices. Probably not, an FFT plan is per-device.
+
+  So transforms should be executed on a feed, that makes a lot of sense.
+Plans are created per device.
 
 
   The interface of clFFT is a little bulky, maybe it can be simplified:
 
 // maybe this is not required? CUFFT does not need it, clFFT seems to to 
-// only trivial things with shis
+// only trivial things with this - actually clFFT initializes a singleton
+// to handle all the code that is generated in a huge map
 fft_setup();
 
 // should probably bake already and create forward+backward for 
 // in-place and out of place
-fft_plan plan = fft_plan(dimensions, strides, device/feed, parameters);
+fft_plan plan = fft_plan(dimensions, strides, device, parameters);
 
 // this can be done with opencl, we need to find a good mechanism to do that
 // some kind of serialization file format that contains information about the

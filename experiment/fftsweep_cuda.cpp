@@ -12,11 +12,11 @@ using namespace aura::backend;
 // first fft size
 #define start_size 256
 // last fft size
-#define end_size 1024 
+#define end_size 1025 
 // step size between sizes
 #define step_size 1
 // runtime per test in seconds
-#define runtime 10 
+#define runtime 2 
 
 
 void run_test(int size, device & d, feed & f) {
@@ -40,7 +40,7 @@ void run_test(int size, device & d, feed & f) {
   int num;
   MGPU_BENCHMARK_ASYNC(cufftExecC2C(plan, (cufftComplex *)m1,
     (cufftComplex *)m2, CUFFT_FORWARD), f.synchronize();, 
-    size/runtime/10, min, max, mean, stdev, num);
+    runtime, min, max, mean, stdev, num);
  
   // print result
   printf("%d: [%1.2f %1.2f] %1.2f %1.2f %d\n", 
