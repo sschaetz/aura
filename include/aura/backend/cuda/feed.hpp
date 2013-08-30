@@ -78,6 +78,15 @@ private:
 
 };
 
+/**
+ * @brief wait for a feed to finish all operations
+ *
+ * @param f the feed to wait for
+ */
+void wait_for(feed & f) {
+  f.synchronize();
+}
+
 } // cuda
 } // backend_detail
 } // aura

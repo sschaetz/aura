@@ -56,8 +56,8 @@ BOOST_AUTO_TEST_CASE(invoke_) {
     copy(mem, &a1[0], xdim*ydim*sizeof(float), f); 
     invoke(k, grid(ydim), block(xdim), args(mem), f);
     copy(&a2[0], mem, xdim*ydim*sizeof(float), f);
-    f.synchronize();
-    
+    wait_for(f);
+
     for(std::size_t i=0; i<a1.size(); i++) {
       a1[i] += 1.0;
     }
@@ -80,6 +80,6 @@ BOOST_AUTO_TEST_CASE(invoke_noarg) {
     module mod = create_module_from_file(kernel_file, d);
     kernel k = create_kernel(mod, "noarg"); 
     invoke(k, grid(ydim), block(xdim), f);
-    f.synchronize();
+    wait_for(f);
   }
 }
