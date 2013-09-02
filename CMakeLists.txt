@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 # configuration #####
-set(CUDA_TOOLKIT_ROOT_DIR "/usr/local/cuda-5.5/" CACHE STRING "CUDA path")
+set(CUDA_TOOLKIT_ROOT_DIR "/usr/local/cuda_current/" CACHE STRING "CUDA path")
 
 # choose CUDA, OPENCL
 IF(NOT AURA_BACKEND)
@@ -52,7 +52,7 @@ STRING(TOLOWER "${AURA_BACKEND}" AURA_BACKEND_LC)
 MESSAGE(STATUS "Using ${AURA_BACKEND} backend")
 
 # compiler settings
-SET(CMAKE_CXX_FLAGS "-Wall -std=c++0x")
+SET(CMAKE_CXX_FLAGS "-Wall -std=c++0x -g")
 
 # configuration file
 CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/include/aura/config.hpp.template"
@@ -69,3 +69,4 @@ ENABLE_TESTING()
 # add subdirectories
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/experiment/)
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/test/)
+ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/bench/)

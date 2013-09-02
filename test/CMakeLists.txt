@@ -1,4 +1,3 @@
-MESSAGE(${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/basic.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/feed.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/kernel.cpp backend/kernel.cu 
