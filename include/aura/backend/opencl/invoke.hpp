@@ -16,7 +16,7 @@ namespace backend_detail {
 namespace opencl {
 
 namespace detail {
-
+#define AURA_KERNEL_THREAD_LAYOUT_CUDA
 template <std::size_t N0, std::size_t N1, std::size_t N2>
 void invoke_impl(kernel & k, typename grid_t<N0>::type g, 
    typename block_t<N1>::type b, typename args_t<N2>::type a, feed & f) {

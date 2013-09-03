@@ -146,7 +146,7 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
     }                                                                          \
     d1 = aura::now() - d1;                                                     \
     if(d2 > 0 && d1 > 0) {                                                     \
-      measurements.push_back(d2*1000*1000*1000);                               \
+      measurements.push_back(d2);                                              \
       elapsed_time += d1;                                                      \
     }                                                                          \
   }                                                                            \
@@ -191,7 +191,7 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
     }                                                                          \
     d1 = aura::now() - d1;                                                     \
     if(d2 > 0 && d1 > 0) {                                                     \
-      measurements.push_back(d2*1000*1000*1000);                               \
+      measurements.push_back(d2);                                              \
       elapsed_time += d1;                                                      \
     }                                                                          \
   }                                                                            \
@@ -229,7 +229,7 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
     }                                                                          \
     d1 = aura::now() - d1;                                                     \
     if(d2 > 0 && d1 > 0) {                                                     \
-      measurements.push_back(d2*1000*1000*1000);                               \
+      measurements.push_back(d2);                                              \
       elapsed_time += d1;                                                      \
     }                                                                          \
   }                                                                            \

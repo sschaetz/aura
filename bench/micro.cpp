@@ -10,20 +10,24 @@ const char * kernel_file = "bench/micro.cl";
 const char * kernel_file = "bench/micro.ptx"; 
 #endif
 
+// run each subtest for a specific number of seconds
+const int duration_per_test = 2*1e6;
+
+// benchmark how long it takes to launch an empty kernel on 1...N GPUs
 
 inline void bench_noarg_expr(std::vector<feed *> & feeds, 
-  std::vector<kernel> & kernels) {
-  for(std::size_t n=0; n<feeds.size(); n++) {
+  std::vector<kernel> & kernels, std::size_t num) {
+  for(std::size_t n=0; n<num; n++) {
     invoke(kernels[n], grid(1), block(1), *feeds[n]);
   } 
-  for(std::size_t n=0; n<feeds.size(); n++) {
+  for(std::size_t n=0; n<num; n++) {
     wait_for(*feeds[n]); 
   } 
 }
 
 
 void bench_noarg(std::vector<device *> & devices, 
-  std::vector<feed *> & feeds) {
+  std::vector<feed *> & feeds, const char * kernel_name) {
   
   double min, max, mean, stdev;
   std::size_t num;
@@ -31,18 +35,66 @@ void bench_noarg(std::vector<device *> & devices,
   std::vector<kernel> kernels(devices.size());
   for(std::size_t n=0; n<devices.size(); n++) {
     modules[n] = create_module_from_file(kernel_file, *devices[n]); 
-    kernels[n] = create_kernel(modules[n], "noarg");
+    kernels[n] = create_kernel(modules[n], kernel_name);
     invoke(kernels[n], grid(1), block(1), *feeds[n]);
+    wait_for(*feeds[n]); 
   }
 
-  MGPU_BENCHMARK(bench_noarg_expr(feeds, kernels), 
-    4, min, max, mean, stdev, num);
-  printf("noarg: num %lu min %f max %f mean %f stdev %f\n", 
-    num, min, max, mean, stdev);
-  MGPU_BENCHMARK_HISTOGRAM(bench_noarg_expr(feeds, kernels), 
-    4, min);
+  for(std::size_t n=1; n<=devices.size(); n++) {
+    MGPU_BENCHMARK(bench_noarg_expr(feeds, kernels, n), 
+      duration_per_test, min, max, mean, stdev, num);
+    printf("%s_kernel: %ld GPUs num %lu min %f max %f mean %f stdev %f\n", 
+      kernel_name, n, num, min, max, mean, stdev);
+  }
 }
 
+// ----
+
+// benchmark how long it takes to run a very simple kernel on 1...N GPUs
+
+inline void bench_onearg_expr(std::vector<feed *> & feeds, 
+  std::vector<kernel> & kernels, std::vector<memory> & device_memory,
+  std::size_t griddim, std::size_t blockdim, std::size_t num) {
+  for(std::size_t n=0; n<num; n++) {
+    invoke(kernels[n], grid(griddim), block(blockdim), 
+      args(device_memory[n]), *feeds[n]);
+  } 
+  for(std::size_t n=0; n<num; n++) {
+    wait_for(*feeds[n]); 
+  } 
+}
+
+
+void bench_onearg(std::vector<device *> & devices, 
+  std::vector<feed *> & feeds, const char * kernel_name, 
+  std::size_t griddim, std::size_t blockdim) {
+  
+  double min, max, mean, stdev;
+  std::size_t num;
+  std::size_t size = griddim * blockdim;
+  std::vector<module> modules(devices.size());
+  std::vector<kernel> kernels(devices.size());
+  std::vector<memory> device_memory(devices.size());
+  std::vector<float> host_memory(size, 42.);
+  for(std::size_t n=0; n<devices.size(); n++) {
+    modules[n] = create_module_from_file(kernel_file, *devices[n]); 
+    kernels[n] = create_kernel(modules[n], kernel_name);
+    device_memory[n] = device_malloc(size*sizeof(float), *devices[n]);
+    copy(&host_memory[0], device_memory[n], size*sizeof(float), *feeds[n]);
+    invoke(kernels[n], grid(griddim), block(blockdim), args(device_memory[n]), *feeds[n]);
+    wait_for(*feeds[n]); 
+  }
+
+  for(std::size_t n=1; n<=devices.size(); n++) {
+    MGPU_BENCHMARK(bench_onearg_expr(feeds, kernels, 
+        device_memory, griddim, blockdim, n), 
+      duration_per_test, min, max, mean, stdev, num);
+    printf("%s_kernel (%ldG %ld:%ld): num %lu min %f max %f mean %f stdev %f\n", 
+      kernel_name, n, griddim, blockdim, num, min, max, mean, stdev);
+  }
+}
+
+// ----
 
 int main(void) {
   init();
@@ -55,7 +107,11 @@ int main(void) {
     feeds[n] = new feed(*devices[n]);   
   }
 
-  bench_noarg(devices, feeds);
+  bench_noarg(devices, feeds, "noarg");
+  bench_onearg(devices, feeds, "simple_add", 1024, 1024);
+  bench_onearg(devices, feeds, "four_mad", 1024, 1024);
+  bench_onearg(devices, feeds, "peak_flop_empty", 16384, 512);
+  bench_onearg(devices, feeds, "peak_flop", 16384, 512);
 }
 
 

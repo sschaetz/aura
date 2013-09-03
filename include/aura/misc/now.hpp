@@ -12,7 +12,7 @@ namespace aura {
 inline double now() {
   struct timeval tp;
   gettimeofday(&tp ,NULL);
-  return double(tp.tv_sec) + double(tp.tv_usec)*1e-6;
+  return double(tp.tv_sec)*1e6 + double(tp.tv_usec);
 }
 
 } // namespace aura
