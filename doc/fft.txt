@@ -27,7 +27,7 @@ fft_setup();
 
 // should probably bake already and create forward+backward for 
 // in-place and out of place
-fft_plan plan = fft_plan(dimensions, strides, device, parameters);
+fft_plan plan(dimensions, strides, device, parameters);
 
 // this can be done with opencl, we need to find a good mechanism to do that
 // some kind of serialization file format that contains information about the
@@ -40,4 +40,21 @@ fft_inverse(source, target, plan, feed);
 
 
 
+For CUDA we need a nice interface for this function:
+cufftResult cufftPlanMany(cufftHandle *plan, int rank, int *n, int *inembed,
+  int istride, int idist, int *onembed, int ostride,
+  int odist, cufftType type, int batch);
 
+rank and n can be a generic type describing a multi-dimensional vector,
+the name could be dim_t
+embed, stride and dist can be also a type, maybe fft_layout? It contains
+a dim_t, and 2 ints.
+the type should be an fft_type r2c c2r c2c d2z z2d d2z
+
+so:
+fft_plan plan(dim_t dimensions, fft_type type, std::size_t batch = 1,
+  fft_layout inputlayout = default_layout, 
+  fft_layout outputlayout = default_layout);
+
+with
+fft_layout layout(dim_t dimensions, std::size_t stride, std::size_t dist);
