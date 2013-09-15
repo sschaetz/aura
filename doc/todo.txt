@@ -1,0 +1,12 @@
+Todo
+====
+
+Missing parameters for functions:
+
+
+
+The kernel calling mechanism should be sanitized, probably with runtime
+argument sizes instead of compile time. This reduces the number of functions
+we have and the number of error messages we generate in case of an error
+and is a lot simpler to maintain and a lot more flexible too.
+

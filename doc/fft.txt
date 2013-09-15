@@ -58,3 +58,4 @@ fft_plan plan(dim_t dimensions, fft_type type, std::size_t batch = 1,
 
 with
 fft_layout layout(dim_t dimensions, std::size_t stride, std::size_t dist);
+

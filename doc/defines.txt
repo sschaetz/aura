@@ -1,0 +1,2 @@
+aura/detail/dim_base.hpp uses
+AURA_DIM_BASE_MAX_SIZE

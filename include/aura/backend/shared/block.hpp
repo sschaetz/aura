@@ -1,6 +1,7 @@
 #ifndef AURA_BACKEND_SHARED_BLOCK_HPP_GUARD
 #error "Shared file can not be included"
 #endif // AURA_BACKEND_SHARED_BLOCK_HPP_GUARD
+#undef AURA_BACKEND_SHARED_BLOCK_HPP_GUARD
 
 // this is shared code by all backend
 // it must not be in a namespace, each backend
