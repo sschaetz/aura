@@ -3,7 +3,7 @@
 #define AURA_BACKEND_OPENCL_DEVICE_HPP
 
 
-#include <boost/noncopyable.hpp>
+#include <boost/move/move.hpp>
 #include <vector>
 #include <CL/cl.h>
 #include <aura/backend/opencl/call.hpp>
@@ -18,9 +18,19 @@ namespace opencl {
  *
  * every interaction with devices starts from this class
  */
-class device : private boost::noncopyable {
+class device {
+
+private:
+  BOOST_MOVABLE_BUT_NOT_COPYABLE(device)
 
 public:
+
+  /**
+   * create empty device object without device and context
+   */
+  inline explicit device() : 
+    device_(device::no_device), context_(device::no_context), pinned_(false) {}
+ 
   /**
    * create device form ordinal, also creates a context
    *
@@ -56,11 +66,41 @@ public:
   }
 
   /**
+   * move constructor, move device information here, invalidate other
+   *
+   * @param d device to move here
+   */
+  device(BOOST_RV_REF(device) d) : 
+    device_(d.device_), context_(d.context_), pinned_(d.pinned_)
+  {  
+    d.device_ = device::no_device;
+    d.context_ = device::no_context;
+    d.pinned_ = false; 
+  }
+
+  /**
+   * move assignment, move device information here, invalidate other
+   *
+   * @param d device to move here
+   */
+  device& operator=(BOOST_RV_REF(device) d) 
+  { 
+    device_ = d.device_;
+    context_ = d.context_;
+    pinned_ = d.pinned_;
+    d.device_ = device::no_device;
+    d.context_ = device::no_context;
+    d.pinned_ = false;
+    return *this;
+  }
+
+  /**
    * destroy device (context)
    */
   inline ~device() {
     AURA_OPENCL_SAFE_CALL(clReleaseContext(context_));
   }
+
 
   /// make device active
   inline void set() const {
@@ -97,6 +137,15 @@ private:
   cl_context context_;
   /// flag indicating pinned or unpinned context
   bool pinned_;
+
+  /// const value indicating no device
+  static int const no_device = 0;
+
+  // bit of a hack, should be 
+  // static constexpr cl_context no_context = -1;
+  /// const value indicationg no context
+  static int const no_context = 0; 
+
 };
  
 

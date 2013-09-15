@@ -13,3 +13,5 @@ IF(${AURA_BACKEND} STREQUAL CUDA)
 ENDIF()
 
 AURA_ADD_TARGET(exp.namespace_alias namespace_alias.cpp)
+SET(CMAKE_CXX_FLAGS "-O3")   
+AURA_ADD_TARGET(exp.vec_vs_vla vec_vs_vla.cpp)
