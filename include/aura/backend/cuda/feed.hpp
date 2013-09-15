@@ -29,6 +29,8 @@ public:
    * create device feed for device
    *
    * @param d device to create feed for
+   *
+   * const device & is not allowed since an actual instance is needed
    */
   inline explicit feed(device & d) : device_(&d) {
     device_->set();

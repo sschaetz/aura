@@ -11,5 +11,8 @@
 #cmakedefine01 AURA_BACKEND_CUDA 
 #cmakedefine01 AURA_BACKEND_OPENCL 
 
+/// maximum size of elements in dim_base and specialized types
+#define AURA_DIM_BASE_MAX_SIZE 12
+
 #endif // AURA_CONFIG_HPP 
 
