@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 # configuration #####
-set(CUDA_TOOLKIT_ROOT_DIR "/usr/local/cuda_current/" CACHE STRING "CUDA path")
+set(CUDA_TOOLKIT_ROOT_DIR "/usr/local/cuda/" CACHE STRING "CUDA path")
 
 # choose CUDA, OPENCL
 IF(NOT AURA_BACKEND)
@@ -15,8 +15,8 @@ INCLUDE(cmake/functions.cmake)
 
 # find Boost libraries #####
 SET(Boost_USE_STATIC_LIBS ON)
-SET(BOOST_ROOT "/usr/local/boost_current")
-SET(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0" "1.48" "1.48.0" "1.51" "1.51.0")
+SET(BOOST_ROOT "/usr/local/boost")
+SET(Boost_ADDITIONAL_VERSIONS "1.54" "1.54.0" "1.48" "1.48.0" "1.51" "1.51.0")
 FIND_PACKAGE(Boost 1.45.0 COMPONENTS system thread unit_test_framework)
 
 # find CUDA libraries #####

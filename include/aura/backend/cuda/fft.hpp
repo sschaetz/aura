@@ -1,5 +1,5 @@
-#ifndef AURA_BACKEND_CUDA_FEED_HPP
-#define AURA_BACKEND_CUDA_FEED_HPP
+#ifndef AURA_BACKEND_CUDA_FFT_HPP
+#define AURA_BACKEND_CUDA_FFT_HPP
 
 #include <boost/move/move.hpp>
 #include <cuda.h>
@@ -11,60 +11,62 @@ namespace aura {
 namespace backend_detail {
 namespace cuda {
 
+
+
 /**
- * feed class
+ * fft class
  */
-class feed {
+class fft {
 
 private:
-  BOOST_MOVABLE_BUT_NOT_COPYABLE(feed)
+  BOOST_MOVABLE_BUT_NOT_COPYABLE(fft)
 
 public:
  
   /**
-   * create empty feed object without device and stream
+   * create empty fft object without device and stream
    */
-  inline explicit feed() : device_(0), stream_((CUstream)feed::no_stream) {}
+  inline explicit fft() : device_(0), stream_((CUstream)fft::no_stream) {}
 
   /**
-   * create device feed for device
+   * create device fft for device
    *
-   * @param d device to create feed for
+   * @param d device to create fft for
    */
-  inline explicit feed(device & d) : device_(&d) {
+  inline explicit fft(device & d) : device_(&d) {
     device_->set();
     AURA_CUDA_SAFE_CALL(cuStreamCreate(&stream_, 0 /*CU_STREAM_NON_BLOCKING*/));
     device_->unset(); 
   }
 
   /**
-   * move constructor, move feed information here, invalidate other
+   * move constructor, move fft information here, invalidate other
    *
-   * @param f feed to move here
+   * @param f fft to move here
    */
-  feed(BOOST_RV_REF(feed) f) : 
+  fft(BOOST_RV_REF(fft) f) : 
     device_(f.device_), stream_(f.stream_)
   {  
-    f.stream_ = (CUstream)feed::no_stream;
+    f.stream_ = (CUstream)fft::no_stream;
   }
 
   /**
-   * move assignment, move feed information here, invalidate other
+   * move assignment, move fft information here, invalidate other
    *
-   * @param f feed to move here
+   * @param f fft to move here
    */
-  feed& operator=(BOOST_RV_REF(feed) f) 
+  fft& operator=(BOOST_RV_REF(fft) f) 
   { 
     stream_ = f.stream_;
-    f.stream_ = (CUstream)feed::no_stream;
+    f.stream_ = (CUstream)fft::no_stream;
     return *this;
   }
 
   /**
-   * destroy feed
+   * destroy fft
    */
-  inline ~feed() {
-    if((CUstream)feed::no_stream != stream_) {
+  inline ~fft() {
+    if((CUstream)fft::no_stream != stream_) {
       device_->set();
       AURA_CUDA_SAFE_CALL(cuStreamDestroy(stream_));
       device_->unset(); 
@@ -72,7 +74,7 @@ public:
   }
   
   /**
-   * wait until all commands in the feed have finished
+   * wait until all commands in the fft have finished
    */
   inline void synchronize() const {
     device_->set();
@@ -80,12 +82,12 @@ public:
     device_->unset();
   }
   
-  /// make feed active
+  /// make fft active
   inline void set() const {
     device_->set(); 
   }
   
-  /// undo make feed active
+  /// undo make fft active
   inline void unset() const {
     device_->unset(); 
   }
@@ -107,7 +109,7 @@ public:
 
 
 private:
-  /// reference to device the feed was created for
+  /// reference to device the fft was created for
   device * device_;
   /// stream handle
   CUstream stream_;
@@ -119,18 +121,9 @@ private:
   static const int no_stream = -1;
 };
 
-/**
- * @brief wait for a feed to finish all operations
- *
- * @param f the feed to wait for
- */
-void wait_for(feed & f) {
-  f.synchronize();
-}
-
 } // cuda
 } // backend_detail
 } // aura
 
-#endif // AURA_BACKEND_CUDA_FEED_HPP
+#endif // AURA_BACKEND_CUDA_FFT_HPP
 

@@ -3,7 +3,7 @@ AURA_ADD_TEST(backend/feed.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/kernel.cpp backend/kernel.cu 
   backend/kernel.cl ${AURA_BACKEND_LIBRARIES})
 
-AURA_ADD_TEST(detail/dim_base.cpp)
+AURA_ADD_TEST(detail/svec.cpp)
 AURA_ADD_TEST(misc/profile.cpp pthread)
 
 # cprofile is a C interface for the profiler, it requires

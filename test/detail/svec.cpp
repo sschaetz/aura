@@ -1,12 +1,12 @@
-#define BOOST_TEST_MODULE detail.dim_base
+#define BOOST_TEST_MODULE detail.svec
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/execution_monitor.hpp> 
-#include <aura/detail/dim_base.hpp>
+#include <aura/detail/svec.hpp>
 
 using namespace aura;
 
-typedef dim_base<int, 3> dim3;
+typedef svec<int, 3> dim3;
 
 // basic
 // _____________________________________________________________________________
@@ -24,3 +24,5 @@ BOOST_AUTO_TEST_CASE(basic) {
   // this should assert:
   //dim3 d4(0,1,2,3);
 }
+
+
