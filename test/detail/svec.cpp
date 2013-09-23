@@ -8,6 +8,19 @@ using namespace aura;
 
 typedef svec<int, 3> dim3;
 
+struct dummy1 {
+  dummy1() {}
+  dummy1(int n) {}
+  dummy1 operator *=(dummy1 b) {
+    return b;
+  }
+};
+
+struct dummy2 {
+  dummy2() {}
+  dummy2(int n) {}
+};
+
 // basic
 // _____________________________________________________________________________
 
@@ -21,8 +34,20 @@ BOOST_AUTO_TEST_CASE(basic) {
   }
   dim3 d2(0,1);
   BOOST_CHECK(d2.size() == 2);
+
+  dim3 dp(4,4,4);
+  BOOST_CHECK(product(dp)  == 4*4*4);
+  
+  svec<dummy1, 3> sd(dummy1(12), dummy1(13), dummy1(14));
+  dummy1 foo = product(sd);
+  (void)foo; 
+
   // this should assert:
   //dim3 d4(0,1,2,3);
+
+  svec<dummy2, 3> sdd(dummy2(12), dummy2(13), dummy2(14));
+  // this should assert:
+  //dummy2 fooo = product(sdd);
 }
 
 
