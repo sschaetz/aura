@@ -49,3 +49,10 @@ devices and command queues can be set as defaults per thread
 
 command queues are per device
 
+Rationale
+=========
+
+The backend uses typed to initialize, hold and release resources. Types can
+have methods but methods must not be used, free functions should always
+duplicate functionality of methods to provide a more functional interface.
+

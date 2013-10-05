@@ -11,6 +11,7 @@
 #include <aura/backend/cuda/call.hpp>
 #include <aura/backend/cuda/device.hpp>
 #include <aura/backend/cuda/feed.hpp>
+#include <aura/backend/cuda/fft.hpp>
 #include <aura/backend/cuda/grid.hpp>
 #include <aura/backend/cuda/init.hpp>
 #include <aura/backend/cuda/invoke.hpp>
