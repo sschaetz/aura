@@ -25,4 +25,21 @@ BOOST_AUTO_TEST_CASE(basic) {
   //dim3 d4(0,1,2,3);
 }
 
+// push_back 
+// _____________________________________________________________________________
 
+BOOST_AUTO_TEST_CASE(push_back) {
+  dim3 d3;
+  BOOST_CHECK(d3.size()==0);
+  d3.push_back(42);
+  BOOST_CHECK(d3.size()==1);
+  BOOST_CHECK(d3[0]== 42);
+  d3.push_back(43);
+  BOOST_CHECK(d3.size()==2);
+  BOOST_CHECK(d3[1]== 43);
+  d3.push_back(44);
+  BOOST_CHECK(d3.size()==3);
+  BOOST_CHECK(d3[2]== 44);
+  // this should assert:
+  //d3.push_back(45);
+}

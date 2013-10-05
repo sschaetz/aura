@@ -7,9 +7,7 @@ namespace aura {
 namespace backend_detail {
 namespace cuda {
 
-#define AURA_BACKEND_SHARED_GRID_HPP_GUARD
-#include <aura/backend/shared/grid.hpp>
-#undef AURA_BACKEND_SHARED_GRID_HPP_GUARD
+typedef svec<std::size_t, AURA_MAX_GRID_DIMS> grid;
 
 } // cuda
 } // backend_detail

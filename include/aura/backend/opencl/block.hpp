@@ -1,16 +1,14 @@
 #ifndef AURA_BACKEND_OPENCL_BLOCK_HPP
 #define AURA_BACKEND_OPENCL_BLOCK_HPP
 
-
 #include <array>
+#include <aura/detail/svec.hpp>
 
 namespace aura {
 namespace backend_detail {
 namespace opencl {
 
-#define AURA_BACKEND_SHARED_BLOCK_HPP_GUARD
-#include <aura/backend/shared/block.hpp>
-#undef AURA_BACKEND_SHARED_BLOCK_HPP_GUARD
+typedef svec<std::size_t, AURA_MAX_BLOCK_DIMS> block;
 
 } // opencl 
 } // backend_detail

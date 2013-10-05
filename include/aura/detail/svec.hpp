@@ -1,7 +1,8 @@
 #ifndef AURA_DETAIL_SVEC_HPP
 #define AURA_DETAIL_SVEC_HPP
 
-#include <boost/array.hpp>
+#include <assert.h>
+#include <array>
 #include <boost/preprocessor/arithmetic/inc.hpp>
 #include <boost/preprocessor/repetition/repeat_from_to.hpp>
 #include <boost/mpl/assert.hpp>
@@ -61,7 +62,6 @@ public:
   #undef AURA_SVEC_ASSIGN
   #undef AURA_SVEC_ARGS
 
-
   /// operator []
   T & operator [](const int & offset) { 
     return dim_[offset]; 
@@ -70,6 +70,15 @@ public:
   /// operator []
   const T & operator [](const int & offset) const { 
     return dim_[offset]; 
+  }
+
+  /**
+   * @brief add element to vector and increment size
+   */
+  void push_back(const T & e) {
+    assert(size_+1 <= max_size_);
+    dim_[size_] = e;
+    size_++;
   }
 
   /**
@@ -102,7 +111,7 @@ private:
   std::size_t size_;
 
   /// array containing dimensions 
-  boost::array<T, max_size_> dim_;
+  std::array<T, max_size_> dim_;
 };
 
 } // namespace aura

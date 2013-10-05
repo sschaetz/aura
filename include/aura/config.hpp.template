@@ -14,5 +14,13 @@
 /// maximum size of elements in svec specialized types
 #define AURA_SVEC_MAX_SIZE 12
 
+/// maximum dimensionality of a grid
+#define AURA_MAX_GRID_DIMS 4
+
+/// maximum dimensionality of a block
+#define AURA_MAX_BLOCK_DIMS 4
+
+/// maximum number of possible kernel arguments
+#define AURA_MAX_KERNEL_ARGS 12
 #endif // AURA_CONFIG_HPP 
 

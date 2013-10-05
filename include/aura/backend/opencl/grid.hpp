@@ -2,19 +2,17 @@
 #define AURA_BACKEND_OPENCL_GRID_HPP
 
 #include <array>
+#include <aura/detail/svec.hpp>
 
 namespace aura {
 namespace backend_detail {
 namespace opencl {
 
-#define AURA_BACKEND_SHARED_GRID_HPP_GUARD
-#include <aura/backend/shared/grid.hpp>
-#undef AURA_BACKEND_SHARED_GRID_HPP_GUARD
+typedef svec<std::size_t, AURA_MAX_GRID_DIMS> grid;
 
 } // opencl 
 } // backend_detail
 } // aura
-
 
 
 #endif // AURA_BACKEND_OPENCL_GRID_HPP
