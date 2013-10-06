@@ -4,41 +4,45 @@
 #include <array>
 #include <utility>
 
+#include <aura/detail/svec.hpp>
+
 namespace aura {
 namespace backend_detail {
 namespace cuda {
 
-// type to hold kernel arguments
-template <std::size_t N>
-struct args_t {
-  typedef std::array<void *, N> type;
-};
+typedef void * arg_t;
+typedef svec<arg_t, AURA_MAX_KERNEL_ARGS> args_t;
 
-// generate 1 kernel argument
 template <typename T0>
-args_t<1>::type args(T0 & a0) {
-  args_t<1>::type r;
-  r[0] = (void*)&a0;
-  return r;
+args_t args(T0 & a0) {
+  return args_t((void*)&a0);
 }
 
-// generate 2 kernel arguments
 template <typename T0, typename T1>
-args_t<2>::type args(T0 & a0, T1 & a1) {
-  args_t<2>::type r;
-  r[0] = (void*)&a0;
-  r[1] = (void*)&a1;
-  return r;
+args_t args(T0 & a0, T1 & a1) {
+  return args_t(
+    (void*)&a0,
+    (void*)&a1
+  );
 }
 
-// generate 3 kernel arguments
 template <typename T0, typename T1, typename T2>
-args_t<3>::type args(T0 & a0, T1 & a1, T2 & a2) {
-  args_t<3>::type r;
-  r[0] = (void*)&a0;
-  r[1] = (void*)&a1;
-  r[2] = (void*)&a2;
-  return r;
+args_t args(T0 & a0, T1 & a1, T2 & a2) {
+  return args_t(
+    (void*)&a0,
+    (void*)&a1,
+    (void*)&a2
+  );
+}
+
+template <typename T0, typename T1, typename T2, typename T3>
+args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3) {
+  return args_t(
+    (void*)&a0,
+    (void*)&a1,
+    (void*)&a2,
+    (void*)&a3
+  );
 }
 
 } // cuda 

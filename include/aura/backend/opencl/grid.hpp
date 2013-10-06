@@ -1,7 +1,6 @@
 #ifndef AURA_BACKEND_OPENCL_GRID_HPP
 #define AURA_BACKEND_OPENCL_GRID_HPP
 
-#include <array>
 #include <aura/detail/svec.hpp>
 
 namespace aura {

@@ -1,7 +1,7 @@
 #ifndef AURA_BACKEND_CUDA_GRID_HPP
 #define AURA_BACKEND_CUDA_GRID_HPP
 
-#include <array>
+#include <aura/detail/svec.hpp>
 
 namespace aura {
 namespace backend_detail {

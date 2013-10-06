@@ -36,15 +36,14 @@ args_t args(T0 & a0, T1 & a1, T2 & a2) {
 }
 
 template <typename T0, typename T1, typename T2, typename T3>
-args_t args(T0 & a0, T1 & a1, T2 & a2) {
+args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3) {
   return args_t(
     arg_t(&a0, sizeof(T0)),
     arg_t(&a1, sizeof(T1)),
-    arg_t(&a2, sizeof(T2))
+    arg_t(&a2, sizeof(T2)),
+    arg_t(&a3, sizeof(T3))
   );
 }
-
-
 
 } // opencl 
 } // backend_detail

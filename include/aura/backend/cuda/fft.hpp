@@ -139,7 +139,7 @@ private:
   cufftType type_;
 };
 
-void fft_forward(memory & dst, memory & src, fft & plan, const feed & f) {
+inline void fft_forward(memory & dst, memory & src, fft & plan, const feed & f) {
   plan.set_feed(f);
   switch(plan.get_type()) {
     case fft::type::r2c: {
@@ -187,7 +187,7 @@ void fft_forward(memory & dst, memory & src, fft & plan, const feed & f) {
   }
 }
 
-void fft_inverse(memory & dst, memory & src, fft & plan, const feed & f) {
+inline void fft_inverse(memory & dst, memory & src, fft & plan, const feed & f) {
   plan.set_feed(f);
   switch(plan.get_type()) {
     case fft::type::r2c: {

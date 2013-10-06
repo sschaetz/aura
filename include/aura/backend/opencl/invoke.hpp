@@ -50,12 +50,12 @@ void invoke_impl(kernel & k, const grid & g, const block & b,
 } // namespace detail
 
 
-// without args
+/// invoke kernel without args
 void invoke(kernel & k, const grid & g, const block & b, feed & f) {
   detail::invoke_impl(k, g, b, args_t(), f);
 }
 
-// with args
+/// invoke kernel with args
 void invoke(kernel & k, const grid & g, const block & b,
   const args_t & a, feed & f) {
   detail::invoke_impl(k, g, b, a, f);
