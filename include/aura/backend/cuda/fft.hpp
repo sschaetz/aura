@@ -27,12 +27,12 @@ private:
 public:
  
   enum type {
-    r2c = CUFFT_R2C,  // real to complex  
-    c2r = CUFFT_C2R,  // complex to real 
-    c2c = CUFFT_C2C,  // complex to complex  
-    d2z = CUFFT_D2Z,  // double to double-complex 
-    z2d = CUFFT_Z2D,  // double-complex to double 
-    z2z = CUFFT_Z2Z   // double-complex to double-complex
+    r2c,  // real to complex  
+    c2r,  // complex to real 
+    c2c,  // complex to complex  
+    d2z,  // double to double-complex 
+    z2d,  // double-complex to double 
+    z2z   // double-complex to double-complex
   };
 
   enum direction {
@@ -56,7 +56,8 @@ public:
     const fft_embed & iembed = fft_embed(),
     std::size_t istride = 1, std::size_t idist = 0,
     const fft_embed & oembed = fft_embed(),
-    std::size_t ostride = 1, std::size_t odist = 0) : device_(&d)
+    std::size_t ostride = 1, std::size_t odist = 0) : device_(&d), 
+    type_(type)
   {
     device_->set();
     AURA_CUFFT_SAFE_CALL(
@@ -70,7 +71,7 @@ public:
         0 == oembed.size() ? NULL : const_cast<int*>(&oembed[0]),
         ostride, 
         0 == odist ? product(dim) : odist,
-        (cufftType)type, 
+        map_type(type), 
         batch 
       )
     ); 
@@ -124,22 +125,61 @@ public:
   /**
    * return fft type
    */
-  const cufftType & get_type() const {
+  const type & get_type() const {
     return type_;
   }
 
-private:
-  // device handle
+  /// map fft type to cufftType
+  cufftType map_type(fft::type type) {
+    switch(type) {
+      case r2c: 
+        return CUFFT_R2C;
+      case c2r: 
+        return CUFFT_C2R;
+      case c2c: 
+        return CUFFT_C2C;
+      case d2z: 
+        return CUFFT_D2Z;
+      case z2d: 
+        return CUFFT_Z2D;
+      case z2z: 
+        return CUFFT_Z2Z;
+      default:
+        return (cufftType)0;
+    }
+  }
+
+protected:
+  /// device handle
   device * device_;
   
+private:
   /// fft handle
   cufftHandle handle_;
 
   /// fft type
-  cufftType type_;
+  type type_;
+
+// give free functions access to device
+friend void fft_forward(memory & dst, memory & src, 
+  fft & plan, const feed & f);
+friend void fft_inverse(memory & dst, memory & src, 
+  fft & plan, const feed & f);
+
 };
 
-inline void fft_forward(memory & dst, memory & src, fft & plan, const feed & f) {
+
+/**
+ * @brief calculate forward fourier transform
+ * 
+ * @param dst pointer to result of fourier transform
+ * @param src pointer to input of fourier transform
+ * @param plan that is used to calculate the fourier transform
+ * @param f feed the fourier transform should be calculated in
+ */
+inline void fft_forward(memory & dst, memory & src, 
+  fft & plan, const feed & f) {
+  plan.device_->set();
   plan.set_feed(f);
   switch(plan.get_type()) {
     case fft::type::r2c: {
@@ -185,9 +225,21 @@ inline void fft_forward(memory & dst, memory & src, fft & plan, const feed & f) 
       break;
     }    
   }
+  plan.device_->unset();
 }
 
-inline void fft_inverse(memory & dst, memory & src, fft & plan, const feed & f) {
+
+/**
+ * @brief calculate forward fourier transform
+ * 
+ * @param dst pointer to result of fourier transform
+ * @param src pointer to input of fourier transform
+ * @param plan that is used to calculate the fourier transform
+ * @param f feed the fourier transform should be calculated in
+ */
+inline void fft_inverse(memory & dst, memory & src, 
+  fft & plan, const feed & f) {
+  plan.device_->set();
   plan.set_feed(f);
   switch(plan.get_type()) {
     case fft::type::r2c: {
@@ -233,6 +285,7 @@ inline void fft_inverse(memory & dst, memory & src, fft & plan, const feed & f) 
       break;
     }    
   }
+  plan.device_->unset();
 }
 } // cuda
 } // backend_detail

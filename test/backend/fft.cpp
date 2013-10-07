@@ -15,20 +15,32 @@ BOOST_AUTO_TEST_CASE(basic) {
   init();
   int num = device_get_count();
   if(0 < num) {
+    int samples = 4;
+    const cfloat signal[] = 
+      {cfloat(1, 1), cfloat(2, 2), cfloat(3, 3), cfloat(4, 4)};
+    const cfloat spectrum[] = 
+      {cfloat(10, 10), cfloat(-4, 0), cfloat(-2, -2), cfloat(0, -4)};
+    assert(samples == sizeof(signal) / sizeof(signal[0]));
+    
+    std::vector<cfloat> input(signal, signal+samples);
+    std::vector<cfloat> output(samples, cfloat(555., 666.));
+    
     device d(0);
     feed f(d); 
-    int samples = 8;
-    const float signal[] = {0, 1, 1, 0, 0, 1, 1, 0};
-    assert(samples == sizeof(signal) / sizeof(signal[0]));
-    std::vector<float> input(signal, signal+samples);
-    std::vector<cfloat> output(samples);
-    memory m1 = device_malloc(samples*sizeof(float), d);
+    
+    memory m1 = device_malloc(samples*sizeof(cfloat), d);
     memory m2 = device_malloc(samples*sizeof(cfloat), d);
-    fft fh(d, fft_dim(8), fft::type::r2c);
-    copy(m1, &input[0], samples*sizeof(float), f);
+    copy(m1, &input[0], samples*sizeof(cfloat), f);
+    copy(m2, &output[0], samples*sizeof(cfloat), f);
+    
+    fft fh(d, fft_dim(samples), fft::type::c2c);
     fft_forward(m2, m1, fh, f);
+    
     copy(&output[0], m2, samples*sizeof(cfloat), f);
     wait_for(f);
+    BOOST_CHECK(std::equal(output.begin(), output.end(), spectrum));
+    device_free(m1, d);
+    device_free(m2, d);
   }
 }
 
