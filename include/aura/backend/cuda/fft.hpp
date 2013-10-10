@@ -39,6 +39,7 @@ public:
     fwd = CUFFT_FORWARD,
     inv = CUFFT_INVERSE
   };
+
   /**
    * create empty fft object without device and stream
    */
@@ -168,6 +169,12 @@ friend void fft_inverse(memory & dst, memory & src,
 
 };
 
+/// initialize fft library
+inline void fft_init() {
+}
+/// finish using fft library and release all associated resources
+inline void fft_finish() {
+}
 
 /**
  * @brief calculate forward fourier transform
