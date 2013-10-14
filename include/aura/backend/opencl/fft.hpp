@@ -1,6 +1,7 @@
 #ifndef AURA_BACKEND_OPENCL_FFT_HPP
 #define AURA_BACKEND_OPENCL_FFT_HPP
 
+#include <tuple>
 #include <boost/move/move.hpp>
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/memory.hpp>
@@ -21,9 +22,9 @@ class fft {
 
 private:
   BOOST_MOVABLE_BUT_NOT_COPYABLE(fft)
+  typedef std::tuple<clfftPrecision, clfftLayout, clfftLayout> clfft_type;
 
 public:
- 
   enum type {
     r2c,  // real to complex  
     c2r,  // complex to real 
@@ -34,8 +35,8 @@ public:
   };
 
   enum direction {
-    fwd = CUFFT_FORWARD,
-    inv = CUFFT_INVERSE
+    fwd = CLFFT_FORWARD,
+    inv = CLFFT_BACKWARD 
   };
 
   /**
@@ -58,23 +59,6 @@ public:
     std::size_t ostride = 1, std::size_t odist = 0) : device_(&d), 
     type_(type)
   {
-    device_->set();
-    AURA_CUFFT_SAFE_CALL(
-      cufftPlanMany(
-        &handle_, 
-        dim.size(), 
-        const_cast<int*>(&dim[0]),
-        0 == iembed.size() ? NULL : const_cast<int*>(&iembed[0]),
-        istride, 
-        0 == idist ? product(dim) : idist,
-        0 == oembed.size() ? NULL : const_cast<int*>(&oembed[0]),
-        ostride, 
-        0 == odist ? product(dim) : odist,
-        map_type(type), 
-        batch 
-      )
-    ); 
-    device_->unset(); 
   }
 
   /**
@@ -153,11 +137,14 @@ protected:
   device * device_;
   
 private:
-  /// fft handle
-  cufftHandle handle_;
+    /// in-place plan 
+   	clfftPlanHandle inplace_handle_; 
 
-  /// fft type
-  type type_;
+    /// out-of-place plan  
+   	clfftPlanHandle outofplace_handle_; 
+
+    /// fft type
+    type type_;
 
 // give free functions access to device
 friend void fft_forward(memory & dst, memory & src, 
@@ -168,11 +155,11 @@ friend void fft_inverse(memory & dst, memory & src,
 };
 
 /// initialize fft library
-inline void fft_init() {
+inline void fft_initialize() {
   clfftSetup();
 }
 /// finish using fft library and release all associated resources
-inline void fft_finish() {
+inline void fft_terminate() {
   clfftTeardown();
 }
 
@@ -186,53 +173,7 @@ inline void fft_finish() {
  */
 inline void fft_forward(memory & dst, memory & src, 
   fft & plan, const feed & f) {
-  plan.device_->set();
-  plan.set_feed(f);
-  switch(plan.get_type()) {
-    case fft::type::r2c: {
-      AURA_CUFFT_SAFE_CALL(
-        cufftExecR2C(
-          plan.get_handle(), (cufftReal*)src, (cufftComplex*)dst)
-      );
-      break;
-    }
-    case fft::type::c2r: {
-      assert(false); // FIXME 
-      break;
-    }
-    case fft::type::c2c: {
-      AURA_CUFFT_SAFE_CALL(
-        cufftExecC2C(
-          plan.get_handle(), 
-          (cufftComplex*)src, 
-          (cufftComplex*)dst, 
-          fft::direction::fwd)
-      );
-      break;
-    }
-    case fft::type::d2z: {
-      AURA_CUFFT_SAFE_CALL(
-        cufftExecD2Z(
-          plan.get_handle(), (cufftDoubleReal*)src, (cufftDoubleComplex*)dst)
-      );
-      break;
-    }
-    case fft::type::z2d: {
-      assert(false); // FIXME 
-      break;
-    }
-    case fft::type::z2z: {
-      AURA_CUFFT_SAFE_CALL(
-        cufftExecZ2Z(
-          plan.get_handle(), 
-          (cufftDoubleComplex*)src, 
-          (cufftDoubleComplex*)dst,
-          fft::direction::fwd)
-      );
-      break;
-    }    
-  }
-  plan.device_->unset();
+
 }
 
 
@@ -246,54 +187,9 @@ inline void fft_forward(memory & dst, memory & src,
  */
 inline void fft_inverse(memory & dst, memory & src, 
   fft & plan, const feed & f) {
-  plan.device_->set();
-  plan.set_feed(f);
-  switch(plan.get_type()) {
-    case fft::type::r2c: {
-      assert(false); // FIXME
-      break;
-    }
-    case fft::type::c2r: {
-      AURA_CUFFT_SAFE_CALL(
-        cufftExecC2R(
-          plan.get_handle(), (cufftComplex*)src, (cufftReal*)dst)
-      );
-      break;
-    }
-    case fft::type::c2c: {
-      AURA_CUFFT_SAFE_CALL(
-        cufftExecC2C(
-          plan.get_handle(), 
-          (cufftComplex*)src, 
-          (cufftComplex*)dst, 
-          fft::direction::inv)
-      );
-      break;
-    }
-    case fft::type::d2z: {
-      assert(false); // FIXME
-      break;
-    }
-    case fft::type::z2d: {
-      AURA_CUFFT_SAFE_CALL(
-        cufftExecZ2D(
-          plan.get_handle(), (cufftDoubleComplex*)src, (cufftDoubleReal*)dst)
-      );
-      break;
-    }
-    case fft::type::z2z: {
-      AURA_CUFFT_SAFE_CALL(
-        cufftExecZ2Z(
-          plan.get_handle(), 
-          (cufftDoubleComplex*)src, 
-          (cufftDoubleComplex*)dst,
-          fft::direction::inv)
-      );
-      break;
-    }    
-  }
-  plan.device_->unset();
+
 }
+
 } // opencl 
 } // backend_detail
 } // aura

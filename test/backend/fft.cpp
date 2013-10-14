@@ -13,7 +13,7 @@ using namespace aura::backend;
 
 BOOST_AUTO_TEST_CASE(basic) {
   init();
-  fft_init(); 
+  fft_initialize(); 
   int num = device_get_count();
   if(0 < num) {
     int samples = 4;
@@ -43,6 +43,6 @@ BOOST_AUTO_TEST_CASE(basic) {
     device_free(m1, d);
     device_free(m2, d);
   }
-  fft_finish();
+  fft_finalize();
 }
 

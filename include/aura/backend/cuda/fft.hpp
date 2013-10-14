@@ -170,10 +170,10 @@ friend void fft_inverse(memory & dst, memory & src,
 };
 
 /// initialize fft library
-inline void fft_init() {
+inline void fft_initialize() {
 }
-/// finish using fft library and release all associated resources
-inline void fft_finish() {
+/// finalize fft library and release all associated resources
+inline void fft_terminate() {
 }
 
 /**

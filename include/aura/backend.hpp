@@ -26,6 +26,7 @@
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/device.hpp>
 #include <aura/backend/opencl/feed.hpp>
+#include <aura/backend/opencl/fft.hpp>
 #include <aura/backend/opencl/grid.hpp>
 #include <aura/backend/opencl/init.hpp>
 #include <aura/backend/opencl/invoke.hpp>
