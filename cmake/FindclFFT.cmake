@@ -1,31 +1,19 @@
-# - Try to find clFFT 
-# Once done, this will define
-#
-#  clFFT_FOUND - system has clFFT 
-#  clFFT_INCLUDE_DIRS - the clFFT include directories
-#  clFFT_LIBRARIES - link these to use clFFT 
+# find clFFT libraries
 
-INCLUDE(LibFindMacros)
-
-# Use pkg-config to get hints about paths
-libfind_pkg_check_modules(clFFT_PKGCONF clFFT)
+FIND_PACKAGE(PackageHandleStandardArgs)
 
 # Include dir
-FIND_PATH(clFFT_INCLUDE_DIR
+FIND_PATH(CLFFT_INCLUDE_DIRS
   NAMES clFFT.h clAmdFft.h
-  PATHS ${clFFT_PKGCONF_INCLUDE_DIRS}
 )
 
 # Finally the library itself
-FIND_LIBRARY(clFFT_LIBRARY
+FIND_LIBRARY(CLFFT_LIBRARIES
   NAMES clFFT 
-  PATHS ${clFFT_PKGCONF_LIBRARY_DIRS}
 )
 
-# Set the include dir variables and the libraries and let libfind_process 
-# do the rest.
-SET(clFFT_PROCESS_INCLUDES clFFT_INCLUDE_DIR clFFT_INCLUDE_DIRS)
-SET(clFFT_PROCESS_LIBS clFFT_LIBRARY clFFT_LIBRARIES)
-
-libfind_process(clFFT)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(clFFT DEFAULT_MSG 
+  CLFFT_LIBRARIES CLFFT_INCLUDE_DIRS
+)
+MARK_AS_ADVANCED(CLFFT_INCLUDE_DIRS)
 

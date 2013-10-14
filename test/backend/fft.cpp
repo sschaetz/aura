@@ -43,6 +43,6 @@ BOOST_AUTO_TEST_CASE(basic) {
     device_free(m1, d);
     device_free(m2, d);
   }
-  fft_finalize();
+  fft_terminate();
 }
 

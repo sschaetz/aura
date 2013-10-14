@@ -8,6 +8,8 @@
 #include <aura/detail/svec.hpp>
 #include <aura/backend/opencl/device.hpp>
 
+#include <clFFT.h>
+
 namespace aura {
 namespace backend_detail {
 namespace opencl {
@@ -86,24 +88,24 @@ public:
    * destroy fft
    */
   inline ~fft() {
-    device_->set();
-    AURA_CUFFT_SAFE_CALL(cufftDestroy(handle_));
-    device_->unset();
+    AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&inplace_handle_));
+    AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&outofplace_handle_));
   }
 
   /**
    * set feed
    */
   void set_feed(const feed & f) {
-    AURA_CUFFT_SAFE_CALL(cufftSetStream(handle_, f.get_stream()));
   }
 
   /**
    * return fft handle
    */
+#if 0
   const cufftHandle & get_handle() const {
     return handle_;
   }
+#endif
   
   /**
    * return fft type
@@ -112,23 +114,35 @@ public:
     return type_;
   }
 
-  /// map fft type to cufftType
-  cufftType map_type(fft::type type) {
+  /// map fft type to clfft_type 
+  clfft_type map_type(fft::type type) {
     switch(type) {
       case r2c: 
-        return CUFFT_R2C;
+        return clfft_type(CLFFT_SINGLE, 
+          CLFFT_REAL, 
+          CLFFT_COMPLEX_INTERLEAVED);
       case c2r: 
-        return CUFFT_C2R;
+        return clfft_type(CLFFT_SINGLE, 
+          CLFFT_COMPLEX_INTERLEAVED, 
+          CLFFT_REAL);
       case c2c: 
-        return CUFFT_C2C;
+        return clfft_type(CLFFT_SINGLE, 
+          CLFFT_COMPLEX_INTERLEAVED, 
+          CLFFT_COMPLEX_INTERLEAVED);
       case d2z: 
-        return CUFFT_D2Z;
+        return clfft_type(CLFFT_DOUBLE, 
+          CLFFT_REAL, 
+          CLFFT_COMPLEX_INTERLEAVED);
       case z2d: 
-        return CUFFT_Z2D;
+        return clfft_type(CLFFT_DOUBLE, 
+            CLFFT_COMPLEX_INTERLEAVED, 
+            CLFFT_REAL);
       case z2z: 
-        return CUFFT_Z2Z;
+        return clfft_type(CLFFT_DOUBLE, 
+          CLFFT_COMPLEX_INTERLEAVED, 
+          CLFFT_COMPLEX_INTERLEAVED);
       default:
-        return (cufftType)0;
+        return clfft_type(ENDPRECISION, ENDLAYOUT, ENDLAYOUT);
     }
   }
 
@@ -156,7 +170,9 @@ friend void fft_inverse(memory & dst, memory & src,
 
 /// initialize fft library
 inline void fft_initialize() {
-  clfftSetup();
+  clfftSetupData setupdata;
+  AURA_CLFFT_SAFE_CALL(clfftInitSetupData(&setupdata));
+  AURA_CLFFT_SAFE_CALL(clfftSetup(&setupdata));
 }
 /// finish using fft library and release all associated resources
 inline void fft_terminate() {
