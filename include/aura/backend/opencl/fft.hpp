@@ -61,6 +61,29 @@ public:
     std::size_t ostride = 1, std::size_t odist = 0) : device_(&d), 
     type_(type)
   {
+    // we need to create a default plan
+    AURA_CLFFT_SAFE_CALL(clfftCreateDefaultPlan(&inplace_handle_, 
+      device_->get_context(), dim.size(), &dim[0]));
+   
+    clfft_type temptype = map_type(type);
+
+    AURA_CLFFT_SAFE_CALL(clfftSetPlanPrecision(&inplace_handle_, 
+      std::get<0>(temptype)));
+    AURA_CLFFT_SAFE_CALL(clfftSetLayout(&inplace_handle_, 
+      std::get<1>(temptype), std::get<2>(temptype));
+   
+    // different result location, rest is the same
+    AURA_CLFFT_SAFE_CALL(clfftCopyPlan(&outofplace_handle_, 
+      device->get_context(), inplace_handle_);
+    
+    AURA_CLFFT_SAFE_CALL(clfftSetResultLocation(&inplace_handle_, 
+      CLFFT_INPLACE)); 
+    AURA_CLFFT_SAFE_CALL(clfftSetResultLocation(&outofplace_handle_, 
+      CLFFT_OUTOFPLACE));
+
+    // FIXME
+    // since we have no feed here we can not bake the plans, we need an
+    // extra method for that maybe
   }
 
   /**
@@ -189,7 +212,13 @@ inline void fft_terminate() {
  */
 inline void fft_forward(memory & dst, memory & src, 
   fft & plan, const feed & f) {
-
+  if(dst == src) {
+    AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_, 
+      CLFFT_FORWARD, 1, &f.get_stream(), 0, NULL, NULL, &src, NULL, NULL));
+  } else {
+    AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle, 
+      CLFFT_FORWARD, 1, &f.get_stream(), 0, NULL, NULL, &src, &dst, NULL));
+  }
 }
 
 
@@ -203,7 +232,13 @@ inline void fft_forward(memory & dst, memory & src,
  */
 inline void fft_inverse(memory & dst, memory & src, 
   fft & plan, const feed & f) {
-
+  if(dst == src) {
+    AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_, 
+      CLFFT_BACKWARD, 1, &f.get_stream(), 0, NULL, NULL, &src, NULL, NULL));
+  } else {
+    AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle, 
+      CLFFT_BACKWARD, 1, &f.get_stream(), 0, NULL, NULL, &src, &dst, NULL));
+  }
 }
 
 } // opencl 
