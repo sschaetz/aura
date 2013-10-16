@@ -13,8 +13,9 @@ namespace aura {
 namespace backend_detail {
 namespace cuda {
 
-typedef svec<int, 3> fft_dim;
-typedef svec<int, 3> fft_embed;
+typedef int fft_size;
+typedef svec<fft_size, 3> fft_dim;
+typedef svec<fft_size, 3> fft_embed;
 
 /**
  * fft class

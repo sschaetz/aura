@@ -14,8 +14,9 @@ namespace aura {
 namespace backend_detail {
 namespace opencl {
 
-typedef svec<int, 3> fft_dim;
-typedef svec<int, 3> fft_embed;
+typedef std::size_t fft_size;
+typedef svec<fft_size, 3> fft_dim;
+typedef svec<fft_size, 3> fft_embed;
 
 /**
  * fft class
@@ -63,22 +64,24 @@ public:
   {
     // we need to create a default plan
     AURA_CLFFT_SAFE_CALL(clfftCreateDefaultPlan(&inplace_handle_, 
-      device_->get_context(), dim.size(), &dim[0]));
-   
+      device_->get_context(), static_cast<clfftDim>(dim.size()), &dim[0]));
+
+    AURA_CLFFT_SAFE_CALL(clfftSetPlanBatchSize(inplace_handle_, batch));
+
     clfft_type temptype = map_type(type);
 
-    AURA_CLFFT_SAFE_CALL(clfftSetPlanPrecision(&inplace_handle_, 
+    AURA_CLFFT_SAFE_CALL(clfftSetPlanPrecision(inplace_handle_, 
       std::get<0>(temptype)));
-    AURA_CLFFT_SAFE_CALL(clfftSetLayout(&inplace_handle_, 
-      std::get<1>(temptype), std::get<2>(temptype));
+    AURA_CLFFT_SAFE_CALL(clfftSetLayout(inplace_handle_, 
+      std::get<1>(temptype), std::get<2>(temptype)));
    
     // different result location, rest is the same
     AURA_CLFFT_SAFE_CALL(clfftCopyPlan(&outofplace_handle_, 
-      device->get_context(), inplace_handle_);
+      device_->get_context(), inplace_handle_));
     
-    AURA_CLFFT_SAFE_CALL(clfftSetResultLocation(&inplace_handle_, 
+    AURA_CLFFT_SAFE_CALL(clfftSetResultLocation(inplace_handle_, 
       CLFFT_INPLACE)); 
-    AURA_CLFFT_SAFE_CALL(clfftSetResultLocation(&outofplace_handle_, 
+    AURA_CLFFT_SAFE_CALL(clfftSetResultLocation(outofplace_handle_, 
       CLFFT_OUTOFPLACE));
 
     // FIXME
@@ -214,10 +217,12 @@ inline void fft_forward(memory & dst, memory & src,
   fft & plan, const feed & f) {
   if(dst == src) {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_, 
-      CLFFT_FORWARD, 1, &f.get_stream(), 0, NULL, NULL, &src, NULL, NULL));
+      CLFFT_FORWARD, 1, const_cast<cl_command_queue*>(&f.get_stream()), 
+      0, NULL, NULL, &src, NULL, NULL));
   } else {
-    AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle, 
-      CLFFT_FORWARD, 1, &f.get_stream(), 0, NULL, NULL, &src, &dst, NULL));
+    AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle_, 
+      CLFFT_FORWARD, 1, const_cast<cl_command_queue*>(&f.get_stream()), 
+      0, NULL, NULL, &src, &dst, NULL));
   }
 }
 
@@ -234,10 +239,12 @@ inline void fft_inverse(memory & dst, memory & src,
   fft & plan, const feed & f) {
   if(dst == src) {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_, 
-      CLFFT_BACKWARD, 1, &f.get_stream(), 0, NULL, NULL, &src, NULL, NULL));
+      CLFFT_BACKWARD, 1, const_cast<cl_command_queue*>(&f.get_stream()), 
+      0, NULL, NULL, &src, NULL, NULL));
   } else {
-    AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle, 
-      CLFFT_BACKWARD, 1, &f.get_stream(), 0, NULL, NULL, &src, &dst, NULL));
+    AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle_, 
+      CLFFT_BACKWARD, 1, const_cast<cl_command_queue*>(&f.get_stream()), 
+      0, NULL, NULL, &src, &dst, NULL));
   }
 }
 

@@ -12,7 +12,7 @@ using namespace aura::backend;
 // _____________________________________________________________________________
 
 BOOST_AUTO_TEST_CASE(basic) {
-  init();
+  initialize();
   fft_initialize(); 
   int num = device_get_count();
   if(0 < num) {
