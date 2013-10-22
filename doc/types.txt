@@ -1,0 +1,11 @@
+Types
+=====
+
+The CUFFT and the clFFT library define size types differently.
+CUFFT uses int, clFFT uses size_t. Those types might not be
+compatible.
+
+We probably have to define a specific size type for this case
+that is typedefed differently for each library. Uses then have
+to cast their whatever-types probably explicitly to the specific
+size type.

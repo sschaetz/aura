@@ -93,7 +93,7 @@ public:
 
   /// get context 
   inline const cl_context & get_context() const {
-    return device_->get_context();;
+    return device_->get_context();
   }
 
   /// get stream
