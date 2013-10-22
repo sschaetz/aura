@@ -26,7 +26,9 @@
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/device.hpp>
 #include <aura/backend/opencl/feed.hpp>
+#if AURA_FFT_CLFFT
 #include <aura/backend/opencl/fft.hpp>
+#endif // AURA_FFT_CLFFT
 #include <aura/backend/opencl/grid.hpp>
 #include <aura/backend/opencl/init.hpp>
 #include <aura/backend/opencl/invoke.hpp>

@@ -24,3 +24,7 @@
 #define AURA_MAX_KERNEL_ARGS 12
 #endif // AURA_CONFIG_HPP 
 
+/// fft libraries
+#cmakedefine01 AURA_FFT_CLFFT
+#cmakedefine01 AURA_FFT_CUFFT
+
