@@ -97,6 +97,7 @@ public:
    */
   fft& operator=(BOOST_RV_REF(fft) f)
   {
+    finalize(); 
     device_ = f.device_;
     handle_ = f.handle_;
     type_ = f.type_;
@@ -109,12 +110,7 @@ public:
    * destroy fft
    */
   inline ~fft() {
-    if(empty_) {
-      return;
-    }
-    device_->set();
-    AURA_CUFFT_SAFE_CALL(cufftDestroy(handle_));
-    device_->unset();
+    finalize(); 
   }
 
   /**
@@ -163,6 +159,16 @@ protected:
   device * device_;
   
 private:
+  /// finalize object (called from dtor and move assign)
+  void finalize() {
+    if(empty_) {
+        return;
+    }
+    device_->set();
+    AURA_CUFFT_SAFE_CALL(cufftDestroy(handle_));
+    device_->unset();
+  }
+
   /// fft handle
   cufftHandle handle_;
 

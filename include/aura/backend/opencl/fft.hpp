@@ -45,8 +45,7 @@ public:
   /**
    * create empty fft object without device and stream
    */
-  inline explicit fft() { 
-    // FIXME 
+  inline explicit fft() : empty_(true) { 
   }
 
   /**
@@ -60,8 +59,9 @@ public:
     std::size_t istride = 1, std::size_t idist = 0,
     const fft_embed & oembed = fft_embed(),
     std::size_t ostride = 1, std::size_t odist = 0) : device_(&d), 
-    type_(type)
-  {
+    type_(type), empty_(false)
+  { 
+    // FIXME handle strides and embed etc.
     // we need to create a default plan
     AURA_CLFFT_SAFE_CALL(clfftCreateDefaultPlan(&inplace_handle_, 
       device_->get_context(), static_cast<clfftDim>(dim.size()), &dim[0]));
@@ -94,9 +94,11 @@ public:
    *
    * @param f fft to move here
    */
-  fft(BOOST_RV_REF(fft) f)
+  fft(BOOST_RV_REF(fft) f) :
+    device_(f.device_), inplace_handle_(f.inplace_handle_), 
+    outofplace_handle_(f.outofplace_handle_), empty_(false)
   {  
-    // FIXME 
+    f.empty_ = true; 
   }
 
   /**
@@ -106,7 +108,13 @@ public:
    */
   fft& operator=(BOOST_RV_REF(fft) f)
   {
-    // FIXME 
+    finalize();
+    device_ = f.device_;
+    inplace_handle_ = f.inplace_handle_;
+    outofplace_handle_ = f.outofplace_handle_;
+    type_ = f.type_;
+    empty_ = false;
+    f.empty_ = true; 
     return *this;
   }
 
@@ -114,8 +122,7 @@ public:
    * destroy fft
    */
   inline ~fft() {
-    AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&inplace_handle_));
-    AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&outofplace_handle_));
+    finalize();
   }
 
   /**
@@ -177,20 +184,32 @@ protected:
   device * device_;
   
 private:
-    /// in-place plan 
-   	clfftPlanHandle inplace_handle_; 
+  /// finalize object (called from dtor and move assign)
+  void finalize() {
+    if(empty_) {
+      return;
+    }
+    AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&inplace_handle_));
+    AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&outofplace_handle_));
+  }
 
-    /// out-of-place plan  
-   	clfftPlanHandle outofplace_handle_; 
+  /// in-place plan 
+  clfftPlanHandle inplace_handle_; 
 
-    /// fft type
-    type type_;
+  /// out-of-place plan  
+  clfftPlanHandle outofplace_handle_; 
 
-// give free functions access to device
-friend void fft_forward(memory & dst, memory & src, 
-  fft & plan, const feed & f);
-friend void fft_inverse(memory & dst, memory & src, 
-  fft & plan, const feed & f);
+  /// fft type
+  type type_;
+
+  /// empty marker
+  int empty_;
+
+  // give free functions access to device
+  friend void fft_forward(memory & dst, memory & src, 
+    fft & plan, const feed & f);
+  friend void fft_inverse(memory & dst, memory & src, 
+    fft & plan, const feed & f);
 
 };
 

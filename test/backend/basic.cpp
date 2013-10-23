@@ -11,7 +11,7 @@ using namespace aura::backend;
 // _____________________________________________________________________________
 
 BOOST_AUTO_TEST_CASE(basic) {
-  init();
+  initialize();
   int num = device_get_count();
   if(0 < num) {
     device d(0);  
@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(basic) {
 // _____________________________________________________________________________
 
 BOOST_AUTO_TEST_CASE(memorypingpong) {
-  init();
+  initialize();
   int num = device_get_count();
   if(0 < num) {
     device d(0);  

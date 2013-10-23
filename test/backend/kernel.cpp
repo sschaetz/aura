@@ -23,7 +23,7 @@ const char * kernel_file = "test/kernel.ptx";
 // _____________________________________________________________________________
 
 BOOST_AUTO_TEST_CASE(basic) {
-  init();
+  initialize();
   int num = device_get_count();
   if(0 < num) {
     device d(0); 
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(basic) {
 // invoke_
 // _____________________________________________________________________________
 BOOST_AUTO_TEST_CASE(invoke_) {
-  init();
+  initialize();
   int num = device_get_count();
   if(0 < num) {
     device d(0);  
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(invoke_) {
 // invoke_noarg
 // _____________________________________________________________________________
 BOOST_AUTO_TEST_CASE(invoke_noarg) {
-  init();
+  initialize();
   int num = device_get_count();
   if(0 < num) {
     device d(0);  
