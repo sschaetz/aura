@@ -18,6 +18,7 @@
 #include <aura/backend/cuda/kernel.hpp>
 #include <aura/backend/cuda/memory.hpp>
 #include <aura/backend/cuda/module.hpp>
+#include <aura/backend/cuda/p2p.hpp>
 
 #elif AURA_BACKEND_OPENCL
 

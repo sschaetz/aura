@@ -1,7 +1,11 @@
 AURA_ADD_TEST(backend/basic.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/feed.cpp ${AURA_BACKEND_LIBRARIES})
-AURA_ADD_TEST(backend/fft.cpp pthread
-  ${AURA_BACKEND_LIBRARIES} ${AURA_FFT_LIBRARIES})
+
+IF(NOT ${AURA_FFT_LIBRARIES} STREQUAL "")
+  AURA_ADD_TEST(backend/fft.cpp pthread
+    ${AURA_BACKEND_LIBRARIES} ${AURA_FFT_LIBRARIES})
+ENDIF()
+
 AURA_ADD_TEST(backend/kernel.cpp backend/kernel.cu 
   backend/kernel.cl ${AURA_BACKEND_LIBRARIES})
 

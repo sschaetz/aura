@@ -44,8 +44,7 @@ public:
    * @param f feed to move here
    */
   feed(BOOST_RV_REF(feed) f) : 
-    device_(f.device_), stream_(f.stream_)
-  {  
+    device_(f.device_), stream_(f.stream_) {  
     f.stream_ = (CUstream)feed::no_stream;
   }
 
@@ -54,8 +53,7 @@ public:
    *
    * @param f feed to move here
    */
-  feed& operator=(BOOST_RV_REF(feed) f) 
-  { 
+  feed& operator=(BOOST_RV_REF(feed) f) { 
     stream_ = f.stream_;
     f.stream_ = (CUstream)feed::no_stream;
     return *this;

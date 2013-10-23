@@ -44,8 +44,7 @@ public:
   /**
    * create empty fft object without device and stream
    */
-  inline explicit fft() { 
-    // FIXME 
+  inline explicit fft() : empty_(true) { 
   }
 
   /**
@@ -58,8 +57,8 @@ public:
     const fft_embed & iembed = fft_embed(),
     std::size_t istride = 1, std::size_t idist = 0,
     const fft_embed & oembed = fft_embed(),
-    std::size_t ostride = 1, std::size_t odist = 0) : device_(&d), 
-    type_(type)
+    std::size_t ostride = 1, std::size_t odist = 0) : 
+    device_(&d), type_(type), empty_(false)
   {
     device_->set();
     AURA_CUFFT_SAFE_CALL(
@@ -85,9 +84,10 @@ public:
    *
    * @param f fft to move here
    */
-  fft(BOOST_RV_REF(fft) f)
-  {  
-    // FIXME 
+  fft(BOOST_RV_REF(fft) f) :
+    device_(f.device_), handle_(f.handle_), type_(f.type_), empty_(false)
+  { 
+    f.empty_ = true;
   }
 
   /**
@@ -97,7 +97,11 @@ public:
    */
   fft& operator=(BOOST_RV_REF(fft) f)
   {
-    // FIXME 
+    device_ = f.device_;
+    handle_ = f.handle_;
+    type_ = f.type_;
+    empty_ = 0;
+    f.empty_ = 1; 
     return *this;
   }
 
@@ -105,6 +109,9 @@ public:
    * destroy fft
    */
   inline ~fft() {
+    if(empty_) {
+      return;
+    }
     device_->set();
     AURA_CUFFT_SAFE_CALL(cufftDestroy(handle_));
     device_->unset();
@@ -162,11 +169,14 @@ private:
   /// fft type
   type type_;
 
-// give free functions access to device
-friend void fft_forward(memory & dst, memory & src, 
-  fft & plan, const feed & f);
-friend void fft_inverse(memory & dst, memory & src, 
-  fft & plan, const feed & f);
+  /// empty marker
+  int empty_;
+
+  // give free functions access to device
+  friend void fft_forward(memory & dst, memory & src, 
+    fft & plan, const feed & f);
+  friend void fft_inverse(memory & dst, memory & src, 
+    fft & plan, const feed & f);
 
 };
 
