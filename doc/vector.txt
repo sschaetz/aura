@@ -1,0 +1,34 @@
+Vector
+======
+
+What should a device vector be called?
+
+dev_vector
+device_vector
+device_vec
+
+Probably device_vector will be nice. 
+The smart pointers library for example has shared_ptr and shared_array,
+the standard now has shared_ptr, weak_ptr etc. This would favour 
+device_vec but I still prefer device_vector.
+
+Market research:
+
+boost compute has
+boost::compute::vector<T, allocator>
+
+vexvl has
+vexcl::vector
+
+mtl4 has 
+mtl::vector::dense_vector
+that inherits from
+::mtl::detail::contiguous_memory_block
+
+paralution has
+LocalVector<T>
+that is used on a device after MoveToAccelerator is called.
+
+Thrust has
+thrust::device_vector
+
