@@ -142,6 +142,18 @@ inline std::size_t device_get_count() {
   return (std::size_t)num_devices;
 }
 
+/**
+ * print device info to stdout
+ */
+inline void print_device_info() {
+  for(std::size_t n=0; n<device_get_count(); n++) {
+    CUdevice device; 
+    AURA_CUDA_SAFE_CALL(cuDeviceGet(&device, n));
+    char device_name[400];
+    AURA_CUDA_SAFE_CALL(cuDeviceGetName(device_name, 400, device)); 
+    printf("%lu: %s\n", n, device_name); 
+  }
+}
 
 } // cuda
 } // backend_detail

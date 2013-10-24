@@ -170,6 +170,41 @@ inline int device_get_count() {
   return num_devices;
 }
 
+/**
+ * print device info to stdout
+ */
+inline void print_device_info() {
+  // get platforms
+  unsigned int num_platforms = 0;
+  AURA_OPENCL_SAFE_CALL(clGetPlatformIDs(0, 0, &num_platforms));
+  std::vector<cl_platform_id> platforms(num_platforms);
+  AURA_OPENCL_SAFE_CALL(clGetPlatformIDs(num_platforms, &platforms[0], 0));
+  
+  unsigned int num = 0;
+
+  // find device 
+  for(unsigned int i=0; i<num_platforms; i++) {
+    unsigned int num_devices_platform = 0;
+    AURA_OPENCL_SAFE_CALL(clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_ALL, 
+      0, 0, &num_devices_platform));
+    std::vector<cl_device_id> devices;
+    devices.reserve(num_devices_platform);
+    AURA_OPENCL_SAFE_CALL(clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_ALL, 
+      num_devices_platform, &devices[0], NULL));
+    for(unsigned int j=0; j<num_devices_platform; j++) {
+      std::size_t namelen;
+      AURA_OPENCL_SAFE_CALL(clGetDeviceInfo(devices[j], CL_DEVICE_NAME, 0, 
+        NULL, &namelen));
+      std::vector<char> name;
+      name.reserve(namelen);
+      AURA_OPENCL_SAFE_CALL(clGetDeviceInfo(devices[j], CL_DEVICE_NAME, 
+        namelen, &name[0], NULL));
+      printf("platform %u device %u (ordinal %u): %s\n", i, j, num, &name[0]);
+      num++;
+    }
+  }
+}
+
 
 } // opencl 
 } // backend_detail
