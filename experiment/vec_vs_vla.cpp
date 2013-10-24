@@ -1,7 +1,7 @@
 /**
  * compare the runtime of creating a std::vector and various alternatives
  * includes a variable number of copies of the object
- * result: constant size if fastest, dynamic is second, vector is slowest
+ * result: constant size is fastest, dynamic is second, vector is slowest
  */
 
 #include <vector>

@@ -1,3 +1,5 @@
+// run various micro-benchmarks (simple kernels) on all devices available
+
 #include <vector>
 #include <aura/backend.hpp>
 #include <aura/misc/benchmark.hpp>

@@ -54,7 +54,7 @@ void run_test(int size, device & d, feed & f) {
 
 
 int main(void) {
-  init();
+  initialize();
   int num = device_get_count();
   if(1 >= num) {
     printf("no devices found\n"); exit(0);

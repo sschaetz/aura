@@ -203,7 +203,7 @@ private:
   type type_;
 
   /// empty marker
-  int empty_;
+  bool empty_;
 
   // give free functions access to device
   friend void fft_forward(memory & dst, memory & src, 

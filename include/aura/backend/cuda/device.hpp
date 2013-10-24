@@ -25,15 +25,14 @@ public:
   /**
    * create empty device object without device and context
    */
-  inline explicit device() : 
-    device_(device::no_device), context_(device::no_context), pinned_(false) {}
+  inline explicit device() : empty_(true) {}
    
   /**
    * create device form ordinal, also creates a context
    *
    * @param ordinal device number
    */
-  inline explicit device(std::size_t ordinal) : pinned_(false) {
+  inline explicit device(std::size_t ordinal) : pinned_(false), empty_(false) {
     AURA_CUDA_SAFE_CALL(cuDeviceGet(&device_, ordinal));
     AURA_CUDA_SAFE_CALL(cuCtxCreate(&context_, 0, device_));
   }
@@ -42,9 +41,7 @@ public:
    * destroy device (context)
    */
   inline ~device() {
-    if(device::no_context != context_) {
-      AURA_CUDA_SAFE_CALL(cuCtxDestroy(context_));
-    }
+    finalize();
   }
 
   /**
@@ -55,9 +52,7 @@ public:
   device(BOOST_RV_REF(device) d) : 
     device_(d.device_), context_(d.context_), pinned_(d.pinned_)
   {  
-    d.device_ = device::no_device;
-    d.context_ = device::no_context;
-    d.pinned_ = false; 
+    d.empty_ = true;
   }
 
   /**
@@ -66,13 +61,13 @@ public:
    * @param d device to move here
    */
   device& operator=(BOOST_RV_REF(device) d) 
-  { 
+  {
+    finalize();
     device_ = d.device_;
     context_ = d.context_;
     pinned_ = d.pinned_;
-    d.device_ = device::no_device;
-    d.context_ = device::no_context;
-    d.pinned_ = false;
+    empty_ = false;
+    d.empty_ = true;
     return *this;
   }
 
@@ -115,7 +110,16 @@ public:
   inline const CUcontext & get_context() const {
     return context_; 
   }
-  
+
+private:
+  /// finalize object (called from dtor and move assign)
+  void finalize() {
+    if(empty_) {
+      return;
+    }
+    AURA_CUDA_SAFE_CALL(cuCtxDestroy(context_));
+  }
+
 private:
   /// device handle
   CUdevice device_;
@@ -123,15 +127,8 @@ private:
   CUcontext context_;
   /// flag indicating pinned or unpinned context
   bool pinned_;
-
-  /// const value indicating no device
-  static CUdevice const no_device = -1;
-
-  // bit of a hack, should be 
-  // static constexpr CUcontext no_context = 0;
-  /// const value indicationg no context
-  static int const no_context = 0; 
-
+  /// flag indicating empty object
+  bool empty_;
 };
   
 /**

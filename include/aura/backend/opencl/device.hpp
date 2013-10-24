@@ -28,15 +28,14 @@ public:
   /**
    * create empty device object without device and context
    */
-  inline explicit device() : 
-    device_(device::no_device), context_(device::no_context), pinned_(false) {}
+  inline explicit device() : empty_(true) {}
  
   /**
    * create device form ordinal, also creates a context
    *
    * @param ordinal device number
    */
-  inline device(int ordinal) : pinned_(false) {
+  inline device(int ordinal) : pinned_(false), empty_(false) {
     // get platforms
     unsigned int num_platforms = 0;
     AURA_OPENCL_SAFE_CALL(clGetPlatformIDs(0, 0, &num_platforms));
@@ -73,9 +72,7 @@ public:
   device(BOOST_RV_REF(device) d) : 
     device_(d.device_), context_(d.context_), pinned_(d.pinned_)
   {  
-    d.device_ = device::no_device;
-    d.context_ = device::no_context;
-    d.pinned_ = false; 
+    d.empty_ = true;
   }
 
   /**
@@ -85,12 +82,12 @@ public:
    */
   device& operator=(BOOST_RV_REF(device) d) 
   { 
+    finalize();
     device_ = d.device_;
     context_ = d.context_;
     pinned_ = d.pinned_;
-    d.device_ = device::no_device;
-    d.context_ = device::no_context;
-    d.pinned_ = false;
+    empty_ = false;
+    d.empty_ = true;
     return *this;
   }
 
@@ -98,8 +95,8 @@ public:
    * destroy device (context)
    */
   inline ~device() {
-    AURA_OPENCL_SAFE_CALL(clReleaseContext(context_));
-  }
+    finalize();
+      }
 
 
   /// make device active
@@ -129,6 +126,14 @@ public:
   inline const cl_context & get_context() const {
     return context_; 
   }
+private:
+  /// finalize object (called from dtor and move assign)
+  void finalize() {
+    if(empty_) {
+      return;
+    }
+    AURA_OPENCL_SAFE_CALL(clReleaseContext(context_));
+  }
 
 private:
   /// device handle
@@ -137,15 +142,8 @@ private:
   cl_context context_;
   /// flag indicating pinned or unpinned context
   bool pinned_;
-
-  /// const value indicating no device
-  static int const no_device = 0;
-
-  // bit of a hack, should be 
-  // static constexpr cl_context no_context = -1;
-  /// const value indicationg no context
-  static int const no_context = 0; 
-
+  /// empty marker
+  int empty_;
 };
  
 

@@ -1,5 +1,6 @@
 // run 2D ffts on all GPUs in the system continuously
 // designed to stress-test a (multi-)GPU system
+// used to test Titan error, now fixed by Nvidia through driver update
 
 #include <vector>
 #include <cufft.h>
@@ -53,7 +54,7 @@ void run_test(int size, device & d, feed & f) {
 
 
 int main(void) {
-  inititalize();
+  initialize();
   int num = device_get_count();
   if(1 >= num) {
     printf("no devices found\n"); exit(0);

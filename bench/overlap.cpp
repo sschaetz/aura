@@ -1,3 +1,17 @@
+// idea of benchmark: try to see if we can overlap a p2p kernel and FFT 
+//
+// use 4 devices
+//
+// in the same feed:
+// run 2D FFTs (variable batchsize) on all
+// run a all to all copy kernel
+//
+// try the same with different feeds
+// vary the batch size to see if overlap performance changes
+// 
+// result: apparently it does not work as expected, almost no overlaping can
+// be observed
+
 
 #include <complex>
 #include <vector>
@@ -17,18 +31,6 @@ typedef std::complex<float> cfloat;
 
 // run each subtest for a specific number of seconds
 const int duration_per_test = 2*1e6;
-
-// idea of benchmark: try to see if we can overlap a p2p kernel and FFT 
-//
-// use 4 devices
-//
-// in the same feed:
-// run 2D FFTs (variable batchsize) on all
-// run a all to all copy kernel
-//
-// try the same with different feeds
-// vary the batch size to see if overlap performance changes
-//
 
 void bench_fft_only(std::vector<memory> & fftmem1, 
     std::vector<memory> & fftmem2, 

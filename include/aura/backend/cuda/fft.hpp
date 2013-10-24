@@ -2,7 +2,7 @@
 #define AURA_BACKEND_CUDA_FFT_HPP
 
 #include <boost/move/move.hpp>
-#include <cuda.h>
+#include <cuda.h> 
 #include <cufft.h>
 #include <aura/backend/cuda/call.hpp>
 #include <aura/backend/cuda/memory.hpp>
@@ -101,7 +101,7 @@ public:
     device_ = f.device_;
     handle_ = f.handle_;
     type_ = f.type_;
-    empty_ = 0;
+    empty_ = false;
     f.empty_ = 1; 
     return *this;
   }
@@ -154,10 +154,6 @@ public:
     }
   }
 
-protected:
-  /// device handle
-  device * device_;
-  
 private:
   /// finalize object (called from dtor and move assign)
   void finalize() {
@@ -169,6 +165,11 @@ private:
     device_->unset();
   }
 
+protected:
+  /// device handle
+  device * device_;
+  
+private:
   /// fft handle
   cufftHandle handle_;
 
@@ -176,7 +177,7 @@ private:
   type type_;
 
   /// empty marker
-  int empty_;
+  bool empty_;
 
   // give free functions access to device
   friend void fft_forward(memory & dst, memory & src, 

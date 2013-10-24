@@ -23,7 +23,7 @@ public:
   /**
    * create empty feed object without device and stream
    */
-  inline explicit feed() : device_(0), stream_((CUstream)feed::no_stream) {}
+  inline explicit feed() : empty_(true) {}
 
   /**
    * create device feed for device
@@ -32,7 +32,7 @@ public:
    *
    * const device & is not allowed since an actual instance is needed
    */
-  inline explicit feed(device & d) : device_(&d) {
+  inline explicit feed(device & d) : device_(&d), empty_(false) {
     device_->set();
     AURA_CUDA_SAFE_CALL(cuStreamCreate(&stream_, 0 /*CU_STREAM_NON_BLOCKING*/));
     device_->unset(); 
@@ -44,8 +44,8 @@ public:
    * @param f feed to move here
    */
   feed(BOOST_RV_REF(feed) f) : 
-    device_(f.device_), stream_(f.stream_) {  
-    f.stream_ = (CUstream)feed::no_stream;
+    device_(f.device_), stream_(f.stream_), empty_(false) {  
+    f.empty_ = true;
   }
 
   /**
@@ -54,8 +54,10 @@ public:
    * @param f feed to move here
    */
   feed& operator=(BOOST_RV_REF(feed) f) { 
+    finalize();
     stream_ = f.stream_;
-    f.stream_ = (CUstream)feed::no_stream;
+    empty_ = false;
+    f.empty_ = true; 
     return *this;
   }
 
@@ -63,11 +65,7 @@ public:
    * destroy feed
    */
   inline ~feed() {
-    if((CUstream)feed::no_stream != stream_) {
-      device_->set();
-      AURA_CUDA_SAFE_CALL(cuStreamDestroy(stream_));
-      device_->unset(); 
-    }
+    finalize(); 
   }
   
   /**
@@ -104,18 +102,24 @@ public:
     return stream_;
   }
 
+private:
+  /// finalize object (called from dtor and move assign)
+  void finalize() {
+    if(empty_) {
+      return;
+    }
+    device_->set();
+    AURA_CUDA_SAFE_CALL(cuStreamDestroy(stream_));
+    device_->unset(); 
+  }
 
 private:
   /// reference to device the feed was created for
   device * device_;
   /// stream handle
   CUstream stream_;
-
-  // 0 is probably not ok for CUDA, it is the default stream
-  // we're relying here on implementation details of CUDA
-  // this might not be the best way to do this
-  /// const value indicating no stream
-  static const int no_stream = -1;
+  /// flag indicating empty object
+  bool empty_;
 };
 
 /**

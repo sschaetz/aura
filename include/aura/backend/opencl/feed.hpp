@@ -23,7 +23,7 @@ public:
   /**
    * create empty feed object without device and stream
    */
-  inline explicit feed() : device_(0), stream_((cl_command_queue)feed::no_stream) {}
+  inline explicit feed() : empty_(true) {}
   
   /**
    * create device feed for device
@@ -32,7 +32,7 @@ public:
    *
    * const device & is not allowed since an actual instance is needed
    */
-  inline feed(device & d) : device_(&d) {
+  inline feed(device & d) : device_(&d), empty_(false) {
     int errorcode = 0;
     stream_ = clCreateCommandQueue(device_->get_context(), 
       device_->get_device(), 0, &errorcode);
@@ -45,9 +45,8 @@ public:
    * @param f feed to move here
    */
   feed(BOOST_RV_REF(feed) f) : 
-    device_(f.device_), stream_(f.stream_)
-  {  
-    f.stream_ = (cl_command_queue)feed::no_stream;
+    device_(f.device_), stream_(f.stream_), empty_(false) {  
+    f.empty_ = true;
   }
 
   /**
@@ -55,10 +54,11 @@ public:
    *
    * @param f feed to move here
    */
-  feed& operator=(BOOST_RV_REF(feed) f) 
-  { 
+  feed& operator=(BOOST_RV_REF(feed) f) { 
+    finalize();
     stream_ = f.stream_;
-    f.stream_ = (cl_command_queue)feed::no_stream;
+    empty_ = false;
+    f.empty_ = false;
     return *this;
   }
 
@@ -66,7 +66,7 @@ public:
    * destroy feed
    */
   inline ~feed() {
-    AURA_OPENCL_SAFE_CALL(clReleaseCommandQueue(stream_)); 
+    finalize();
   }
   
   /**
@@ -100,16 +100,23 @@ public:
   inline const cl_command_queue & get_stream() const {
     return stream_;
   }
-
+  
+private:
+  /// finalize object (called from dtor and move assign)
+  void finalize() {
+    if(empty_) {
+      return;
+    }
+    AURA_OPENCL_SAFE_CALL(clReleaseCommandQueue(stream_)); 
+  }
 
 private:
   /// reference to device the feed was created for
   device * device_;
   /// stream handle
   cl_command_queue stream_;
-  
-  /// const value indicating no stream
-  static const int no_stream = 0;
+  /// empty marker
+  bool empty_;
 };
 
 /**
