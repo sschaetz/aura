@@ -11,6 +11,7 @@
 // 
 // result: apparently it does not work as expected, almost no overlaping can
 // be observed
+//
 
 
 #include <complex>
@@ -90,6 +91,44 @@ void bench_overlap_diff_feed(std::vector<memory> & fftmem1,
   std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
 }
 
+void bench_overlap_diff_feed_2(std::vector<memory> & fftmem1, 
+    std::vector<memory> & fftmem2, 
+    std::vector<memory> & p2pmem1, 
+    std::vector<memory> & p2pmem2, 
+    std::vector<fft> & ffth, 
+    std::vector<kernel> & kernels, 
+    std::vector<feed> & feeds1,
+    std::vector<feed> & feeds2,
+    std::size_t dim) {
+  
+  fft_forward(fftmem1[0], fftmem2[0], ffth[0], feeds2[0]);
+  fft_forward(fftmem1[1], fftmem2[1], ffth[1], feeds2[1]);
+  fft_forward(fftmem1[2], fftmem2[2], ffth[2], feeds2[2]);
+  fft_forward(fftmem1[3], fftmem2[3], ffth[3], feeds2[3]);
+  
+  // 0 + 1
+  invoke(kernels[0], grid(dim/2), block(dim/2), 
+    args(p2pmem1[0], p2pmem2[0], p2pmem2[0+1]), feeds1[0]);
+  // 2+3
+  invoke(kernels[2], grid(dim/2), block(dim/2), 
+    args(p2pmem1[2], p2pmem2[2], p2pmem2[2+1]), feeds1[2]);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  // 01 + 23 
+  invoke(kernels[0], grid(dim/2), block(dim/2), 
+    args(p2pmem2[0], p2pmem1[0], p2pmem1[2]), feeds1[0]);
+  // 23 + 01 
+  invoke(kernels[2], grid(dim/2), block(dim/2), 
+    args(p2pmem2[2], p2pmem1[2], p2pmem1[0]), feeds1[2]);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  invoke(kernels[1], grid(dim/2), block(dim/2), 
+    args(p2pmem1[1], p2pmem1[1], p2pmem2[0]), feeds1[1]);
+  invoke(kernels[3], grid(dim/2), block(dim/2), 
+    args(p2pmem1[3], p2pmem1[3], p2pmem2[2]), feeds1[3]);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  
+  std::for_each(feeds2.begin(), feeds2.end(), &wait_for);
+}
+
 void bench_overlap(std::vector<device> & devices, 
   std::vector<feed> & feeds1, std::vector<feed> & feeds2,  
   std::size_t dim, std::size_t batch) {
@@ -118,10 +157,12 @@ void bench_overlap(std::vector<device> & devices,
 
   // create kernel handle
   std::vector<module> modules(devices.size());
-  std::vector<kernel> kernels(devices.size());
+  std::vector<kernel> kernels_2(devices.size());
+  std::vector<kernel> kernels_4(devices.size());
   for(std::size_t n=0; n<devices.size(); n++) {
     modules[n] = create_module_from_file(kernel_file, devices[n]); 
-    kernels[n] = create_kernel(modules[n], "p2p");
+    kernels_2[n] = create_kernel(modules[n], "p2p_2");
+    kernels_4[n] = create_kernel(modules[n], "p2p_4");
   }
 
   // enable p2p communication
@@ -134,27 +175,33 @@ void bench_overlap(std::vector<device> & devices,
 
   // warmup run 
   bench_overlap_same_feed(fftmem1, fftmem2, p2pmem1, p2pmem2, 
-    ffth, kernels, feeds1, feeds2, dim);
+    ffth, kernels_4, feeds1, feeds2, dim);
   // synchronize
   std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
   
   MGPU_BENCHMARK(bench_fft_only(fftmem1, fftmem2, p2pmem1, p2pmem1, 
-      ffth, kernels, feeds1, feeds2, dim),
+      ffth, kernels_4, feeds1, feeds2, dim),
     duration_per_test, min, max, mean, stdev, num);
   printf("%s: GPUs num %lu min %f max %f mean %f stdev %f\n", 
     "bench_fft_only", num, min, max, mean, stdev);
   
   MGPU_BENCHMARK(bench_overlap_same_feed(fftmem1, fftmem2, p2pmem1, p2pmem1, 
-      ffth, kernels, feeds1, feeds2, dim),
+      ffth, kernels_4, feeds1, feeds2, dim),
     duration_per_test, min, max, mean, stdev, num);
   printf("%s: GPUs num %lu min %f max %f mean %f stdev %f\n", 
     "bench_overlap_same_feed", num, min, max, mean, stdev);
   
   MGPU_BENCHMARK(bench_overlap_diff_feed(fftmem1, fftmem2, p2pmem1, p2pmem1, 
-      ffth, kernels, feeds1, feeds2, dim),
+      ffth, kernels_4, feeds1, feeds2, dim),
     duration_per_test, min, max, mean, stdev, num);
   printf("%s: GPUs num %lu min %f max %f mean %f stdev %f\n", 
     "bench_overlap_diff_feed", num, min, max, mean, stdev);
+ 
+  MGPU_BENCHMARK(bench_overlap_diff_feed_2(fftmem1, fftmem2, p2pmem1, p2pmem1, 
+      ffth, kernels_2, feeds1, feeds2, dim),
+    duration_per_test, min, max, mean, stdev, num);
+  printf("%s: GPUs num %lu min %f max %f mean %f stdev %f\n", 
+    "bench_overlap_diff_feed_2", num, min, max, mean, stdev);
   
   for(std::size_t n=0; n<devices.size(); n++) {
     device_free(fftmem1[n], devices[n]);
