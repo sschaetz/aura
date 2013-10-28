@@ -1,10 +1,16 @@
 Todo
 ====
 
-Missing parameters for functions:
+Maybe remove th empty_ flag and replace by nullptr to device, per convention
+if a device resource has a nullptr as device it is neither initialized 
+nor usable.
 
+All types that can be empty should have the bool operator to evaluate to
+false if they are empty.
 
+Missing parameters for functions - many!
 
+Done:
 The kernel calling mechanism should be sanitized, probably with runtime
 argument sizes instead of compile time. This reduces the number of functions
 we have and the number of error messages we generate in case of an error

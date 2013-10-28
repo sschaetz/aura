@@ -6,6 +6,12 @@ What should a device vector be called?
 dev_vector
 device_vector
 device_vec
+memory
+device_memory
+dev_memory
+memory_dev
+device_array
+device_table
 
 Probably device_vector will be nice. 
 The smart pointers library for example has shared_ptr and shared_array,
@@ -32,3 +38,41 @@ that is used on a device after MoveToAccelerator is called.
 Thrust has
 thrust::device_vector
 
+Martins recon toolkit does not have a vector nor a device ptr, it
+has functions and pointers to memory. It uses backend functions to check
+if a pointer lives on the device and dispatches at runtime device or host
+functions
+
+AGILE has
+GPUVector and GPUMatrix
+
+nt2 has
+table<T>
+
+codeare uses ViennaCL
+ViennaCL has 
+viennacl::vector 
+(that can live on host and device)
+and uses a shared ptr to handle memory behind the scenes, this
+allows them to copy references to memory around that are still
+valid even if the original vector goes out of scope
+
+
+Memory Management
+=================
+
+How doe other projects handle memory? Do they have device pointer?
+
+should it be a
+
+device_ptr<T>, i.e. aura::backend::device_ptr<T>
+remote_ptr<T>
+ptr<T>, i.e. aura::backend::ptr<T>
+
+
+Should it be reference counted? I think not, too much overhead.
+It needs the actual pointer, a device/context (pointer to device)
+and in the case of OpenCL it requires an offset.
+
+I think this type is needed. It will allow type-safety from the
+get-go since this type follows a device_malloc<T> of course.

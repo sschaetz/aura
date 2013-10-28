@@ -1,0 +1,7 @@
+Pipes
+=====
+
+OpenCL 2.0 seems to have pipes. Similar to what is 
+planned to be implemented here. This concept can also
+be implemented using remote iterators.
+
