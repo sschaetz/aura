@@ -100,32 +100,72 @@ void bench_overlap_diff_feed_2(std::vector<memory> & fftmem1,
     std::vector<feed> & feeds1,
     std::vector<feed> & feeds2,
     std::size_t dim) {
-  
+  /* 
   fft_forward(fftmem1[0], fftmem2[0], ffth[0], feeds2[0]);
   fft_forward(fftmem1[1], fftmem2[1], ffth[1], feeds2[1]);
   fft_forward(fftmem1[2], fftmem2[2], ffth[2], feeds2[2]);
   fft_forward(fftmem1[3], fftmem2[3], ffth[3], feeds2[3]);
-  
+  */ 
   // 0 + 1
   invoke(kernels[0], grid(dim/2), block(dim/2), 
     args(p2pmem1[0], p2pmem2[0], p2pmem2[0+1]), feeds1[0]);
+  invoke(kernels[1], grid(dim/2), block(dim/2), 
+    args(p2pmem1[1], p2pmem2[1], p2pmem2[1-1]), feeds1[1]);
   // 2+3
   invoke(kernels[2], grid(dim/2), block(dim/2), 
     args(p2pmem1[2], p2pmem2[2], p2pmem2[2+1]), feeds1[2]);
+  invoke(kernels[3], grid(dim/2), block(dim/2), 
+    args(p2pmem1[3], p2pmem2[3], p2pmem2[3-1]), feeds1[3]);
   std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
   // 01 + 23 
   invoke(kernels[0], grid(dim/2), block(dim/2), 
     args(p2pmem2[0], p2pmem1[0], p2pmem1[2]), feeds1[0]);
   // 23 + 01 
-  invoke(kernels[2], grid(dim/2), block(dim/2), 
-    args(p2pmem2[2], p2pmem1[2], p2pmem1[0]), feeds1[2]);
+  invoke(kernels[3], grid(dim/2), block(dim/2), 
+    args(p2pmem2[3], p2pmem1[3], p2pmem1[1]), feeds1[3]);
   std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
   invoke(kernels[1], grid(dim/2), block(dim/2), 
-    args(p2pmem1[1], p2pmem1[1], p2pmem2[0]), feeds1[1]);
-  invoke(kernels[3], grid(dim/2), block(dim/2), 
-    args(p2pmem1[3], p2pmem1[3], p2pmem2[2]), feeds1[3]);
+    args(p2pmem2[1], p2pmem2[1], p2pmem2[0]), feeds1[1]);
+  invoke(kernels[2], grid(dim/2), block(dim/2), 
+    args(p2pmem2[2], p2pmem2[2], p2pmem2[3]), feeds1[2]);
+  
   std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
   
+  std::for_each(feeds2.begin(), feeds2.end(), &wait_for);
+}
+
+void bench_overlap_diff_feed_copy_api(std::vector<memory> & fftmem1, 
+    std::vector<memory> & fftmem2, 
+    std::vector<memory> & p2pmem1, 
+    std::vector<memory> & p2pmem2, 
+    std::vector<fft> & ffth, 
+    std::vector<kernel> & kernels, 
+    std::vector<feed> & feeds1,
+    std::vector<feed> & feeds2,
+    std::size_t dim) {
+  
+  std::size_t s = (dim/2)*(dim/2)*sizeof(cfloat); 
+  fft_forward(fftmem1[0], fftmem2[0], ffth[0], feeds2[0]);
+  fft_forward(fftmem1[1], fftmem2[1], ffth[1], feeds2[1]);
+  fft_forward(fftmem1[2], fftmem2[2], ffth[2], feeds2[2]);
+  fft_forward(fftmem1[3], fftmem2[3], ffth[3], feeds2[3]);
+
+  // run 2d copy kernel
+  copy(p2pmem1[0], p2pmem1[1], s, feeds1[0]);
+  copy(p2pmem1[1], p2pmem1[0], s, feeds1[1]);
+  copy(p2pmem1[2], p2pmem1[3], s, feeds1[2]);
+  copy(p2pmem1[3], p2pmem1[2], s, feeds1[3]);
+  // run addition kernel
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  copy(p2pmem2[0], p2pmem1[3], s, feeds1[0]);
+  copy(p2pmem2[2], p2pmem1[1], s, feeds1[1]);
+  // run addition kernel
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  copy(p2pmem2[1], p2pmem1[0], s, feeds1[0]);
+  copy(p2pmem2[3], p2pmem1[2], s, feeds1[3]);
+  // run addition kernel
+  
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
   std::for_each(feeds2.begin(), feeds2.end(), &wait_for);
 }
 
@@ -202,8 +242,13 @@ void bench_overlap(std::vector<device> & devices,
     duration_per_test, min, max, mean, stdev, num);
   printf("%s: GPUs num %lu min %f max %f mean %f stdev %f\n", 
     "bench_overlap_diff_feed_2", num, min, max, mean, stdev);
-  
-  for(std::size_t n=0; n<devices.size(); n++) {
+  MGPU_BENCHMARK(bench_overlap_diff_feed_copy_api(fftmem1, fftmem2, p2pmem1, 
+      p2pmem1, ffth, kernels_2, feeds1, feeds2, dim),
+    duration_per_test, min, max, mean, stdev, num);
+  printf("%s: GPUs num %lu min %f max %f mean %f stdev %f\n", 
+    "bench_overlap_diff_feed_copy_api", num, min, max, mean, stdev);
+
+    for(std::size_t n=0; n<devices.size(); n++) {
     device_free(fftmem1[n], devices[n]);
     device_free(fftmem2[n], devices[n]);
     device_free(p2pmem1[n], devices[n]);

@@ -100,6 +100,7 @@ void bench_onearg(std::vector<device> & devices,
 
 int main(void) {
   initialize();
+  print_device_info();
   std::size_t num = device_get_count();
 
   std::vector<device> devices;
