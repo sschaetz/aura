@@ -1,7 +1,6 @@
 Todo
 ====
 
-
 Tests run on device 0 most of the time, for OpenCL this is often
 the CPU, so we're not really testing the device. Maybe we should
 be able to define on which device ordinal to run tests.
@@ -9,10 +8,15 @@ be able to define on which device ordinal to run tests.
 Missing parameters for functions:
 Plenty backend parameters are not exposed at the moment
 
+Maybe remove the empty_ flag and replace by nullptr to device, per convention
+if a device resource has a nullptr as device it is neither initialized 
+nor usable.
+
+All types that can be empty should have the bool operator to evaluate to
+false if they are empty.
 
 
 Done:
-
 The kernel calling mechanism should be sanitized, probably with runtime
 argument sizes instead of compile time. This reduces the number of functions
 we have and the number of error messages we generate in case of an error
