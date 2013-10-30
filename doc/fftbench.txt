@@ -1,0 +1,16 @@
+FFTBench
+========
+
+God, I hope this is the last FFT benchmark code I will ever write.
+
+We want to specify:
+* runtime per single test in seconds
+* types: fwd, bwd, in-place, out-of-place
+* size as a range, i.e. 3D: 200:+1:300,200:+2:300,50
+* batch size as a range
+* list of device ordinals the test should run on
+* consecutive or parallel execution in case of multiple devices
+
+Is this overkill? Might be...
+I can use the range thing for all benchmarks though.
+
