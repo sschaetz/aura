@@ -102,9 +102,9 @@ public:
    */
   inline void debug__()
   {
-    for(int i=0; i<size_; i++)
+    for(std::size_t i=0; i<size_; i++)
     {
-      printf("%d: %d\n", i, dim_[i]);
+      printf("%lu: %lu\n", i, dim_[i]);
     }
   }
 

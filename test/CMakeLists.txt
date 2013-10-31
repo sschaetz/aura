@@ -17,4 +17,5 @@ AURA_ADD_TEST(misc/profile.cpp pthread)
 # a C++ library that exports C functions
 ADD_LIBRARY(cprofile ${PROJECT_SOURCE_DIR}/source/misc/cprofile.cpp)
 AURA_ADD_TEST(misc/cprofile.c cprofile pthread)
+AURA_ADD_TEST(misc/sequence.cpp)
 

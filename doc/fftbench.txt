@@ -11,6 +11,22 @@ We want to specify:
 * list of device ordinals the test should run on
 * consecutive or parallel execution in case of multiple devices
 
-Is this overkill? Might be...
+Is this overkill? Might be.
 I can use the range thing for all benchmarks though.
+
+The range handling can be some generic thing, what should it be called?
+
+range_handler
+range_parser
+range_generator
+range_gen
+extent_generator
+extent_handler
+extent_gen
+sequence_generator
+nsequence_generator
+sequence
+
+sequence_generator makes sense but is rather bulky,
+let's try sequence and see if it works.
 
