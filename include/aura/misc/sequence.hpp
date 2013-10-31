@@ -2,8 +2,10 @@
 #define AURA_MISC_SEQUENCE_HPP
 
 #include <stdio.h>
+#include <cctype>
 #include <cstdlib>
 #include <vector>
+#include <cmath>
 #include <aura/error.hpp>
 #include <aura/detail/svec.hpp>
 
@@ -12,12 +14,15 @@ namespace aura {
 template <std::size_t max_size_>
 struct sequence {
 
+  /// default ctor
+  inline sequence() {}
+  
   /**
    * parse sequence strings like:
    *
    * 4:+1:10
-   * 4:-1:3;2:*2:32
-   * start-dim0:op arg:stop-dim0;start-dim1:op arg:stop-dim1
+   * 4:-1:3,2:*2:32
+   * start-dim0:op arg:stop-dim0,start-dim1:op arg:stop-dim1
    *
    * and generate parser that give the correct sequence
    */
@@ -34,7 +39,7 @@ struct sequence {
         n = numstore;
       }
       
-      if(*c == ':' || *c == ';' || *c == '\0') {
+      if(*c == ':' || *c == ',' || *c == '\0') {
         if(state == 0) {
           start_.push_back(atoi(numstore));          
           cur_.push_back(atoi(numstore));
@@ -61,7 +66,7 @@ struct sequence {
 
   /// rewind to starting position
   inline void rewind() {
-    std::copy(&start_[0], &start_[start_.size()-1], &cur_[0]);
+    std::copy(&start_[0], &start_[start_.size()], &cur_[0]);
   }
 
   /**
@@ -101,6 +106,19 @@ struct sequence {
       }
     }
     return ret; 
+  }
+
+  // get the number of elements in the sequence
+  std::size_t size() {
+    std::size_t s = 0;
+    bool good = false;
+    std::tie(std::ignore, good) = next();
+    while(good) {
+      s++;
+      std::tie(std::ignore, good) = next();
+    }
+    rewind();
+    return s;
   }
 
   /// current values for each dimension

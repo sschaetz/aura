@@ -25,7 +25,10 @@ public:
   /**
    * create empty device object without device and context
    */
-  inline explicit device() : empty_(true) {}
+  inline explicit device() : empty_(true) {
+    printf("Device ctor empty %lx\n", &device_);
+    fflush(stdout);
+  }
    
   /**
    * create device form ordinal, also creates a context
@@ -33,6 +36,8 @@ public:
    * @param ordinal device number
    */
   inline explicit device(std::size_t ordinal) : pinned_(false), empty_(false) {
+    printf("Device ctor %lx\n", &device_);
+    fflush(stdout);
     AURA_CUDA_SAFE_CALL(cuDeviceGet(&device_, ordinal));
     AURA_CUDA_SAFE_CALL(cuCtxCreate(&context_, 0, device_));
   }
@@ -41,6 +46,8 @@ public:
    * destroy device (context)
    */
   inline ~device() {
+    printf("Device dtor %lx\n", &device_);
+    fflush(stdout);
     finalize();
   }
 
@@ -51,7 +58,9 @@ public:
    */
   device(BOOST_RV_REF(device) d) : 
     device_(d.device_), context_(d.context_), pinned_(d.pinned_)
-  {  
+  { 
+    printf("Device move ctor %lx (other %lx)\n", &device_, &d.device_);
+    fflush(stdout);
     d.empty_ = true;
   }
 
@@ -62,6 +71,8 @@ public:
    */
   device& operator=(BOOST_RV_REF(device) d) 
   {
+    printf("Device move assign %lx (other %lx)\n", &device_, &d.device_);
+    fflush(stdout);
     finalize();
     device_ = d.device_;
     context_ = d.context_;

@@ -16,7 +16,7 @@ namespace aura
 /**
 * @brief svec small vector class
 */
-template <typename T, std::size_t max_size_>
+template <typename T, std::size_t max_size_ = AURA_SVEC_MAX_SIZE>
 class svec 
 {
 

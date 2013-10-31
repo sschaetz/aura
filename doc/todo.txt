@@ -1,6 +1,10 @@
 Todo
 ====
 
+There is something weird when putting devices and feeds in vectors
+without reserving space beforehand. The move thing does not seem
+to work!
+
 Tests run on device 0 most of the time, for OpenCL this is often
 the CPU, so we're not really testing the device. Maybe we should
 be able to define on which device ordinal to run tests.

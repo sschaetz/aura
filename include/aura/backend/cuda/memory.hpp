@@ -14,8 +14,10 @@ namespace cuda {
 
 
 /// memory handle
-typedef CUdevicememory_ memory;
+typedef CUdeviceptr memory;
 
+#if 0
+typedef CUdevicememory memory;
 // FIXME: let's assume we can do pointer arithmetic with CUdevicememory_
 
 template <typename T>
@@ -182,7 +184,7 @@ private:
   device * device_;
 
 };
-
+#endif
 
 
 /**
