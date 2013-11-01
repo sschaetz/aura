@@ -1,0 +1,8 @@
+Guidelines
+==========
+
+How should comments be written?
+* don't write stupid comments like
+  /// increment i
+  T increment(T i) {}
+

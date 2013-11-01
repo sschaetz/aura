@@ -53,3 +53,20 @@ BOOST_AUTO_TEST_CASE(multiple) {
   }
 }
 
+// multiple vector
+// check if we can properly move device and feed
+// _____________________________________________________________________________
+
+BOOST_AUTO_TEST_CASE(multiple_vector) {
+  initialize();
+  int num = device_get_count();
+  num = 4; 
+  std::vector<device> devices;
+  std::vector<feed> feeds;
+  for(int n=0; n<num; n++) {
+    devices.push_back(device(n));
+    feeds.push_back(feed(devices[n]));
+  }
+}
+
+

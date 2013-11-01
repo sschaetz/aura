@@ -11,7 +11,9 @@
 
 namespace aura {
 
-template <std::size_t max_size_>
+/// generate a sequence of tuples, defined by a sequence string
+/// T must be a numeric type
+template <typename T, std::size_t max_size_>
 struct sequence {
 
   /// default ctor
@@ -73,9 +75,9 @@ struct sequence {
    * get the next values of the sequence, return the sequence and true
    * if the end was not reached yet
    */
-  inline std::pair<svec<std::size_t, max_size_>, bool> next() {
+  inline std::pair<svec<T, max_size_>, bool> next() {
 
-    std::pair<svec<std::size_t, max_size_>, bool> ret(cur_, false); 
+    std::pair<svec<T, max_size_>, bool> ret(cur_, false); 
     // check if end was reached
     for(std::size_t i=0; i<cur_.size(); i++) {
       if(cur_[i] >= end_[i]) {
@@ -122,15 +124,15 @@ struct sequence {
   }
 
   /// current values for each dimension
-  svec<std::size_t, max_size_> cur_; 
+  svec<T, max_size_> cur_; 
   /// current values for each dimension
-  svec<std::size_t, max_size_> start_; 
+  svec<T, max_size_> start_; 
   /// end values for each dimension
-  svec<std::size_t, max_size_> end_;
+  svec<T, max_size_> end_;
   /// operations to calculate next values
   svec<char, max_size_> op_;
   /// arguments to operations to calculate next values
-  svec<std::size_t, max_size_> arg_;  
+  svec<T, max_size_> arg_;  
 
 };
 

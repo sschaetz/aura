@@ -4,12 +4,13 @@ FIND_PACKAGE(PackageHandleStandardArgs)
 
 # Include dir
 FIND_PATH(CLFFT_INCLUDE_DIRS
-  NAMES clFFT.h clAmdFft.h
+  clFFT.h  
+  PATHS "/usr/local/include/clFFT"
 )
 
 # Finally the library itself
 FIND_LIBRARY(CLFFT_LIBRARIES
-  NAMES clFFT 
+  NAMES clFFT
 )
 
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(clFFT DEFAULT_MSG 
