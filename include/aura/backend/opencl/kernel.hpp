@@ -36,14 +36,14 @@ void print_module_build_log(module m, device & d) {
   // from http://stackoverflow.com/a/9467325/244786
   // Determine the size of the log
   std::size_t log_size;
-  clGetProgramBuildInfo(m, d.get_device(), 
+  clGetProgramBuildInfo(m, d.get_backend_device(), 
     CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
 
   // Allocate memory for the log
   char *log = (char *) malloc(log_size);
 
   // Get the log
-  clGetProgramBuildInfo(m, d.get_device(), CL_PROGRAM_BUILD_LOG, 
+  clGetProgramBuildInfo(m, d.get_backend_device(), CL_PROGRAM_BUILD_LOG, 
     log_size, log, NULL);
 
   // Print the log

@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(pin_unpin) {
 #if AURA_BACKEND_CUDA
     CUdevice dev;
     AURA_CUDA_SAFE_CALL(cuCtxGetDevice(&dev));
-    BOOST_CHECK(dev == d0.get_device());
+    BOOST_CHECK(dev == d0.get_backend_device());
 #endif
     d0.unpin();
   }
@@ -60,12 +60,11 @@ BOOST_AUTO_TEST_CASE(multiple) {
 BOOST_AUTO_TEST_CASE(multiple_vector) {
   initialize();
   int num = device_get_count();
-  num = 4; 
   std::vector<device> devices;
   std::vector<feed> feeds;
   for(int n=0; n<num; n++) {
     devices.push_back(device(n));
-    feeds.push_back(feed(devices[n]));
+    //feeds.push_back(feed(devices[n]));
   }
 }
 

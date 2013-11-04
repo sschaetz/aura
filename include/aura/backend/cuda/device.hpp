@@ -5,6 +5,7 @@
 #include <boost/move/move.hpp>
 #include <cuda.h>
 #include <aura/backend/cuda/call.hpp>
+#include <aura/backend/cuda/context.hpp>
 
 namespace aura {
 namespace backend_detail {
@@ -22,25 +23,18 @@ private:
 
 public:
 
-  /**
-   * create empty device object without device and context
-   */
-  inline explicit device() : empty_(true) {
-  }
+  /// create empty device object 
+  inline explicit device() : context_(nullptr) {}
    
   /**
-   * create device form ordinal, also creates a context
+   * create device form ordinal
    *
    * @param ordinal device number
    */
-  inline explicit device(std::size_t ordinal) : pinned_(false), empty_(false) {
-    AURA_CUDA_SAFE_CALL(cuDeviceGet(&device_, ordinal));
-    AURA_CUDA_SAFE_CALL(cuCtxCreate(&context_, 0, device_));
-  }
+  inline explicit device(std::size_t ordinal) : 
+    context_(new backend:context(nullptr)) {}
 
-  /**
-   * destroy device (context)
-   */
+  /// destroy device
   inline ~device() {
     finalize();
   }
@@ -50,10 +44,8 @@ public:
    *
    * @param d device to move here
    */
-  device(BOOST_RV_REF(device) d) : 
-    device_(d.device_), context_(d.context_), pinned_(d.pinned_), empty_(false)
-  { 
-    d.empty_ = true;
+  device(BOOST_RV_REF(device) d) : context_(d.context_) { 
+    d.context_ = nullptr;
   }
 
   /**
@@ -64,25 +56,19 @@ public:
   device& operator=(BOOST_RV_REF(device) d) 
   {
     finalize();
-    device_ = d.device_;
     context_ = d.context_;
-    pinned_ = d.pinned_;
-    empty_ = false;
-    d.empty_ = true;
+    d.context_ = nullptr;
     return *this;
   }
 
   /// make device active
-  inline void set() const {
-    AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(context_));
+  inline void set() {
+    context_->set();
   }
   
   /// undo make device active
-  inline void unset() const {
-    if(pinned_) {
-      return;
-    }
-    AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
+  inline void unset() {
+    context_->unset();
   }
 
   /**
@@ -93,43 +79,40 @@ public:
    * explicitly
    */
   inline void pin() {
-    set();
-    pinned_ = true;
+    context_->pin();
   }
   
   /// unpin (reenable unset)
   inline void unpin() {
-    pinned_ = false;
+    context_->unpin();
   } 
 
   /// access the device handle
-  inline const CUdevice & get_device() const {
-    return device_; 
+  inline const CUdevice & get_backend_device() const {
+    return context_->get_backend_device(); 
   }
   
   /// access the context handle
-  inline const CUcontext & get_context() const {
+  inline const CUcontext & get_backend_context() const {
+    return context_->get_backend_context(); 
+  }
+  
+  /// access the context handle
+  inline detail::context * get_context() {
     return context_; 
   }
 
 private:
   /// finalize object (called from dtor and move assign)
   void finalize() {
-    if(empty_) {
-      return;
+    if(nullptr != context_) {
+      delete context_;
     }
-    AURA_CUDA_SAFE_CALL(cuCtxDestroy(context_));
   }
 
 private:
-  /// device handle
-  CUdevice device_;
-  /// context handle 
-  CUcontext context_;
-  /// flag indicating pinned or unpinned context
-  bool pinned_;
-  /// flag indicating empty object
-  bool empty_;
+  /// device context
+  detail::context * context_;
 };
   
 /**

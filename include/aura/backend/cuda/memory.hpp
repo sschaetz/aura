@@ -228,7 +228,7 @@ inline void copy(memory dst, const void * src, std::size_t size,
   feed & f, std::size_t offset=0) {
   f.set(); 
   AURA_CUDA_SAFE_CALL(cuMemcpyHtoDAsync(dst+offset, src, 
-    size, f.get_stream()));
+    size, f.get_backend_stream()));
   f.unset();
 } 
 
@@ -246,7 +246,7 @@ inline void copy(void * dst, memory src, std::size_t size,
   feed & f, std::size_t offset=0) {
   f.set();
   AURA_CUDA_SAFE_CALL(cuMemcpyDtoHAsync(dst, src+offset, 
-    size, f.get_stream()));
+    size, f.get_backend_stream()));
   f.unset();
 }
 
@@ -264,7 +264,7 @@ inline void copy(memory dst, memory src, std::size_t size,
   feed & f, std::size_t dst_offset=0, std::size_t src_offset=0) {
   f.set();
   AURA_CUDA_SAFE_CALL(cuMemcpyDtoDAsync(dst+dst_offset, 
-    src+src_offset, size, f.get_stream()));
+    src+src_offset, size, f.get_backend_stream()));
   f.unset();
 }
 

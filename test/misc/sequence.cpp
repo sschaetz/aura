@@ -11,7 +11,7 @@ using namespace aura;
 // _____________________________________________________________________________
 
 BOOST_AUTO_TEST_CASE(basic) {
-  sequence<3> s("10:+3:17,100:*2:2000");
+  sequence<std::size_t, 3> s("10:+3:17,100:*2:2000");
   // should generate (10, 100) (13, 200) (16, 400) (false)
   bool good;
   svec<std::size_t, 3> dims;

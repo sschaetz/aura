@@ -12,11 +12,11 @@ namespace cuda {
 inline void enable_peer_access(device & d1, device & d2) {
   // enable access from 1 to 2
   d1.set();
-  AURA_CUDA_SAFE_CALL(cuCtxEnablePeerAccess(d2.get_context(), 0));
+  AURA_CUDA_SAFE_CALL(cuCtxEnablePeerAccess(d2.get_backend_context(), 0));
   d1.unset();
   // enable access from 2 to 1
   d2.set();
-  AURA_CUDA_SAFE_CALL(cuCtxEnablePeerAccess(d1.get_context(), 0));
+  AURA_CUDA_SAFE_CALL(cuCtxEnablePeerAccess(d1.get_backend_context(), 0));
   d2.unset();
 }
 

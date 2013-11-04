@@ -36,7 +36,7 @@ void invoke_impl(kernel & k, const grid & g, const block & b,
 
   f.set();
   AURA_CUDA_SAFE_CALL(cuLaunchKernel(k, gridx, gridy, gridz, 
-    blockx, blocky, blockz, 0, f.get_stream(), 
+    blockx, blocky, blockz, 0, f.get_backend_stream(), 
     const_cast<void**>(&a[0]), NULL)); 
   f.unset();
 }

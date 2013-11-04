@@ -20,10 +20,8 @@ private:
 
 public:
  
-  /**
-   * create empty feed object without device and stream
-   */
-  inline explicit feed() : empty_(true) {}
+  /// create empty feed object without device and stream
+  inline explicit feed() : context_(nullptr) {}
 
   /**
    * create device feed for device
@@ -32,10 +30,10 @@ public:
    *
    * const device & is not allowed since an actual instance is needed
    */
-  inline explicit feed(device & d) : device_(&d), empty_(false) {
-    device_->set();
+  inline explicit feed(device & d) : context_(d.get_context()) {
+    context_->set();
     AURA_CUDA_SAFE_CALL(cuStreamCreate(&stream_, 0 /*CU_STREAM_NON_BLOCKING*/));
-    device_->unset(); 
+    context_->unset(); 
   }
 
   /**
@@ -44,8 +42,8 @@ public:
    * @param f feed to move here
    */
   feed(BOOST_RV_REF(feed) f) : 
-    device_(f.device_), stream_(f.stream_), empty_(false) {  
-    f.empty_ = true;
+    context_(f.context_), stream_(f.stream_) {  
+    f.context_ = nullptr;
   }
 
   /**
@@ -55,71 +53,69 @@ public:
    */
   feed& operator=(BOOST_RV_REF(feed) f) { 
     finalize();
+    context_ = f.context;
     stream_ = f.stream_;
-    empty_ = false;
-    f.empty_ = true; 
+    f.context_ = nullptr;
     return *this;
   }
 
-  /**
-   * destroy feed
-   */
+  /// destroy feed
   inline ~feed() {
     finalize(); 
   }
   
-  /**
-   * wait until all commands in the feed have finished
-   */
+  /// wait until all commands in the feed have finished
   inline void synchronize() const {
-    device_->set();
+    context_->set();
     AURA_CUDA_SAFE_CALL(cuStreamSynchronize(stream_));
-    device_->unset();
+    context_->unset();
   }
   
   /// make feed active
   inline void set() const {
-    device_->set(); 
+    context_->set(); 
   }
   
   /// undo make feed active
   inline void unset() const {
-    device_->unset(); 
+    context_->unset(); 
   }
  
   /// get device 
-  inline const CUdevice & get_device() const {
-    return device_->get_device();
+  inline const CUdevice & get_backend_device() const {
+    return context_->get_backend_device();
   }
 
   /// get context 
-  inline const CUcontext & get_context() const {
-    return device_->get_context();
+  inline const CUcontext & get_backend_context() const {
+    return context_->get_backend_context();
   }
 
   /// get stream
-  inline const CUstream & get_stream() const {
+  inline const CUstream & get_backend_stream() const {
     return stream_;
+  }
+  
+  /// access the context handle
+  inline detail::context * get_context() {
+    return context_; 
   }
 
 private:
   /// finalize object (called from dtor and move assign)
   void finalize() {
-    if(empty_) {
-      return;
+    if(nullptr != context_) {
+      context_->set();
+      AURA_CUDA_SAFE_CALL(cuStreamDestroy(stream_));
+      context_->unset(); 
     }
-    device_->set();
-    AURA_CUDA_SAFE_CALL(cuStreamDestroy(stream_));
-    device_->unset(); 
   }
 
 private:
   /// reference to device the feed was created for
-  device * device_;
+  detail::context * context_;
   /// stream handle
   CUstream stream_;
-  /// flag indicating empty object
-  bool empty_;
 };
 
 /**

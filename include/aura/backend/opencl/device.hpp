@@ -7,6 +7,7 @@
 #include <vector>
 #include <CL/cl.h>
 #include <aura/backend/opencl/call.hpp>
+#include <aura/backend/opencl/context.hpp>
 
 namespace aura {
 namespace backend_detail {
@@ -25,44 +26,15 @@ private:
 
 public:
 
-  /**
-   * create empty device object without device and context
-   */
-  inline explicit device() : empty_(true) {}
+  /// create empty device object without device and context
+  inline explicit device() : context_(nullptr) {}
  
   /**
    * create device form ordinal, also creates a context
    *
    * @param ordinal device number
    */
-  inline device(int ordinal) : pinned_(false), empty_(false) {
-    // get platforms
-    unsigned int num_platforms = 0;
-    AURA_OPENCL_SAFE_CALL(clGetPlatformIDs(0, 0, &num_platforms));
-    std::vector<cl_platform_id> platforms(num_platforms);
-    AURA_OPENCL_SAFE_CALL(clGetPlatformIDs(num_platforms, &platforms[0], NULL));
-    
-    // find device 
-    unsigned int num_devices = 0;
-    for(unsigned int i=0; i<num_platforms; i++) {
-      unsigned int num_devices_platform = 0;
-      AURA_OPENCL_SAFE_CALL(clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_ALL, 
-        0, 0, &num_devices_platform));
-      
-      // check if we found the device we want
-      if(num_devices+num_devices_platform > (unsigned)ordinal) {
-        std::vector<cl_device_id> devices(num_devices_platform);
-        AURA_OPENCL_SAFE_CALL(clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_ALL, 
-          num_devices_platform, &devices[0], 0));
-        
-        device_ = devices[ordinal-num_devices];
-      }
-    }
-   
-    int errorcode = 0;
-    context_ = clCreateContext(NULL, 1, &device_, NULL, NULL, &errorcode);
-    AURA_OPENCL_CHECK_ERROR(errorcode);
-  }
+  inline device(int ordinal) : context_(new detail::context(ordinal)) {}
 
   /**
    * move constructor, move device information here, invalidate other
@@ -70,9 +42,8 @@ public:
    * @param d device to move here
    */
   device(BOOST_RV_REF(device) d) : 
-    device_(d.device_), context_(d.context_), pinned_(d.pinned_)
-  {  
-    d.empty_ = true;
+    context_(d.context_) {
+    d.context_ = nullptr;
   }
 
   /**
@@ -83,11 +54,8 @@ public:
   device& operator=(BOOST_RV_REF(device) d) 
   { 
     finalize();
-    device_ = d.device_;
     context_ = d.context_;
-    pinned_ = d.pinned_;
-    empty_ = false;
-    d.empty_ = true;
+    d.context_ = nullptr;
     return *this;
   }
 
@@ -96,54 +64,47 @@ public:
    */
   inline ~device() {
     finalize();
-      }
+  }
 
 
   /// make device active
-  inline void set() const {
-  }
+  inline void set() const {}
   
   /// undo make device active
-  inline void unset() const {
-  }
+  inline void unset() const {}
 
   /// pin
-  inline void pin() {
-    pinned_ = true;
-  }
+  inline void pin() {}
   
   /// unpin 
-  inline void unpin() {
-    pinned_ = false;
-  } 
+  inline void unpin() {} 
   
-  /// access the device handle
-  inline const cl_device_id & get_device() const {
-    return device_; 
+  /// access the backend device handle
+  inline const cl_device_id & get_backend_device() const {
+    return context_->get_backend_device(); 
+  }
+  
+  /// access the backend context handle
+  inline const cl_context & get_backend_context() const {
+    return context_->get_backend_context(); 
   }
   
   /// access the context handle
-  inline const cl_context & get_context() const {
+  inline detail::context * get_context() {
     return context_; 
-  }
-private:
-  /// finalize object (called from dtor and move assign)
-  void finalize() {
-    if(empty_) {
-      return;
-    }
-    AURA_OPENCL_SAFE_CALL(clReleaseContext(context_));
   }
 
 private:
-  /// device handle
-  cl_device_id device_;
+  /// finalize object (called from dtor and move assign)
+  void finalize() {
+    if(nullptr != context_) {
+      delete context_;
+    }
+  }
+
+private:
   /// context handle
-  cl_context context_;
-  /// flag indicating pinned or unpinned context
-  bool pinned_;
-  /// empty marker
-  int empty_;
+  detail::context * context_;
 };
  
 

@@ -45,7 +45,7 @@ public:
   /**
    * create empty fft object without device and stream
    */
-  inline explicit fft() : empty_(true) { 
+  inline explicit fft() : context_(nullptr) { 
   }
 
   /**
@@ -58,13 +58,13 @@ public:
     const fft_embed & iembed = fft_embed(),
     std::size_t istride = 1, std::size_t idist = 0,
     const fft_embed & oembed = fft_embed(),
-    std::size_t ostride = 1, std::size_t odist = 0) : device_(&d), 
-    type_(type), empty_(false)
-  { 
+    std::size_t ostride = 1, std::size_t odist = 0) : context_(d.get_context()), 
+    type_(type) {
+
     // FIXME handle strides and embed etc.
     // we need to create a default plan
     AURA_CLFFT_SAFE_CALL(clfftCreateDefaultPlan(&inplace_handle_, 
-      device_->get_context(), static_cast<clfftDim>(dim.size()), &dim[0]));
+      context_->get_backend_context(), static_cast<clfftDim>(dim.size()), &dim[0]));
 
     AURA_CLFFT_SAFE_CALL(clfftSetPlanBatchSize(inplace_handle_, batch));
 
@@ -77,7 +77,7 @@ public:
    
     // different result location, rest is the same
     AURA_CLFFT_SAFE_CALL(clfftCopyPlan(&outofplace_handle_, 
-      device_->get_context(), inplace_handle_));
+      context_->get_backend_context(), inplace_handle_));
     
     AURA_CLFFT_SAFE_CALL(clfftSetResultLocation(inplace_handle_, 
       CLFFT_INPLACE)); 
@@ -95,7 +95,7 @@ public:
    * @param f fft to move here
    */
   fft(BOOST_RV_REF(fft) f) :
-    device_(f.device_), inplace_handle_(f.inplace_handle_), 
+    context_(f.context_), inplace_handle_(f.inplace_handle_), 
     outofplace_handle_(f.outofplace_handle_), empty_(false)
   {  
     f.empty_ = true; 
@@ -109,12 +109,11 @@ public:
   fft& operator=(BOOST_RV_REF(fft) f)
   {
     finalize();
-    device_ = f.device_;
+    context_= f.context_;
     inplace_handle_ = f.inplace_handle_;
     outofplace_handle_ = f.outofplace_handle_;
     type_ = f.type_;
-    empty_ = false;
-    f.empty_ = true; 
+    f.context_= nullptr; 
     return *this;
   }
 
@@ -128,18 +127,8 @@ public:
   /**
    * set feed
    */
-  void set_feed(const feed & f) {
-  }
+  void set_feed(const feed & f) { }
 
-  /**
-   * return fft handle
-   */
-#if 0
-  const cufftHandle & get_handle() const {
-    return handle_;
-  }
-#endif
-  
   /**
    * return fft type
    */
@@ -180,17 +169,16 @@ public:
   }
 
 protected:
-  /// device handle
-  device * device_;
+  /// context handle
+  detail::context * context_;
   
 private:
   /// finalize object (called from dtor and move assign)
   void finalize() {
-    if(empty_) {
-      return;
+    if(nullptr != context_) {
+      AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&inplace_handle_));
+      AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&outofplace_handle_));
     }
-    AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&inplace_handle_));
-    AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&outofplace_handle_));
   }
 
   /// in-place plan 
@@ -205,7 +193,7 @@ private:
   /// empty marker
   bool empty_;
 
-  // give free functions access to device
+  // give free functions access to context 
   friend void fft_forward(memory & dst, memory & src, 
     fft & plan, const feed & f);
   friend void fft_inverse(memory & dst, memory & src, 
@@ -236,11 +224,11 @@ inline void fft_forward(memory & dst, memory & src,
   fft & plan, const feed & f) {
   if(dst == src) {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_, 
-      CLFFT_FORWARD, 1, const_cast<cl_command_queue*>(&f.get_stream()), 
+      CLFFT_FORWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
       0, NULL, NULL, &src, NULL, NULL));
   } else {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle_, 
-      CLFFT_FORWARD, 1, const_cast<cl_command_queue*>(&f.get_stream()), 
+      CLFFT_FORWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
       0, NULL, NULL, &src, &dst, NULL));
   }
 }
@@ -258,11 +246,11 @@ inline void fft_inverse(memory & dst, memory & src,
   fft & plan, const feed & f) {
   if(dst == src) {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_, 
-      CLFFT_BACKWARD, 1, const_cast<cl_command_queue*>(&f.get_stream()), 
+      CLFFT_BACKWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
       0, NULL, NULL, &src, NULL, NULL));
   } else {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle_, 
-      CLFFT_BACKWARD, 1, const_cast<cl_command_queue*>(&f.get_stream()), 
+      CLFFT_BACKWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
       0, NULL, NULL, &src, &dst, NULL));
   }
 }

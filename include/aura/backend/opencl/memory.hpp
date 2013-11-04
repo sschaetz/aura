@@ -25,7 +25,7 @@ typedef cl_mem memory;
  */
 inline memory device_malloc(std::size_t size, device & d) {
   int errorcode = 0;
-  memory m = clCreateBuffer(d.get_context(), CL_MEM_READ_WRITE, 
+  memory m = clCreateBuffer(d.get_backend_context(), CL_MEM_READ_WRITE, 
     size, 0, &errorcode);
   AURA_OPENCL_CHECK_ERROR(errorcode);
   return m;
@@ -53,7 +53,7 @@ inline void device_free(memory m, device &) {
  */
 inline void copy(memory dst, const void * src, std::size_t size, 
   feed & f, std::size_t offset=0) {
-  AURA_OPENCL_SAFE_CALL(clEnqueueWriteBuffer(f.get_stream(),
+  AURA_OPENCL_SAFE_CALL(clEnqueueWriteBuffer(f.get_backend_stream(),
   	dst, CL_FALSE, offset, size, src, 0, NULL, NULL))
 } 
 
@@ -69,7 +69,7 @@ inline void copy(memory dst, const void * src, std::size_t size,
  */
 inline void copy(void * dst, memory src, std::size_t size, 
   feed & f, std::size_t offset=0) {
-  AURA_OPENCL_SAFE_CALL(clEnqueueReadBuffer(f.get_stream(),
+  AURA_OPENCL_SAFE_CALL(clEnqueueReadBuffer(f.get_backend_stream(),
   	src, CL_FALSE, offset, size, dst, 0, NULL, NULL));
 }
 
@@ -85,7 +85,7 @@ inline void copy(void * dst, memory src, std::size_t size,
  */
 inline void copy(memory dst, memory src, std::size_t size, 
   feed & f, std::size_t dst_offset=0, std::size_t src_offset=0) {
-  AURA_OPENCL_SAFE_CALL(clEnqueueCopyBuffer(f.get_stream(),
+  AURA_OPENCL_SAFE_CALL(clEnqueueCopyBuffer(f.get_backend_stream(),
     src, dst, src_offset, dst_offset, size, 0, 0, 0)); 	
 }
 

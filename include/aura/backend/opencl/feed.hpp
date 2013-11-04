@@ -23,7 +23,7 @@ public:
   /**
    * create empty feed object without device and stream
    */
-  inline explicit feed() : empty_(true) {}
+  inline explicit feed() : context_(nullptr) {}
   
   /**
    * create device feed for device
@@ -32,10 +32,10 @@ public:
    *
    * const device & is not allowed since an actual instance is needed
    */
-  inline feed(device & d) : device_(&d), empty_(false) {
+  inline feed(device & d) : context_(d.get_context()) {
     int errorcode = 0;
-    stream_ = clCreateCommandQueue(device_->get_context(), 
-      device_->get_device(), 0, &errorcode);
+    stream_ = clCreateCommandQueue(context_->get_backend_context(), 
+      context_->get_backend_device(), 0, &errorcode);
     AURA_OPENCL_CHECK_ERROR(errorcode);
   }
 
@@ -45,8 +45,8 @@ public:
    * @param f feed to move here
    */
   feed(BOOST_RV_REF(feed) f) : 
-    device_(f.device_), stream_(f.stream_), empty_(false) {  
-    f.empty_ = true;
+    context_(f.context_) {  
+    f.context_ = nullptr;
   }
 
   /**
@@ -56,9 +56,8 @@ public:
    */
   feed& operator=(BOOST_RV_REF(feed) f) { 
     finalize();
-    stream_ = f.stream_;
-    empty_ = false;
-    f.empty_ = false;
+    context_ = f.context_;
+    f.context_ = nullptr;
     return *this;
   }
 
@@ -77,46 +76,39 @@ public:
   }
   
   /// make feed active
-  inline void set() const {
-    device_->set();
-  }
+  inline void set() const { }
   
   /// undo make feed active
-  inline void unset() const {
-    device_->unset();
-  }
+  inline void unset() const { }
 
   /// get device 
-  inline const cl_device_id & get_device() const {
-    return device_->get_device();
+  inline const cl_device_id & get_backend_device() const {
+    return context_->get_backend_device();
   }
 
   /// get context 
-  inline const cl_context & get_context() const {
-    return device_->get_context();
+  inline const cl_context & get_backend_context() const {
+    return context_->get_backend_context();
   }
 
   /// get stream
-  inline const cl_command_queue & get_stream() const {
+  inline const cl_command_queue & get_backend_stream() const {
     return stream_;
   }
   
 private:
   /// finalize object (called from dtor and move assign)
   void finalize() {
-    if(empty_) {
-      return;
+    if(nullptr != context_) {
+      AURA_OPENCL_SAFE_CALL(clReleaseCommandQueue(stream_)); 
     }
-    AURA_OPENCL_SAFE_CALL(clReleaseCommandQueue(stream_)); 
   }
 
 private:
-  /// reference to device the feed was created for
-  device * device_;
+  /// reference to device context the feed was created for
+  detail::context * context_;
   /// stream handle
   cl_command_queue stream_;
-  /// empty marker
-  bool empty_;
 };
 
 /**

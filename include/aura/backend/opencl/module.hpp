@@ -39,10 +39,10 @@ module create_module_from_file(const char * filename, device & d,
   const char * cdata = data.c_str();
   const std::size_t size = data.size();
   
-  module m = clCreateProgramWithSource(d.get_context(), 1, 
+  module m = clCreateProgramWithSource(d.get_backend_context(), 1, 
     &cdata, &size, &errorcode);
   AURA_OPENCL_CHECK_ERROR(errorcode);
-  AURA_OPENCL_SAFE_CALL(clBuildProgram(m, 1, &d.get_device(), 
+  AURA_OPENCL_SAFE_CALL(clBuildProgram(m, 1, &d.get_backend_device(), 
     build_options, NULL, NULL));
   return m;
 }

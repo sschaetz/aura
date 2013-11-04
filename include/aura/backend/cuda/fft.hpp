@@ -44,7 +44,7 @@ public:
   /**
    * create empty fft object without device and stream
    */
-  inline explicit fft() : empty_(true) { 
+  inline explicit fft() : context_(nullptr) { 
   }
 
   /**
@@ -58,9 +58,9 @@ public:
     std::size_t istride = 1, std::size_t idist = 0,
     const fft_embed & oembed = fft_embed(),
     std::size_t ostride = 1, std::size_t odist = 0) : 
-    device_(&d), type_(type), empty_(false)
+    context_(d.get_context()), type_(type) 
   {
-    device_->set();
+    context_->set();
     AURA_CUFFT_SAFE_CALL(
       cufftPlanMany(
         &handle_, 
@@ -76,7 +76,7 @@ public:
         batch 
       )
     ); 
-    device_->unset(); 
+    context_->unset(); 
   }
 
   /**
@@ -85,9 +85,9 @@ public:
    * @param f fft to move here
    */
   fft(BOOST_RV_REF(fft) f) :
-    device_(f.device_), handle_(f.handle_), type_(f.type_), empty_(false)
+    context_(f.context_), handle_(f.handle_), type_(f.type_)
   { 
-    f.empty_ = true;
+    f.context_ = nullptr;
   }
 
   /**
@@ -98,11 +98,10 @@ public:
   fft& operator=(BOOST_RV_REF(fft) f)
   {
     finalize(); 
-    device_ = f.device_;
+    context_= f.context_;
     handle_ = f.handle_;
     type_ = f.type_;
-    empty_ = false;
-    f.empty_ = 1; 
+    f.context_ = nullptr; 
     return *this;
   }
 
@@ -117,7 +116,7 @@ public:
    * set feed
    */
   void set_feed(const feed & f) {
-    AURA_CUFFT_SAFE_CALL(cufftSetStream(handle_, f.get_stream()));
+    AURA_CUFFT_SAFE_CALL(cufftSetStream(handle_, f.get_backend_stream()));
   }
 
   /**
@@ -157,27 +156,22 @@ public:
 private:
   /// finalize object (called from dtor and move assign)
   void finalize() {
-    if(empty_) {
-        return;
+    if(nullptr != context_) {
+      context_->set();
+      AURA_CUFFT_SAFE_CALL(cufftDestroy(handle_));
+      context_->unset();
     }
-    device_->set();
-    AURA_CUFFT_SAFE_CALL(cufftDestroy(handle_));
-    device_->unset();
   }
 
 protected:
-  /// device handle
-  device * device_;
+  /// device context
+  detail::context * context_;
   
 private:
   /// fft handle
   cufftHandle handle_;
-
   /// fft type
   type type_;
-
-  /// empty marker
-  bool empty_;
 
   // give free functions access to device
   friend void fft_forward(memory & dst, memory & src, 
@@ -204,7 +198,7 @@ inline void fft_terminate() {
  */
 inline void fft_forward(memory & dst, memory & src, 
   fft & plan, const feed & f) {
-  plan.device_->set();
+  plan.context->set();
   plan.set_feed(f);
   switch(plan.get_type()) {
     case fft::type::r2c: {
@@ -250,7 +244,7 @@ inline void fft_forward(memory & dst, memory & src,
       break;
     }    
   }
-  plan.device_->unset();
+  plan.context_->unset();
 }
 
 
@@ -264,7 +258,7 @@ inline void fft_forward(memory & dst, memory & src,
  */
 inline void fft_inverse(memory & dst, memory & src, 
   fft & plan, const feed & f) {
-  plan.device_->set();
+  plan.context_->set();
   plan.set_feed(f);
   switch(plan.get_type()) {
     case fft::type::r2c: {
@@ -310,7 +304,7 @@ inline void fft_inverse(memory & dst, memory & src,
       break;
     }    
   }
-  plan.device_->unset();
+  plan.context_->unset();
 }
 } // cuda
 } // backend_detail

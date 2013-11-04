@@ -38,12 +38,12 @@ void invoke_impl(kernel & k, const grid & g, const block & b,
 
   // call kernel
   AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(
-    f.get_stream(), k, g_.size(), NULL, &g_[0], &b_[0], 0, NULL, NULL));
+    f.get_backend_stream(), k, g_.size(), NULL, &g_[0], &b_[0], 0, NULL, NULL));
 #else
   assert(g.size() == b.size());
   // call kernel
   AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(
-    f.get_stream(), k, g.size(), NULL, &g[0], &b[0], 0, NULL, NULL)); 
+    f.get_backend_stream(), k, g.size(), NULL, &g[0], &b[0], 0, NULL, NULL)); 
 #endif
 } 
 
