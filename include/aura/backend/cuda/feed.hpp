@@ -53,7 +53,7 @@ public:
    */
   feed& operator=(BOOST_RV_REF(feed) f) { 
     finalize();
-    context_ = f.context;
+    context_ = f.context_;
     stream_ = f.stream_;
     f.context_ = nullptr;
     return *this;

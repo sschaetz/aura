@@ -32,7 +32,7 @@ public:
    * @param ordinal device number
    */
   inline explicit device(std::size_t ordinal) : 
-    context_(new backend:context(nullptr)) {}
+    context_(new detail::context(ordinal)) {}
 
   /// destroy device
   inline ~device() {

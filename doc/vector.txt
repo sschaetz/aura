@@ -57,6 +57,8 @@ and uses a shared ptr to handle memory behind the scenes, this
 allows them to copy references to memory around that are still
 valid even if the original vector goes out of scope
 
+bolt has
+device_vector<T>
 
 Memory Management
 =================

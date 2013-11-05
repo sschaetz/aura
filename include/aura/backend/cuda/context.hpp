@@ -27,8 +27,8 @@ public:
    */
   inline explicit context(std::size_t ordinal) : 
       ordinal_(ordinal), pinned_(false) {
-    AURA_CUDA_SAFE_CALL(cuDeviceGet(&context_, ordinal));
-    AURA_CUDA_SAFE_CALL(cuCtxCreate(&context_, 0, context_));
+    AURA_CUDA_SAFE_CALL(cuDeviceGet(&device_, ordinal));
+    AURA_CUDA_SAFE_CALL(cuCtxCreate(&context_, 0, device_));
   }
 
   /// destroy context
@@ -67,12 +67,12 @@ public:
   } 
 
   /// access the device handle
-  inline const CUdevice & get_device() const {
+  inline const CUdevice & get_backend_device() const {
     return device_; 
   }
   
   /// access the context handle
-  inline const CUcontext & get_context() const {
+  inline const CUcontext & get_backend_context() const {
     return context_; 
   }
 

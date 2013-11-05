@@ -198,7 +198,7 @@ inline void fft_terminate() {
  */
 inline void fft_forward(memory & dst, memory & src, 
   fft & plan, const feed & f) {
-  plan.context->set();
+  plan.context_->set();
   plan.set_feed(f);
   switch(plan.get_type()) {
     case fft::type::r2c: {
