@@ -1,5 +1,50 @@
-Nomenclature (feed)
-===================
+Nomenclature 
+============
+
+OpenCL has global_work_size, local_work_size, work-groups and work_items
+CUDA has grids, blocks, threads
+
+In OpenCL, the local_work_size subdivides the global_work_size
+In CUDA. the grid consists of blocks
+
+* jobs, local global, group
+* threads, local global, group
+* work, local, global, group
+* block
+* grid
+* group
+* domain
+* cluster
+* pack
+* gang
+* fiber
+* lot
+* assembly
+* batch
+* bundle
+* fiber bundle
+* packet
+* lattice
+* weave
+* mesh
+* netting
+* net
+
+fiber, fiber bundle, fiber bundle group
+fiber, bundle, mesh
+spark, flame, blaze
+
+
+for work-group/block:
+synchronization domain 
+single instruction domain (SIMD)
+
+I prefer the subdividing nomanclature over the consists of way of
+defining and partitioning work. It is a lot simpler.
+
+
+-----
+
 
 OpenCL has command queues, CUDA has streams
 

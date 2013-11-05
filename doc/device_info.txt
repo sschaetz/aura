@@ -1,0 +1,27 @@
+Device Info
+===========
+
+OpenCL                              CUDA
+
+CL_DEVICE_MAX_WORK_GROUP_SIZE       CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK
+CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS  3
+CL_DEVICE_MAX_WORK_ITEM_SIZES       CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X *
+                                    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y *
+                                    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Z
+
+global_work_size                    gridDim.x * gridDim.y * griDim.z * 
+  n-dimensional array representing  blockDim.x * blockDim.y * blockDim.z
+  number of all threads               number of all threads
+    
+local_work_size                     blockDim.x * blockDim.y * blockDim.z
+  specify work group size,            threads in block can synchronize,
+  n-dimensional array representing    maximum number of threads in block is
+  number of local threads, mut be     CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK
+  multiple of global_work_size,
+  local threads can synchronzie
+  amongst each other, maximum size 
+  is CL_DEVICE_MAX_WORK_GROUP_SIZE
+
+global-work                         grid
+work-group                          block
+work-groups subdivide global-work   grid consists of blocks

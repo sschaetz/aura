@@ -21,8 +21,8 @@ namespace shortcut = level2::level3;
 namespace level1 {
 namespace shortcut { // this does not work
   struct bar{};
-} // level1
 } // shortcut
+} // level1
 #endif
 
 int main(void) {
