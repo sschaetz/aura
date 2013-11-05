@@ -90,9 +90,3 @@ Hm, the latter is missing a lot to work, a loop construct for example, a way to
 iterate over a buffer etc.
 
 
-FIXME
-Kernels arguments probably have to copied into the args struct to
-capture temporaries such as ptr+offset - we can not take the
-address of such temporaries and expect it to be valid after the function
-exited.
-
