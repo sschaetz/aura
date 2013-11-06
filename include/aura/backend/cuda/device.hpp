@@ -147,7 +147,7 @@ device_info device_get_info(device & d) {
     device.get_backend_device()));
   strncpy(di.vendor, "CUDA", sizeof(di.vendor)-1); 
   
-  // grid
+  // mesh 
   int r;
   AURA_CUDA_SAFE_CALL(&r, CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X,
     device.get_backend_device());
@@ -159,7 +159,7 @@ device_info device_get_info(device & d) {
     device.get_backend_device());
   di.max_grid.push_back(r);
 
-  // block
+  // bundle 
   AURA_CUDA_SAFE_CALL(&r, CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X,
     device.get_backend_device());
   di.max_block.push_back(r);
@@ -170,6 +170,7 @@ device_info device_get_info(device & d) {
     device.get_backend_device());
   di.max_block.push_back(r);
 
+  // fibers in bundle
   AURA_CUDA_SAFE_CALL(&r, CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK,
     device.get_backend_device());
   max_threads = r;

@@ -86,6 +86,11 @@ public:
   inline const cl_context & get_backend_context() const {
     return context_; 
   }
+  
+  /// access the device ordinal
+  inline std::size_t get_ordinal() const {
+    return ordinal_;
+  }
 
 private:
   /// device ordinal

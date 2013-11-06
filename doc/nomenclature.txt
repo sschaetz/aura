@@ -29,19 +29,42 @@ In CUDA. the grid consists of blocks
 * mesh
 * netting
 * net
+* megafiber
+* gigafiber
+* lattice
+* divisor
+* denominator
+* distribution
+* fragmentation
+* partition
+* split
+* sectioning
+* layout
+* fragmentation
+* communition
+
 
 fiber, fiber bundle, fiber bundle group
 fiber, bundle, mesh
 spark, flame, blaze
-
+fiber, bundle, cluster
 
 for work-group/block:
 synchronization domain 
 single instruction domain (SIMD)
 
-I prefer the subdividing nomanclature over the consists of way of
+I prefer the "subdividing" nomanclature over the "consists of" way of
 defining and partitioning work. It is a lot simpler.
 
+I think fiber, bundle and mesh are suitable metaphors for partitioning
+work in the CUDA/OpenCL way.
+
+fiber, bundle, cluster? 
+fiber, fiber_bundle, fiber_cluster?
+fiber, fiber_bundle, fiber_mesh?
+stream, bundle, cluster?
+
+Now should it be fiber_bundle, fiber_mesh
 
 -----
 
