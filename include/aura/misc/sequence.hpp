@@ -25,14 +25,12 @@ struct sequence {
    * 4:+1:10
    * 4:-1:3,2:*2:32
    * start-dim0:op arg:stop-dim0,start-dim1:op arg:stop-dim1
-   *
-   * and generate parser that give the correct sequence
    */
   inline sequence(const char * definition) {
     const char * c = definition;
     char numstore[32];
     char * n = numstore;
-    int state = 0; // 0=start, 1=op/arg 2=end
+    int state = 0; // 0=start, 1=op/arg, 2=end
     while(true) {
       if(isdigit(*c)) {
         *n++ = *c;

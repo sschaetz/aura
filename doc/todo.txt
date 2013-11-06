@@ -1,6 +1,8 @@
 Todo
 ====
 
+Change kernel size to consist of  
+
 Kernels arguments probably have to copied into the args struct to
 capture temporaries such as ptr+offset - we can not take the
 address of such temporaries and expect it to be valid after the function
@@ -12,7 +14,6 @@ be able to define on which device ordinal to run tests.
 
 Missing parameters for functions:
 Plenty backend parameters are not exposed at the moment
-
 
 All types that can be empty should have the bool operator to evaluate to
 false if they are empty.

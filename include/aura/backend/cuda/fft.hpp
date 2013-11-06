@@ -52,7 +52,8 @@ public:
    *
    * @param d device to create fft for
    */
-  inline explicit fft(device & d, const fft_dim & dim, const fft::type & type,
+  inline explicit fft(device & d, feed & f,
+    const fft_dim & dim, const fft::type & type,
     std::size_t batch = 1, 
     const fft_embed & iembed = fft_embed(),
     std::size_t istride = 1, std::size_t idist = 0,

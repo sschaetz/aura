@@ -60,7 +60,7 @@ synchronization domain
 single instruction domain (SIMD)
 
 I prefer the "subdividing" nomanclature over the "consists of" way of
-defining and partitioning work. It is a lot simpler.
+defining and partitioning work. It is a lot simpler. Or is it?
 
 I think fiber, bundle and mesh are suitable metaphors for partitioning
 work in the CUDA/OpenCL way.

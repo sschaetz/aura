@@ -111,7 +111,7 @@ void run_tests() {
         std::size_t msize = aura::product(s) * b[0] * sizeof(cfloat);
         mem1.push_back(aura::backend::device_malloc(msize, devices[i])); 
         mem2.push_back(aura::backend::device_malloc(msize, devices[i]));
-        ffth.push_back(aura::backend::fft(devices[i], s, 
+        ffth.push_back(aura::backend::fft(devices[i], feeds[i], s, 
           aura::backend::fft::type::c2c, b[0]));
       }
       

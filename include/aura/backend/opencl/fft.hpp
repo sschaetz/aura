@@ -53,13 +53,14 @@ public:
    *
    * @param d device to create fft for
    */
-  inline explicit fft(device & d, const fft_dim & dim, const fft::type & type,
+  inline explicit fft(device & d, feed & f,
+    const fft_dim & dim, const fft::type & type,
     std::size_t batch = 1, 
     const fft_embed & iembed = fft_embed(),
     std::size_t istride = 1, std::size_t idist = 0,
     const fft_embed & oembed = fft_embed(),
-    std::size_t ostride = 1, std::size_t odist = 0) : context_(d.get_context()), 
-    type_(type) {
+    std::size_t ostride = 1, std::size_t odist = 0) : 
+    context_(d.get_context()), buffer_(nullptr), type_(type) {
 
     // FIXME handle strides and embed etc.
     // we need to create a default plan
@@ -84,9 +85,21 @@ public:
     AURA_CLFFT_SAFE_CALL(clfftSetResultLocation(outofplace_handle_, 
       CLFFT_OUTOFPLACE));
 
-    // FIXME
-    // since we have no feed here we can not bake the plans, we need an
-    // extra method for that maybe
+    // bake plan
+    AURA_CLFFT_SAFE_CALL(clfftBakePlan(inplace_handle_, 1, 
+      const_cast<cl_command_queue*>(&f.get_backend_stream()),
+      nullptr, nullptr));
+    AURA_CLFFT_SAFE_CALL(clfftBakePlan(outofplace_handle_, 1, 
+      const_cast<cl_command_queue*>(&f.get_backend_stream()),
+      nullptr, nullptr));
+    
+    std::size_t buffer_size1, buffer_size2;
+    AURA_CLFFT_SAFE_CALL(clfftGetTmpBufSize(inplace_handle_, &buffer_size1));
+    AURA_CLFFT_SAFE_CALL(clfftGetTmpBufSize(outofplace_handle_, &buffer_size2));
+    if(0 < buffer_size1 || 0 < buffer_size2) {
+      buffer_ = device_malloc((buffer_size1 > buffer_size2) ? 
+        buffer_size1 : buffer_size2, d);
+    }
   }
 
   /**
@@ -96,9 +109,10 @@ public:
    */
   fft(BOOST_RV_REF(fft) f) :
     context_(f.context_), inplace_handle_(f.inplace_handle_), 
-    outofplace_handle_(f.outofplace_handle_), empty_(false)
+    outofplace_handle_(f.outofplace_handle_),
+    buffer_(f.buffer_) 
   {  
-    f.empty_ = true; 
+    f.context_ = nullptr; 
   }
 
   /**
@@ -113,6 +127,7 @@ public:
     inplace_handle_ = f.inplace_handle_;
     outofplace_handle_ = f.outofplace_handle_;
     type_ = f.type_;
+    buffer_ = f.buffer_; 
     f.context_= nullptr; 
     return *this;
   }
@@ -178,6 +193,9 @@ private:
     if(nullptr != context_) {
       AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&inplace_handle_));
       AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&outofplace_handle_));
+      if(nullptr != buffer_) {
+        AURA_OPENCL_SAFE_CALL(clReleaseMemObject(buffer_));
+      }
     }
   }
 
@@ -186,12 +204,12 @@ private:
 
   /// out-of-place plan  
   clfftPlanHandle outofplace_handle_; 
+  
+  /// temporary buffer for transforms 
+  memory buffer_;
 
   /// fft type
   type type_;
-
-  /// empty marker
-  bool empty_;
 
   // give free functions access to context 
   friend void fft_forward(memory & dst, memory & src, 
@@ -225,11 +243,11 @@ inline void fft_forward(memory & dst, memory & src,
   if(dst == src) {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_, 
       CLFFT_FORWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
-      0, NULL, NULL, &src, NULL, NULL));
+      0, NULL, NULL, &src, NULL, plan.buffer_));
   } else {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle_, 
       CLFFT_FORWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
-      0, NULL, NULL, &src, &dst, NULL));
+      0, NULL, NULL, &src, &dst, plan.buffer_));
   }
 }
 
@@ -247,11 +265,11 @@ inline void fft_inverse(memory & dst, memory & src,
   if(dst == src) {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_, 
       CLFFT_BACKWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
-      0, NULL, NULL, &src, NULL, NULL));
+      0, NULL, NULL, &src, NULL, plan.buffer_));
   } else {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle_, 
       CLFFT_BACKWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
-      0, NULL, NULL, &src, &dst, NULL));
+      0, NULL, NULL, &src, &dst, plan.buffer_));
   }
 }
 
