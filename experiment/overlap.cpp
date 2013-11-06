@@ -58,7 +58,7 @@ void bench_overlap_same_feed(std::vector<memory> & fftmem1,
     std::vector<feed> & feeds2,
     std::size_t dim) {
   for(std::size_t n = 0; n<feeds1.size(); n++) {
-    invoke(kernels[n], grid(dim/2), block(dim/2), 
+    invoke(kernels[n], mesh(dim/2), bundle(dim/2), 
       args(p2pmem1[n], 
         p2pmem2[(n+1)%feeds1.size()],
         p2pmem2[(n+2)%feeds1.size()],
@@ -79,7 +79,7 @@ void bench_overlap_diff_feed(std::vector<memory> & fftmem1,
     std::vector<feed> & feeds2,
     std::size_t dim) {
   for(std::size_t n = 0; n<feeds1.size(); n++) {
-    invoke(kernels[n], grid(dim/2), block(dim/2), 
+    invoke(kernels[n], mesh(dim/2), bundle(dim/2), 
       args(p2pmem1[n], 
         p2pmem2[(n+1)%feeds1.size()],
         p2pmem2[(n+2)%feeds1.size()],
@@ -107,26 +107,26 @@ void bench_overlap_diff_feed_2(std::vector<memory> & fftmem1,
   fft_forward(fftmem1[3], fftmem2[3], ffth[3], feeds2[3]);
   */ 
   // 0 + 1
-  invoke(kernels[0], grid(dim/2), block(dim/2), 
+  invoke(kernels[0], mesh(dim/2), bundle(dim/2), 
     args(p2pmem1[0], p2pmem2[0], p2pmem2[0+1]), feeds1[0]);
-  invoke(kernels[1], grid(dim/2), block(dim/2), 
+  invoke(kernels[1], mesh(dim/2), bundle(dim/2), 
     args(p2pmem1[1], p2pmem2[1], p2pmem2[1-1]), feeds1[1]);
   // 2+3
-  invoke(kernels[2], grid(dim/2), block(dim/2), 
+  invoke(kernels[2], mesh(dim/2), bundle(dim/2), 
     args(p2pmem1[2], p2pmem2[2], p2pmem2[2+1]), feeds1[2]);
-  invoke(kernels[3], grid(dim/2), block(dim/2), 
+  invoke(kernels[3], mesh(dim/2), bundle(dim/2), 
     args(p2pmem1[3], p2pmem2[3], p2pmem2[3-1]), feeds1[3]);
   std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
   // 01 + 23 
-  invoke(kernels[0], grid(dim/2), block(dim/2), 
+  invoke(kernels[0], mesh(dim/2), bundle(dim/2), 
     args(p2pmem2[0], p2pmem1[0], p2pmem1[2]), feeds1[0]);
   // 23 + 01 
-  invoke(kernels[3], grid(dim/2), block(dim/2), 
+  invoke(kernels[3], mesh(dim/2), bundle(dim/2), 
     args(p2pmem2[3], p2pmem1[3], p2pmem1[1]), feeds1[3]);
   std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
-  invoke(kernels[1], grid(dim/2), block(dim/2), 
+  invoke(kernels[1], mesh(dim/2), bundle(dim/2), 
     args(p2pmem2[1], p2pmem2[1], p2pmem2[0]), feeds1[1]);
-  invoke(kernels[2], grid(dim/2), block(dim/2), 
+  invoke(kernels[2], mesh(dim/2), bundle(dim/2), 
     args(p2pmem2[2], p2pmem2[2], p2pmem2[3]), feeds1[2]);
   
   std::for_each(feeds1.begin(), feeds1.end(), &wait_for);

@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(invoke_) {
     memory mem = device_malloc(xdim*ydim*sizeof(float), d);
     
     copy(mem, &a1[0], xdim*ydim*sizeof(float), f); 
-    invoke(k, grid(ydim), block(xdim), args(mem), f);
+    invoke(k, mesh(ydim), bundle(xdim), args(mem), f);
     copy(&a2[0], mem, xdim*ydim*sizeof(float), f);
     wait_for(f);
 
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(invoke_noarg) {
     
     module mod = create_module_from_file(kernel_file, d);
     kernel k = create_kernel(mod, "noarg"); 
-    invoke(k, grid(ydim), block(xdim), f);
+    invoke(k, mesh(ydim), bundle(xdim), f);
     wait_for(f);
   }
 }

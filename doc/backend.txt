@@ -43,7 +43,8 @@ devices in context so maybe we should do that
 [0] https://www.cvg.ethz.ch/teaching/2011spring/gpgpu/GPU-multi-device.pdf
 
 let's ignore platforms for now, let's offer all available devices
-devices are created and contain a context each and a default command queue (a stream)
+devices are created and contain a context each and a default command 
+queue (a stream)
 streams are additional command queues
 devices and command queues can be set as defaults per thread
 
@@ -55,4 +56,15 @@ Rationale
 The backend uses typed to initialize, hold and release resources. Types can
 have methods but methods must not be used, free functions should always
 duplicate functionality of methods to provide a more functional interface.
+
+
+Interface Duplication
+=====================
+
+Interfaces for all backends must currently be duplicated. Also, for the main
+interface in the aura namespace, it must also be duplicated in some way. This
+is quite tedious. Is there a better way to do this?  A way that is less 
+tedious. There could be a single code-base, littered with ifdefs. Not nice,
+not less tedious.
+
 

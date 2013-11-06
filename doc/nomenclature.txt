@@ -42,12 +42,18 @@ In CUDA. the grid consists of blocks
 * layout
 * fragmentation
 * communition
+* solvent
+* fabric
+* cells
+
 
 
 fiber, fiber bundle, fiber bundle group
-fiber, bundle, mesh
+fiber, bundle, mesh <-
 spark, flame, blaze
 fiber, bundle, cluster
+fiber, fiber_bundle, fiber_fabric
+fiber, fiber_bundle, fibre_grid
 
 for work-group/block:
 synchronization domain 

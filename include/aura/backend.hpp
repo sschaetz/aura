@@ -7,12 +7,12 @@
 #if AURA_BACKEND_CUDA
 
 #include <aura/backend/cuda/args.hpp>
-#include <aura/backend/cuda/block.hpp>
+#include <aura/backend/cuda/bundle.hpp>
 #include <aura/backend/cuda/call.hpp>
 #include <aura/backend/cuda/device.hpp>
 #include <aura/backend/cuda/feed.hpp>
 #include <aura/backend/cuda/fft.hpp>
-#include <aura/backend/cuda/grid.hpp>
+#include <aura/backend/cuda/mesh.hpp>
 #include <aura/backend/cuda/init.hpp>
 #include <aura/backend/cuda/invoke.hpp>
 #include <aura/backend/cuda/kernel.hpp>
@@ -23,14 +23,14 @@
 #elif AURA_BACKEND_OPENCL
 
 #include <aura/backend/opencl/args.hpp>
-#include <aura/backend/opencl/block.hpp>
+#include <aura/backend/opencl/bundle.hpp>
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/device.hpp>
 #include <aura/backend/opencl/feed.hpp>
 #if AURA_FFT_CLFFT
 #include <aura/backend/opencl/fft.hpp>
 #endif // AURA_FFT_CLFFT
-#include <aura/backend/opencl/grid.hpp>
+#include <aura/backend/opencl/mesh.hpp>
 #include <aura/backend/opencl/init.hpp>
 #include <aura/backend/opencl/invoke.hpp>
 #include <aura/backend/opencl/kernel.hpp>

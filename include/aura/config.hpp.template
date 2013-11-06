@@ -14,17 +14,18 @@
 /// maximum size of elements in svec specialized types
 #define AURA_SVEC_MAX_SIZE 16
 
-/// maximum dimensionality of a grid
-#define AURA_MAX_GRID_DIMS 4
+/// maximum dimensionality of a MESH 
+#define AURA_MAX_MESH_DIMS 4
 
-/// maximum dimensionality of a block
-#define AURA_MAX_BLOCK_DIMS 4
+/// maximum dimensionality of a BUNDLE 
+#define AURA_MAX_BUNDLE_DIMS 4
 
 /// maximum number of possible kernel arguments
 #define AURA_MAX_KERNEL_ARGS 12
-#endif // AURA_CONFIG_HPP 
 
 /// fft libraries
 #cmakedefine01 AURA_FFT_CLFFT
 #cmakedefine01 AURA_FFT_CUFFT
+
+#endif // AURA_CONFIG_HPP 
 

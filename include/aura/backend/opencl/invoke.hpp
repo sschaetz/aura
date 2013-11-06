@@ -8,8 +8,8 @@
 #include <aura/backend/opencl/kernel.hpp>
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/feed.hpp>
-#include <aura/backend/opencl/grid.hpp>
-#include <aura/backend/opencl/block.hpp>
+#include <aura/backend/opencl/mesh.hpp>
+#include <aura/backend/opencl/bundle.hpp>
 #include <aura/backend/opencl/args.hpp>
 
 namespace aura {
@@ -19,31 +19,31 @@ namespace opencl {
 namespace detail {
 
 #define AURA_KERNEL_THREAD_LAYOUT_CUDA
-void invoke_impl(kernel & k, const grid & g, const block & b, 
+void invoke_impl(kernel & k, const mesh & m, const bundle & b, 
   const args_t & a, feed & f) {
   // set parameters
   for(std::size_t i=0; i<a.size(); i++) {
     AURA_OPENCL_SAFE_CALL(clSetKernelArg(k, i, a[i].second, a[i].first));
   }
 #ifdef AURA_KERNEL_THREAD_LAYOUT_CUDA
-  svec<std::size_t, AURA_MAX_GRID_DIMS+AURA_MAX_BLOCK_DIMS> g_, b_;
-  for(std::size_t i=0; i<g.size(); i++) {
-    g_.push_back(g[i]);
+  svec<std::size_t, AURA_MAX_MESH_DIMS+AURA_MAX_BUNDLE_DIMS> m_, b_;
+  for(std::size_t i=0; i<m.size(); i++) {
+    m_.push_back(m[i]);
     b_.push_back(1);
   }
-  for(std::size_t i=g.size(); i<g.size()+b.size(); i++) {
-    g_.push_back(b[i-g.size()]);
-    b_.push_back(b[i-g.size()]);
+  for(std::size_t i=m.size(); i<m.size()+b.size(); i++) {
+    m_.push_back(b[i-m.size()]);
+    b_.push_back(b[i-m.size()]);
   }
 
   // call kernel
   AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(
-    f.get_backend_stream(), k, g_.size(), NULL, &g_[0], &b_[0], 0, NULL, NULL));
+    f.get_backend_stream(), k, m_.size(), NULL, &m_[0], &b_[0], 0, NULL, NULL));
 #else
-  assert(g.size() == b.size());
+  assert(m.size() == b.size());
   // call kernel
   AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(
-    f.get_backend_stream(), k, g.size(), NULL, &g[0], &b[0], 0, NULL, NULL)); 
+    f.get_backend_stream(), k, m.size(), NULL, &m[0], &b[0], 0, NULL, NULL)); 
 #endif
 } 
 
@@ -51,14 +51,14 @@ void invoke_impl(kernel & k, const grid & g, const block & b,
 
 
 /// invoke kernel without args
-void invoke(kernel & k, const grid & g, const block & b, feed & f) {
-  detail::invoke_impl(k, g, b, args_t(), f);
+void invoke(kernel & k, const mesh & m, const bundle & b, feed & f) {
+  detail::invoke_impl(k, m, b, args_t(), f);
 }
 
 /// invoke kernel with args
-void invoke(kernel & k, const grid & g, const block & b,
+void invoke(kernel & k, const mesh & m, const bundle & b,
   const args_t & a, feed & f) {
-  detail::invoke_impl(k, g, b, a, f);
+  detail::invoke_impl(k, m, b, a, f);
 }
 
 } // namespace aura

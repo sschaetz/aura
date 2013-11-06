@@ -4,9 +4,9 @@
 struct device_info {
   char name[300];
   char vendor[300];
-  svec<std::size_t, AURA_MAX_GRID_DIMS> max_grid; 
-  svec<std::size_t, AURA_MAX_BLOCK_DIMS> max_block; 
-  std::size_t max_threads;
+  svec<std::size_t, AURA_MAX_MESH_DIMS> max_mesh; 
+  svec<std::size_t, AURA_MAX_BUNDLE_DIMS> max_bundle; 
+  std::size_t max_fibers;
 };
 
 #endif // AURA_BACKEND_SHARED_DEVICE_INFO_HPP

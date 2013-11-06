@@ -17,6 +17,7 @@ Plenty backend parameters are not exposed at the moment
 All types that can be empty should have the bool operator to evaluate to
 false if they are empty.
 
+Make boost optional dependency.
 
 Done:
 

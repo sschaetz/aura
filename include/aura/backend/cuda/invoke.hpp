@@ -6,8 +6,8 @@
 #include <aura/backend/cuda/kernel.hpp>
 #include <aura/backend/cuda/call.hpp>
 #include <aura/backend/cuda/feed.hpp>
-#include <aura/backend/cuda/grid.hpp>
-#include <aura/backend/cuda/block.hpp>
+#include <aura/backend/cuda/mesh.hpp>
+#include <aura/backend/cuda/bundle.hpp>
 #include <aura/backend/cuda/args.hpp>
 
 namespace aura {
@@ -16,27 +16,27 @@ namespace cuda {
 
 namespace detail {
 
-void invoke_impl(kernel & k, const grid & g, const block & b, 
+void invoke_impl(kernel & k, const mesh & m, const bundle & b, 
   const args_t & a, feed & f) {
-  // handling for non 3-dimensional grid and block sizes
-  std::size_t gridx = g[0], gridy = 1, gridz = 1;
-  std::size_t blockx = b[0], blocky = 1, blockz = 1;
-  if(g.size() > 1) {
-    gridy = g[1];
+  // handling for non 3-dimensional mesh and bundle sizes
+  std::size_t meshx = m[0], meshy = 1, meshz = 1;
+  std::size_t bundlex = b[0], bundley = 1, bundlez = 1;
+  if(m.size() > 1) {
+    meshy = m[1];
   }
-  if(g.size() > 2) {
-    gridz = g[2];
+  if(m.size() > 2) {
+    meshz = m[2];
   }
   if(b.size() > 1) {
-    blocky = b[1];
+    bundley = b[1];
   }
   if(b.size() > 2) {
-    blockz = b[2];
+    bundlez = b[2];
   }
 
   f.set();
-  AURA_CUDA_SAFE_CALL(cuLaunchKernel(k, gridx, gridy, gridz, 
-    blockx, blocky, blockz, 0, f.get_backend_stream(), 
+  AURA_CUDA_SAFE_CALL(cuLaunchKernel(k, meshx, meshy, meshz, 
+    bundlex, bundley, bundlez, 0, f.get_backend_stream(), 
     const_cast<void**>(&a[0]), NULL)); 
   f.unset();
 }
@@ -44,14 +44,14 @@ void invoke_impl(kernel & k, const grid & g, const block & b,
 } // namespace detail
 
 /// invoke kernel without args
-void invoke(kernel & k, const grid & g, const block & b, feed & f) {
-  detail::invoke_impl(k, g, b, args_t(), f);
+void invoke(kernel & k, const mesh & m, const bundle & b, feed & f) {
+  detail::invoke_impl(k, m, b, args_t(), f);
 }
 
 /// invoke kernel with args
-void invoke(kernel & k, const grid & g, const block & b,
+void invoke(kernel & k, const mesh & m, const bundle & b,
   const args_t & a, feed & f) {
-  detail::invoke_impl(k, g, b, a, f);
+  detail::invoke_impl(k, m, b, a, f);
 }
 
 } // namespace aura

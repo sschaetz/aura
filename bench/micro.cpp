@@ -20,7 +20,7 @@ const int duration_per_test = 2*1e6;
 inline void bench_noarg_expr(std::vector<feed> & feeds, 
   std::vector<kernel> & kernels, std::size_t num) {
   for(std::size_t n=0; n<num; n++) {
-    invoke(kernels[n], grid(1), block(1), feeds[n]);
+    invoke(kernels[n], mesh(1), bundle(1), feeds[n]);
   } 
   for(std::size_t n=0; n<num; n++) {
     wait_for(feeds[n]); 
@@ -38,7 +38,7 @@ void bench_noarg(std::vector<device> & devices,
   for(std::size_t n=0; n<devices.size(); n++) {
     modules[n] = create_module_from_file(kernel_file, devices[n]); 
     kernels[n] = create_kernel(modules[n], kernel_name);
-    invoke(kernels[n], grid(1), block(1), feeds[n]);
+    invoke(kernels[n], mesh(1), bundle(1), feeds[n]);
     wait_for(feeds[n]); 
   }
 
@@ -56,9 +56,9 @@ void bench_noarg(std::vector<device> & devices,
 
 inline void bench_onearg_expr(std::vector<feed> & feeds, 
   std::vector<kernel> & kernels, std::vector<memory> & device_memory,
-  std::size_t griddim, std::size_t blockdim, std::size_t num) {
+  std::size_t meshdim, std::size_t bundledim, std::size_t num) {
   for(std::size_t n=0; n<num; n++) {
-    invoke(kernels[n], grid(griddim), block(blockdim), 
+    invoke(kernels[n], mesh(meshdim), bundle(bundledim), 
       args(device_memory[n]), feeds[n]);
   } 
   for(std::size_t n=0; n<num; n++) {
@@ -69,11 +69,11 @@ inline void bench_onearg_expr(std::vector<feed> & feeds,
 
 void bench_onearg(std::vector<device> & devices, 
   std::vector<feed> & feeds, const char * kernel_name, 
-  std::size_t griddim, std::size_t blockdim) {
+  std::size_t meshdim, std::size_t bundledim) {
   
   double min, max, mean, stdev;
   std::size_t num;
-  std::size_t size = griddim * blockdim;
+  std::size_t size = meshdim * bundledim;
   std::vector<module> modules(devices.size());
   std::vector<kernel> kernels(devices.size());
   std::vector<memory> device_memory(devices.size());
@@ -83,16 +83,17 @@ void bench_onearg(std::vector<device> & devices,
     kernels[n] = create_kernel(modules[n], kernel_name);
     device_memory[n] = device_malloc(size*sizeof(float), devices[n]);
     copy(&host_memory[0], device_memory[n], size*sizeof(float), feeds[n]);
-    invoke(kernels[n], grid(griddim), block(blockdim), args(device_memory[n]), feeds[n]);
+    invoke(kernels[n], mesh(meshdim), bundle(bundledim), 
+      args(device_memory[n]), feeds[n]);
     wait_for(feeds[n]); 
   }
 
   for(std::size_t n=1; n<=devices.size(); n++) {
     MGPU_BENCHMARK(bench_onearg_expr(feeds, kernels, 
-        device_memory, griddim, blockdim, n), 
+        device_memory, meshdim, bundledim, n), 
       duration_per_test, min, max, mean, stdev, num);
-    printf("%s_kernel (%ldG %ld:%ld): num %lu min %f max %f mean %f stdev %f\n", 
-      kernel_name, n, griddim, blockdim, num, min, max, mean, stdev);
+    printf("%s_kernel (%ldG %ld:%ld): num %lu min %f max %f mean %f stdev %f\n",
+      kernel_name, n, meshdim, bundledim, num, min, max, mean, stdev);
   }
 }
 
