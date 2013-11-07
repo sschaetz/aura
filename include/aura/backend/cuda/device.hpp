@@ -138,7 +138,7 @@ inline void print_device_info() {
 }
 
 #include <aura/backend/shared/device_info.hpp>
-
+#if 0
 /// return the device info 
 device_info device_get_info(device & d) {
   device_info di;
@@ -175,7 +175,7 @@ device_info device_get_info(device & d) {
     device.get_backend_device());
   max_fibers = r;
 }
-
+#endif
 } // cuda
 } // backend_detail
 } // aura

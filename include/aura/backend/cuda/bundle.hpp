@@ -7,7 +7,7 @@ namespace aura {
 namespace backend_detail {
 namespace cuda {
 
-typedef svec<std::size_t, AURA_MAX_BUNDLE_DIMS> block;
+typedef svec<std::size_t, AURA_MAX_BUNDLE_DIMS> bundle;
 
 } // cuda 
 } // backend_detail
