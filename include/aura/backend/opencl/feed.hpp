@@ -45,7 +45,7 @@ public:
    * @param f feed to move here
    */
   feed(BOOST_RV_REF(feed) f) : 
-    context_(f.context_) {  
+    context_(f.context_), stream_(f.stream_) {  
     f.context_ = nullptr;
   }
 
@@ -57,6 +57,7 @@ public:
   feed& operator=(BOOST_RV_REF(feed) f) { 
     finalize();
     context_ = f.context_;
+    stream_ = f.stream_;
     f.context_ = nullptr;
     return *this;
   }
