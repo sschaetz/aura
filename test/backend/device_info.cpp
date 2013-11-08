@@ -15,3 +15,13 @@ BOOST_AUTO_TEST_CASE(basic) {
   print_device_info();
 }
 
+// extended 
+// _____________________________________________________________________________
+
+BOOST_AUTO_TEST_CASE(extended) {
+  initialize();
+  device d(0);
+  device_info di = device_get_info(d);
+  print_device_info(di); 
+}
+

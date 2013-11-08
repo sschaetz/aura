@@ -9,5 +9,18 @@ struct device_info {
   std::size_t max_fibers;
 };
 
+/// print device info to stdout
+inline void print_device_info(device_info & di) {
+  printf("%s (%s) max mesh size: ", di.name, di.vendor);
+  for(std::size_t i=0; i<di.max_mesh.size(); i++) {
+    printf("%lu ", di.max_mesh[i]);
+  }
+  printf("max bundle size: ");
+  for(std::size_t i=0; i<di.max_bundle.size(); i++) {
+    printf("%lu ", di.max_bundle[i]);
+  }
+  printf("max_fibers: %lu\n", di.max_fibers);
+}
+
 #endif // AURA_BACKEND_SHARED_DEVICE_INFO_HPP
 

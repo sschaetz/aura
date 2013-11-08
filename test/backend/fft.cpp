@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(basic) {
     copy(m1, &input[0], samples*sizeof(cfloat), f);
     copy(m2, &output[0], samples*sizeof(cfloat), f);
     
-    fft fh(d, fft_dim(samples), fft::type::c2c);
+    fft fh(d, f, fft_dim(samples), fft::type::c2c);
     fft_forward(m2, m1, fh, f);
     
     copy(&output[0], m2, samples*sizeof(cfloat), f);

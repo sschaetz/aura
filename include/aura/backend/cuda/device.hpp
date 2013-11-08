@@ -1,11 +1,12 @@
-
 #ifndef AURA_BACKEND_CUDA_DEVICE_HPP
 #define AURA_BACKEND_CUDA_DEVICE_HPP
 
+#include <cstring>
 #include <boost/move/move.hpp>
 #include <cuda.h>
 #include <aura/backend/cuda/call.hpp>
 #include <aura/backend/cuda/context.hpp>
+#include <aura/misc/deprecate.hpp>
 
 namespace aura {
 namespace backend_detail {
@@ -127,7 +128,7 @@ inline std::size_t device_get_count() {
 }
 
 /// print device info to stdout
-inline void print_device_info() {
+inline void print_system_info() {
   for(std::size_t n=0; n<device_get_count(); n++) {
     CUdevice device; 
     AURA_CUDA_SAFE_CALL(cuDeviceGet(&device, n));
@@ -137,45 +138,52 @@ inline void print_device_info() {
   }
 }
 
+inline void print_device_info() {
+  print_system_info();
+}
+DEPRECATED(void print_device_info());
+
+
 #include <aura/backend/shared/device_info.hpp>
-#if 0
+
 /// return the device info 
 device_info device_get_info(device & d) {
   device_info di;
   // name and vendor
   AURA_CUDA_SAFE_CALL(cuDeviceGetName(di.name, sizeof(di.name)-1,
-    device.get_backend_device()));
+    d.get_backend_device()));
   strncpy(di.vendor, "CUDA", sizeof(di.vendor)-1); 
-  
+
   // mesh 
-  int r;
-  AURA_CUDA_SAFE_CALL(&r, CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X,
-    device.get_backend_device());
+  int r=0;
+  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, 
+    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X, d.get_backend_device()));
   di.max_mesh.push_back(r);
-  AURA_CUDA_SAFE_CALL(&r, CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y,
-    device.get_backend_device());
+  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r,
+    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y, d.get_backend_device()));
   di.max_mesh.push_back(r);
-  AURA_CUDA_SAFE_CALL(&r, CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Z,
-    device.get_backend_device());
+  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, 
+    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Z, d.get_backend_device()));
   di.max_mesh.push_back(r);
 
   // bundle 
-  AURA_CUDA_SAFE_CALL(&r, CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X,
-    device.get_backend_device());
+  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X,
+    d.get_backend_device()));
   di.max_bundle.push_back(r);
-  AURA_CUDA_SAFE_CALL(&r, CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y,
-    device.get_backend_device());
+  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y,
+    d.get_backend_device()));
   di.max_bundle.push_back(r);
-  AURA_CUDA_SAFE_CALL(&r, CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z,
-    device.get_backend_device());
+  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z,
+    d.get_backend_device()));
   di.max_bundle.push_back(r);
 
   // fibers in bundle
-  AURA_CUDA_SAFE_CALL(&r, CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK,
-    device.get_backend_device());
-  max_fibers = r;
+  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK,
+    d.get_backend_device()));
+  di.max_fibers = r;
+  return di;
 }
-#endif
+
 } // cuda
 } // backend_detail
 } // aura
