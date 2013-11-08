@@ -87,17 +87,17 @@ void run_test() {
     double min, max, mean, stdev;
     int num;
     int result = 0;
-    MGPU_BENCHMARK(result += test_vector(i, copies), 
+    AURA_BENCHMARK(result += test_vector(i, copies), 
       duration, min, max, mean, stdev, num);
     printf("vector %d: [%1.2f %1.2f] %1.2f (%d) %d\n", 
       i, min, max, mean, num, result);
     result = 0;
-    MGPU_BENCHMARK(result += test_const_size(i, copies), 
+    AURA_BENCHMARK(result += test_const_size(i, copies), 
       duration, min, max, mean, stdev, num);
     printf("constant %d: [%1.2f %1.2f] %1.2f (%d) %d\n", 
       i, min, max, mean, num, result);
     result = 0;
-    MGPU_BENCHMARK(result += test_dynamic(i, copies), 
+    AURA_BENCHMARK(result += test_dynamic(i, copies), 
       duration, min, max, mean, stdev, num);
     printf("dynamic %d: [%1.2f %1.2f] %1.2f (%d) %d\n\n", 
       i, min, max, mean, num, result);

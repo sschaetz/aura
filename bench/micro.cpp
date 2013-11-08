@@ -43,7 +43,7 @@ void bench_noarg(std::vector<device> & devices,
   }
 
   for(std::size_t n=1; n<=devices.size(); n++) {
-    MGPU_BENCHMARK(bench_noarg_expr(feeds, kernels, n), 
+    AURA_BENCHMARK(bench_noarg_expr(feeds, kernels, n), 
       duration_per_test, min, max, mean, stdev, num);
     printf("%s_kernel: %ld GPUs num %lu min %f max %f mean %f stdev %f\n", 
       kernel_name, n, num, min, max, mean, stdev);
@@ -89,7 +89,7 @@ void bench_onearg(std::vector<device> & devices,
   }
 
   for(std::size_t n=1; n<=devices.size(); n++) {
-    MGPU_BENCHMARK(bench_onearg_expr(feeds, kernels, 
+    AURA_BENCHMARK(bench_onearg_expr(feeds, kernels, 
         device_memory, meshdim, bundledim, n), 
       duration_per_test, min, max, mean, stdev, num);
     printf("%s_kernel (%ldG %ld:%ld): num %lu min %f max %f mean %f stdev %f\n",

@@ -219,30 +219,30 @@ void bench_overlap(std::vector<device> & devices,
   // synchronize
   std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
   
-  MGPU_BENCHMARK(bench_fft_only(fftmem1, fftmem2, p2pmem1, p2pmem1, 
+  AURA_BENCHMARK(bench_fft_only(fftmem1, fftmem2, p2pmem1, p2pmem1, 
       ffth, kernels_4, feeds1, feeds2, dim),
     duration_per_test, min, max, mean, stdev, num);
   printf("%s: GPUs num %lu min %f max %f mean %f stdev %f\n", 
     "bench_fft_only", num, min, max, mean, stdev);
   
-  MGPU_BENCHMARK(bench_overlap_same_feed(fftmem1, fftmem2, p2pmem1, p2pmem1, 
+  AURA_BENCHMARK(bench_overlap_same_feed(fftmem1, fftmem2, p2pmem1, p2pmem1, 
       ffth, kernels_4, feeds1, feeds2, dim),
     duration_per_test, min, max, mean, stdev, num);
   printf("%s: GPUs num %lu min %f max %f mean %f stdev %f\n", 
     "bench_overlap_same_feed", num, min, max, mean, stdev);
   
-  MGPU_BENCHMARK(bench_overlap_diff_feed(fftmem1, fftmem2, p2pmem1, p2pmem1, 
+  AURA_BENCHMARK(bench_overlap_diff_feed(fftmem1, fftmem2, p2pmem1, p2pmem1, 
       ffth, kernels_4, feeds1, feeds2, dim),
     duration_per_test, min, max, mean, stdev, num);
   printf("%s: GPUs num %lu min %f max %f mean %f stdev %f\n", 
     "bench_overlap_diff_feed", num, min, max, mean, stdev);
  
-  MGPU_BENCHMARK(bench_overlap_diff_feed_2(fftmem1, fftmem2, p2pmem1, p2pmem1, 
+  AURA_BENCHMARK(bench_overlap_diff_feed_2(fftmem1, fftmem2, p2pmem1, p2pmem1, 
       ffth, kernels_2, feeds1, feeds2, dim),
     duration_per_test, min, max, mean, stdev, num);
   printf("%s: GPUs num %lu min %f max %f mean %f stdev %f\n", 
     "bench_overlap_diff_feed_2", num, min, max, mean, stdev);
-  MGPU_BENCHMARK(bench_overlap_diff_feed_copy_api(fftmem1, fftmem2, p2pmem1, 
+  AURA_BENCHMARK(bench_overlap_diff_feed_copy_api(fftmem1, fftmem2, p2pmem1, 
       p2pmem1, ffth, kernels_2, feeds1, feeds2, dim),
     duration_per_test, min, max, mean, stdev, num);
   printf("%s: GPUs num %lu min %f max %f mean %f stdev %f\n", 

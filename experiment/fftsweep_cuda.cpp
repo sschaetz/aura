@@ -38,7 +38,7 @@ void run_test(int size, device & d, feed & f) {
   // run benchmark
   double min, max, mean, stdev;
   int num;
-  MGPU_BENCHMARK_ASYNC(cufftExecC2C(plan, (cufftComplex *)m1,
+  AURA_BENCHMARK_ASYNC(cufftExecC2C(plan, (cufftComplex *)m1,
     (cufftComplex *)m2, CUFFT_FORWARD), f.synchronize();, 
     runtime, min, max, mean, stdev, num);
  

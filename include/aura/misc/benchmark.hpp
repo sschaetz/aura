@@ -131,7 +131,7 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
  * @param stdev standard deviation of test 
  * @param num number of test runs
  */
-#define MGPU_BENCHMARK(expression, duration, min, max, mean, stdev, num) {     \
+#define AURA_BENCHMARK(expression, duration, min, max, mean, stdev, num) {     \
   std::vector<double> measurements;                                            \
   double elapsed_time(0.), d2(0.);                                             \
   /* until time is not elapsed */                                              \
@@ -174,7 +174,7 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
  * @param stdev standard deviation of test 
  * @param num number of test runs
  */
-#define MGPU_BENCHMARK_ASYNC(expression, sync, duration,                       \
+#define AURA_BENCHMARK_ASYNC(expression, sync, duration,                       \
     min, max, mean, stdev, num) {                                              \
   std::vector<double> measurements;                                            \
   double elapsed_time(0.), d2(0.);                                             \
@@ -215,7 +215,7 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
  * @param duration the amount of time the expression should execute
  * @param result variable the median runtime of expression is stored in
  */
-#define MGPU_BENCHMARK_HISTOGRAM(expression, duration, result) {               \
+#define AURA_BENCHMARK_HISTOGRAM(expression, duration, result) {               \
   std::vector<double> measurements;                                            \
   double elapsed_time(0.), d2(0.);                                             \
   /* until time is not elapsed and we have not an unequal number of  */        \
@@ -242,4 +242,4 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
 /**/
 
 
-#endif // MGPU_MISC_BENCHMARK_HPP
+#endif // AURA_MISC_BENCHMARK_HPP

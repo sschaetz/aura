@@ -121,25 +121,25 @@ void run_tests() {
       
       if(ops[0]) {
         run_fwdip(mem1, ffth, feeds);        
-        MGPU_BENCHMARK(run_fwdip(mem1, ffth, feeds), 
+        AURA_BENCHMARK(run_fwdip(mem1, ffth, feeds), 
           runtime, min, max, mean, stdev, runs);
         print_results(ops_tbl[0], min, max, mean, stdev, runs, s, b);
       }
       if(ops[1]) {
         run_invip(mem1, ffth, feeds);        
-        MGPU_BENCHMARK(run_invip(mem1, ffth, feeds), 
+        AURA_BENCHMARK(run_invip(mem1, ffth, feeds), 
           runtime, min, max, mean, stdev, runs);
         print_results(ops_tbl[1], min, max, mean, stdev, runs, s, b);
       }
       if(ops[2]) {
         run_fwdop(mem1, mem2, ffth, feeds);        
-        MGPU_BENCHMARK(run_fwdop(mem1, mem2, ffth, feeds), 
+        AURA_BENCHMARK(run_fwdop(mem1, mem2, ffth, feeds), 
           runtime, min, max, mean, stdev, runs);
         print_results(ops_tbl[2], min, max, mean, stdev, runs, s, b);
       }
       if(ops[3]) {
         run_invop(mem1, mem2, ffth, feeds);        
-        MGPU_BENCHMARK(run_invop(mem1, mem2, ffth, feeds), 
+        AURA_BENCHMARK(run_invop(mem1, mem2, ffth, feeds), 
           runtime, min, max, mean, stdev, runs);
         print_results(ops_tbl[3], min, max, mean, stdev, runs, s, b);
       }
