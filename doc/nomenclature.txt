@@ -74,6 +74,16 @@ Now should it be fiber_bundle, fiber_mesh
 
 -----
 
+Name of include file for kernel code:
+
+* kernel_helper.hpp <--
+* stdkernel.hpp
+* stdkernellib.hpp
+* devicelib.hpp
+* libdevice.hpp
+
+-----
+
 
 OpenCL has command queues, CUDA has streams
 

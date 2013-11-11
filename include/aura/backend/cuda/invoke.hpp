@@ -34,6 +34,12 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
     bundlez = b[2];
   }
 
+  // number of bundles subdivides meshes but CUDA has a
+  // "consists of" semantic so we need less mesh elements
+  meshx /= bundlex;
+  meshy /= bundley;
+  meshz /= bundlez;
+
   f.set();
   AURA_CUDA_SAFE_CALL(cuLaunchKernel(k, meshx, meshy, meshz, 
     bundlex, bundley, bundlez, 0, f.get_backend_stream(), 

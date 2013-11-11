@@ -32,7 +32,7 @@ kernel create_kernel(module m, const char * kernel_name) {
  * @param m the module that is built
  * @param d the device the module is built for
  */
-void print_module_build_log(module m, device & d) {
+void print_module_build_log(module & m, device & d) {
   // from http://stackoverflow.com/a/9467325/244786
   // Determine the size of the log
   std::size_t log_size;

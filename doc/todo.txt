@@ -1,7 +1,7 @@
 Todo
 ====
 
-Change kernel size to consist of  
+OpenCL needs the path to AURA when building kernels. Generalize that.
 
 Kernels arguments probably have to copied into the args struct to
 capture temporaries such as ptr+offset - we can not take the
@@ -21,6 +21,8 @@ false if they are empty.
 Make boost optional dependency.
 
 Done:
+
+Change kernel size to consist of  
 
 There is something weird when putting devices and feeds in vectors
 without reserving space beforehand. The move thing does not seem

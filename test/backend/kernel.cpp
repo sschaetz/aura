@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(basic) {
   int num = device_get_count();
   if(0 < num) {
     device d(0); 
-    module m = create_module_from_file(kernel_file, d);
+    module m = create_module_from_file(kernel_file, d, "-I/home/sschaet/dev/noir/aura/include/");
     kernel k = create_kernel(m, "noarg");
     (void)k; 
   }
@@ -35,9 +35,9 @@ BOOST_AUTO_TEST_CASE(basic) {
 
 // basic
 
-// invoke_
+// invoke_simple
 // _____________________________________________________________________________
-BOOST_AUTO_TEST_CASE(invoke_) {
+BOOST_AUTO_TEST_CASE(invoke_simple) {
   initialize();
   int num = device_get_count();
   if(0 < num) {
@@ -49,12 +49,13 @@ BOOST_AUTO_TEST_CASE(invoke_) {
     std::vector<float> a1(xdim*ydim, 41.);
     std::vector<float> a2(xdim*ydim);
     
-    module mod = create_module_from_file(kernel_file, d);
+    module mod = create_module_from_file(kernel_file, d, "-I/home/sschaet/dev/noir/aura/include/");
+    print_module_build_log(mod, d);
     kernel k = create_kernel(mod, "simple_add"); 
     memory mem = device_malloc(xdim*ydim*sizeof(float), d);
     
     copy(mem, &a1[0], xdim*ydim*sizeof(float), f); 
-    invoke(k, mesh(ydim), bundle(xdim), args(mem), f);
+    invoke(k, mesh(ydim, xdim), bundle(xdim), args(mem), f);
     copy(&a2[0], mem, xdim*ydim*sizeof(float), f);
     wait_for(f);
 
@@ -77,7 +78,7 @@ BOOST_AUTO_TEST_CASE(invoke_noarg) {
     std::size_t xdim = 16;
     std::size_t ydim = 16;
     
-    module mod = create_module_from_file(kernel_file, d);
+    module mod = create_module_from_file(kernel_file, d, "-I/home/sschaet/dev/noir/aura/include/");
     kernel k = create_kernel(mod, "noarg"); 
     invoke(k, mesh(ydim), bundle(xdim), f);
     wait_for(f);

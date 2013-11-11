@@ -18,33 +18,40 @@ namespace opencl {
 
 namespace detail {
 
-#define AURA_KERNEL_THREAD_LAYOUT_CUDA
 void invoke_impl(kernel & k, const mesh & m, const bundle & b, 
   const args_t & a, feed & f) {
   // set parameters
   for(std::size_t i=0; i<a.size(); i++) {
     AURA_OPENCL_SAFE_CALL(clSetKernelArg(k, i, a[i].second, a[i].first));
   }
-#ifdef AURA_KERNEL_THREAD_LAYOUT_CUDA
-  svec<std::size_t, AURA_MAX_MESH_DIMS+AURA_MAX_BUNDLE_DIMS> m_, b_;
-  for(std::size_t i=0; i<m.size(); i++) {
-    m_.push_back(m[i]);
-    b_.push_back(1);
-  }
-  for(std::size_t i=m.size(); i<m.size()+b.size(); i++) {
-    m_.push_back(b[i-m.size()]);
-    b_.push_back(b[i-m.size()]);
-  }
+  
+  // handling for non 3-dimensional mesh and bundle sizes
+  mesh tm;
+  tm.push_back(m[0]);
+  tm.push_back(1);
+  tm.push_back(1);
+  bundle tb; 
+  tb.push_back(b[0]);
+  tb.push_back(1);
+  tb.push_back(1);
 
+  if(m.size() > 1) {
+    tm[1] = m[1];
+  }
+  if(m.size() > 2) {
+    tm[2] = m[2];
+  }
+  if(b.size() > 1) {
+    tb[1] = m[1];
+  }
+  if(b.size() > 2) {
+    tb[2] = m[2];
+  }
+  printf("%d %d %d %d %d %d\n", b[0], b[1], b[2], m[0], m[1], m[2]);
   // call kernel
   AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(
-    f.get_backend_stream(), k, m_.size(), NULL, &m_[0], &b_[0], 0, NULL, NULL));
-#else
-  assert(m.size() == b.size());
-  // call kernel
-  AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(
-    f.get_backend_stream(), k, m.size(), NULL, &m[0], &b[0], 0, NULL, NULL)); 
-#endif
+    f.get_backend_stream(), k, tm.size(), NULL, 
+    &tm[0], &tb[0], 0, NULL, NULL)); 
 } 
 
 } // namespace detail
