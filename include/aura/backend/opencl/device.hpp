@@ -2,12 +2,13 @@
 #ifndef AURA_BACKEND_OPENCL_DEVICE_HPP
 #define AURA_BACKEND_OPENCL_DEVICE_HPP
 
-
+#include <cstring>
 #include <boost/move/move.hpp>
 #include <vector>
 #include <CL/cl.h>
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/context.hpp>
+#include <aura/misc/deprecate.hpp>
 
 namespace aura {
 namespace backend_detail {
@@ -132,9 +133,9 @@ inline int device_get_count() {
 }
 
 /**
- * print device info to stdout
+ * print system info to stdout
  */
-inline void print_device_info() {
+inline void print_system_info() {
   // get platforms
   unsigned int num_platforms = 0;
   AURA_OPENCL_SAFE_CALL(clGetPlatformIDs(0, 0, &num_platforms));
@@ -164,6 +165,56 @@ inline void print_device_info() {
       num++;
     }
   }
+}
+inline void print_device_info() {
+  print_system_info();
+}
+DEPRECATED(void print_device_info());
+
+
+#include <aura/backend/shared/device_info.hpp>
+
+/// return the device info 
+device_info device_get_info(device & d) {
+  device_info di;
+
+  // name and vendor
+  std::size_t len;
+  std::vector<char> buf;
+  AURA_OPENCL_SAFE_CALL(clGetDeviceInfo(d.get_backend_device(), 
+    CL_DEVICE_NAME, 0, NULL, &len));
+  buf.reserve(len);
+  AURA_OPENCL_SAFE_CALL(clGetDeviceInfo(d.get_backend_device(), 
+    CL_DEVICE_NAME, len, &buf[0], NULL));
+  strncpy(di.name, &buf[0], sizeof(di.name)-1); 
+  AURA_OPENCL_SAFE_CALL(clGetDeviceInfo(d.get_backend_device(), 
+    CL_DEVICE_VENDOR, 0, NULL, &len));
+  buf.reserve(len);
+  AURA_OPENCL_SAFE_CALL(clGetDeviceInfo(d.get_backend_device(), 
+    CL_DEVICE_VENDOR, len, &buf[0], NULL));
+  strncpy(di.vendor, &buf[0], sizeof(di.name)-1); 
+
+  // mesh 
+  cl_uint dims;
+  AURA_OPENCL_SAFE_CALL(clGetDeviceInfo(d.get_backend_device(), 
+    CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(dims), &dims, NULL));
+  size_t sizes[dims];
+  AURA_OPENCL_SAFE_CALL(clGetDeviceInfo(d.get_backend_device(), 
+     CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(size_t)*dims, sizes, NULL));
+  assert(dims <= AURA_MAX_BUNDLE_DIMS);
+  for(cl_uint i=0; i<dims; i++) {
+    di.max_mesh.push_back(sizes[i]); 
+  }
+
+  // bundle 
+  di.max_bundle = di.max_mesh;
+
+  // fibers in bundle
+  size_t wgs;
+  AURA_OPENCL_SAFE_CALL(clGetDeviceInfo(d.get_backend_device(), 
+    CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(wgs), &wgs, NULL));
+  di.max_fibers_per_bundle = wgs;
+  return di;
 }
 
 

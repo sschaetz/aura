@@ -27,7 +27,8 @@ BOOST_AUTO_TEST_CASE(basic) {
   int num = device_get_count();
   if(0 < num) {
     device d(0); 
-    module m = create_module_from_file(kernel_file, d, "-I/home/sschaet/dev/noir/aura/include/");
+    module m = create_module_from_file(kernel_file, d, 
+      AURA_BACKEND_COMPILE_FLAGS);
     kernel k = create_kernel(m, "noarg");
     (void)k; 
   }
@@ -49,7 +50,8 @@ BOOST_AUTO_TEST_CASE(invoke_simple) {
     std::vector<float> a1(xdim*ydim, 41.);
     std::vector<float> a2(xdim*ydim);
     
-    module mod = create_module_from_file(kernel_file, d, "-I/home/sschaet/dev/noir/aura/include/");
+    module mod = create_module_from_file(kernel_file, d, 
+      AURA_BACKEND_COMPILE_FLAGS);
     print_module_build_log(mod, d);
     kernel k = create_kernel(mod, "simple_add"); 
     memory mem = device_malloc(xdim*ydim*sizeof(float), d);
@@ -78,9 +80,12 @@ BOOST_AUTO_TEST_CASE(invoke_noarg) {
     std::size_t xdim = 16;
     std::size_t ydim = 16;
     
-    module mod = create_module_from_file(kernel_file, d, "-I/home/sschaet/dev/noir/aura/include/");
+    module mod = create_module_from_file(kernel_file, d, 
+      AURA_BACKEND_COMPILE_FLAGS);
+
     kernel k = create_kernel(mod, "noarg"); 
     invoke(k, mesh(ydim), bundle(xdim), f);
     wait_for(f);
   }
 }
+

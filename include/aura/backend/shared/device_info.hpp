@@ -6,7 +6,8 @@ struct device_info {
   char vendor[300];
   svec<std::size_t, AURA_MAX_MESH_DIMS> max_mesh; 
   svec<std::size_t, AURA_MAX_BUNDLE_DIMS> max_bundle; 
-  std::size_t max_fibers;
+  // max fibers per bundle
+  std::size_t max_fibers_per_bundle;
 };
 
 /// print device info to stdout
@@ -19,7 +20,7 @@ inline void print_device_info(device_info & di) {
   for(std::size_t i=0; i<di.max_bundle.size(); i++) {
     printf("%lu ", di.max_bundle[i]);
   }
-  printf("max_fibers: %lu\n", di.max_fibers);
+  printf("max_fibers_per_bundle: %lu\n", di.max_fibers_per_bundle);
 }
 
 #endif // AURA_BACKEND_SHARED_DEVICE_INFO_HPP

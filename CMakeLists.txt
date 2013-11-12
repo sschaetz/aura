@@ -67,6 +67,10 @@ MESSAGE(STATUS "Using ${AURA_BACKEND} backend")
 # compiler settings
 SET(CMAKE_CXX_FLAGS "-Wall -std=c++0x -g")
 
+# used for OpenCL kernels that need to have the include dirs at runtime
+SET(AURA_BACKEND_COMPILE_FLAGS 
+  "-I${PROJECT_SOURCE_DIR}/include/ -I${CMAKE_BINARY_DIR}")
+
 # configuration file
 CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/include/aura/config.hpp.template"
   "${CMAKE_BINARY_DIR}/aura/config.hpp")

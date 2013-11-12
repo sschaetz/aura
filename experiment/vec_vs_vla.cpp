@@ -101,6 +101,7 @@ void run_test() {
       duration, min, max, mean, stdev, num);
     printf("dynamic %d: [%1.2f %1.2f] %1.2f (%d) %d\n\n", 
       i, min, max, mean, num, result);
+    (void)stdev;
   }
 }
 

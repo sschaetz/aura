@@ -152,7 +152,7 @@ device_info device_get_info(device & d) {
   // name and vendor
   AURA_CUDA_SAFE_CALL(cuDeviceGetName(di.name, sizeof(di.name)-1,
     d.get_backend_device()));
-  strncpy(di.vendor, "CUDA", sizeof(di.vendor)-1); 
+  strncpy(di.vendor, "Nvidia", sizeof(di.vendor)-1); 
 
   // mesh 
   int r=0;
@@ -180,7 +180,7 @@ device_info device_get_info(device & d) {
   // fibers in bundle
   AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK,
     d.get_backend_device()));
-  di.max_fibers = r;
+  di.max_fibers_per_bundle = r;
   return di;
 }
 

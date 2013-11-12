@@ -31,9 +31,9 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
   tm.push_back(1);
   tm.push_back(1);
   bundle tb; 
+  tb.push_back(1);
+  tb.push_back(1);
   tb.push_back(b[0]);
-  tb.push_back(1);
-  tb.push_back(1);
 
   if(m.size() > 1) {
     tm[1] = m[1];
@@ -42,12 +42,11 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
     tm[2] = m[2];
   }
   if(b.size() > 1) {
-    tb[1] = m[1];
+    tb[1] = b[1];
   }
   if(b.size() > 2) {
-    tb[2] = m[2];
+    tb[2] = b[2];
   }
-  printf("%d %d %d %d %d %d\n", b[0], b[1], b[2], m[0], m[1], m[2]);
   // call kernel
   AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(
     f.get_backend_stream(), k, tm.size(), NULL, 

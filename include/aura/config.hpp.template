@@ -27,5 +27,8 @@
 #cmakedefine01 AURA_FFT_CLFFT
 #cmakedefine01 AURA_FFT_CUFFT
 
+/// used for runtime kernel compilation
+#define AURA_BACKEND_COMPILE_FLAGS "@AURA_BACKEND_COMPILE_FLAGS@"
+
 #endif // AURA_CONFIG_HPP 
 

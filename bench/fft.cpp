@@ -73,7 +73,7 @@ void print_results(const char * name, double min, double max,
     const aura::svec<std::size_t, 1> & batch) {
   printf("%s %lux ", name, batch[0]);
   for(std::size_t i=0; i<s.size(); i++) {
-    printf("%d ", s[i]);
+    printf("%lu ", s[i]);
   }
   printf("min %f max %f mean %f stdev %f runs %lu\n", 
     min, max, mean, stdev, runs);

@@ -1,12 +1,14 @@
+#include <aura/backend.hpp>
+
 __kernel void noarg() {}
 
 __kernel void simple_add(__global float * A) {
-  int id = get_global_id(0) * get_global_size(0) + get_local_id(1);
+  int id = get_mesh_id();
   A[id] += 1.0;
 }
 
 __kernel void four_mad(__global float * A) {
-  int id = get_global_id(0) * get_global_size(0) + get_local_id(1);
+  int id = get_mesh_id();
   float f = A[id]; 
   f *= 41.0;
   f += 37.0;
@@ -39,7 +41,7 @@ __kernel void four_mad(__global float * A) {
   /**/
 
 __kernel void peak_flop(__global float * A) {
-  int id = get_global_id(0) * get_global_size(0) + get_local_id(1);
+  int id = get_mesh_id();
   float r0, r1, r2, r3, r4, r5, r6, r7;
   float r8, r9, r10, r11, r12, r13, r14, r15;
   r0 = 0.0001 * id;
@@ -83,7 +85,7 @@ __kernel void peak_flop(__global float * A) {
 }
 
 __kernel void peak_flop_empty(__global float * A) {
-  int id = get_global_id(0) * get_global_size(0) + get_local_id(1);
+  int id = get_mesh_id(); 
   float r0, r1, r2, r3, r4, r5, r6, r7;
   float r8, r9, r10, r11, r12, r13, r14, r15;
   r0 = 0.0001 * id;

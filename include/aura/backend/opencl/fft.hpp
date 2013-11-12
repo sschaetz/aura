@@ -92,10 +92,11 @@ public:
     AURA_CLFFT_SAFE_CALL(clfftBakePlan(outofplace_handle_, 1, 
       const_cast<cl_command_queue*>(&f.get_backend_stream()),
       nullptr, nullptr));
-    
+    wait_for(f);    
     std::size_t buffer_size1, buffer_size2;
     AURA_CLFFT_SAFE_CALL(clfftGetTmpBufSize(inplace_handle_, &buffer_size1));
     AURA_CLFFT_SAFE_CALL(clfftGetTmpBufSize(outofplace_handle_, &buffer_size2));
+    printf("%lu %lu\n", buffer_size1, buffer_size2);		
     if(0 < buffer_size1 || 0 < buffer_size2) {
       buffer_ = device_malloc((buffer_size1 > buffer_size2) ? 
         buffer_size1 : buffer_size2, d);
