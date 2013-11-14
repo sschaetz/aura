@@ -58,7 +58,6 @@ inline void bench_onearg_expr(std::vector<feed> & feeds,
   std::vector<kernel> & kernels, std::vector<memory> & device_memory,
   std::size_t meshx, std::size_t meshy, std::size_t meshz, 
   std::size_t bundlex, std::size_t num) {
-
   for(std::size_t n=0; n<num; n++) {
     invoke(kernels[n], mesh(meshx, meshy, meshz), bundle(bundlex, 1, 1),
       args(device_memory[n]), feeds[n]);
