@@ -18,8 +18,8 @@ typedef std::complex<float> cfloat;
 // FIXME missing type (double, float) and r2c c2r
 
 // configuration
-aura::sequence<aura::backend::fft_size, 3> size;
-aura::sequence<std::size_t, 1> batch;
+std::vector<aura::svec<aura::backend::fft_size, 3> > size;
+std::vector<aura::svec<std::size_t, 1> > batch;
 std::size_t runtime;
 
 aura::svec<std::size_t> devordinals;
@@ -94,25 +94,18 @@ void run_tests() {
     feeds.push_back(aura::backend::feed(devices[i]));
   }
   
-  aura::svec<std::size_t, 1> b;
-  bool bgood;
-  std::tie(b, bgood) = batch.next();
- 
-  while(bgood) {
-    aura::svec<aura::backend::fft_size, 3> s;
-    bool sgood;
-    std::tie(s, sgood) = size.next();
-    while(sgood) {
+  for(std::size_t b=0; b<batch.size(); b++) {
+    for(std::size_t s=0; s<size.size(); s++) {
       // allocate memory, make fft plan
       std::vector<aura::backend::memory> mem1;
       std::vector<aura::backend::memory> mem2;
       std::vector<aura::backend::fft> ffth;
       for(std::size_t i=0; i<devices.size(); i++) {
-        std::size_t msize = aura::product(s) * b[0] * sizeof(cfloat);
+        std::size_t msize = aura::product(size[s]) * batch[b][0] * sizeof(cfloat);
         mem1.push_back(aura::backend::device_malloc(msize, devices[i])); 
         mem2.push_back(aura::backend::device_malloc(msize, devices[i]));
-        ffth.push_back(aura::backend::fft(devices[i], feeds[i], s, 
-          aura::backend::fft::type::c2c, b[0]));
+        ffth.push_back(aura::backend::fft(devices[i], feeds[i], size[s], 
+          aura::backend::fft::type::c2c, batch[b][0]));
       }
       
       // benchmark result variables
@@ -123,25 +116,29 @@ void run_tests() {
         run_fwdip(mem1, ffth, feeds);        
         AURA_BENCHMARK(run_fwdip(mem1, ffth, feeds), 
           runtime, min, max, mean, stdev, runs);
-        print_results(ops_tbl[0], min, max, mean, stdev, runs, s, b);
+        print_results(ops_tbl[0], min, max, mean, stdev, runs, 
+          size[s], batch[b]);
       }
       if(ops[1]) {
         run_invip(mem1, ffth, feeds);        
         AURA_BENCHMARK(run_invip(mem1, ffth, feeds), 
           runtime, min, max, mean, stdev, runs);
-        print_results(ops_tbl[1], min, max, mean, stdev, runs, s, b);
+        print_results(ops_tbl[1], min, max, mean, stdev, runs,
+          size[s], batch[b]);
       }
       if(ops[2]) {
         run_fwdop(mem1, mem2, ffth, feeds);        
         AURA_BENCHMARK(run_fwdop(mem1, mem2, ffth, feeds), 
           runtime, min, max, mean, stdev, runs);
-        print_results(ops_tbl[2], min, max, mean, stdev, runs, s, b);
+        print_results(ops_tbl[2], min, max, mean, stdev, runs,
+          size[s], batch[b]);
       }
       if(ops[3]) {
         run_invop(mem1, mem2, ffth, feeds);        
         AURA_BENCHMARK(run_invop(mem1, mem2, ffth, feeds), 
           runtime, min, max, mean, stdev, runs);
-        print_results(ops_tbl[3], min, max, mean, stdev, runs, s, b);
+        print_results(ops_tbl[3], min, max, mean, stdev, runs,
+          size[s], batch[b]);
       }
 
       // free memory 
@@ -149,10 +146,7 @@ void run_tests() {
         aura::backend::device_free(mem1[i], devices[i]);
         aura::backend::device_free(mem2[i], devices[i]);
       }
-      std::tie(s, sgood) = size.next();
     }
-    size.rewind();
-    std::tie(b, bgood) = batch.next();
   }
   fft_terminate();
 }
@@ -170,7 +164,7 @@ int main(int argc, char *argv[]) {
     switch (opt) {
       case 's': {
         printf("size: %s ", optarg);
-        size = aura::sequence<aura::backend::fft_size, 3>(optarg);
+        size = aura::generate_sequence<aura::backend::fft_size, 3>(optarg);
         printf("(%lu) ", size.size());
         break;
       }
@@ -183,7 +177,7 @@ int main(int argc, char *argv[]) {
       }
       case 'b': {
         printf("batch: %s ", optarg);
-        batch = aura::sequence<std::size_t, 1>(optarg);
+        batch = aura::generate_sequence<std::size_t, 1>(optarg);
         printf("(%lu) ", batch.size());
         break;
       }

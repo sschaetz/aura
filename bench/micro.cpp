@@ -1,4 +1,4 @@
-// run various micro-benchmarks (simple kernels) on all devices available
+// run various micro-benchmarks (simple kernels) 
 
 #include <vector>
 #include <aura/backend.hpp>
@@ -102,7 +102,7 @@ void bench_onearg(std::vector<device> & devices,
 
 // ----
 
-int main(void) {
+int main() {
   initialize();
   print_device_info();
   std::size_t num = 1;

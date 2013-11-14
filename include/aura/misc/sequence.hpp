@@ -11,6 +11,8 @@
 
 namespace aura {
 
+
+
 /// generate a sequence of tuples, defined by a sequence string
 /// T must be a numeric type
 template <typename T, std::size_t max_size_>
@@ -133,6 +135,23 @@ struct sequence {
   svec<T, max_size_> arg_;  
 
 };
+
+/// generate a vector containing a sequence defined by a string
+template <typename T, std::size_t max_size_>
+std::vector<svec<T, max_size_> > generate_sequence(const char * definition) {
+  sequence<T, max_size_> s(definition);
+  std::vector<svec<T, max_size_> > ret;
+  ret.reserve(s.size());
+  
+  bool good = false;
+  svec<T, max_size_> val;  
+  std::tie(val, good) = s.next();
+  while(good) {
+    ret.push_back(val);
+    std::tie(val, good) = s.next();
+  }
+  return ret; 
+}
 
 
 } // namespace aura

@@ -35,3 +35,20 @@ BOOST_AUTO_TEST_CASE(basic) {
   BOOST_CHECK(good == false);
 }
 
+
+// generator 
+// _____________________________________________________________________________
+
+BOOST_AUTO_TEST_CASE(generator) {
+  std::vector<aura::svec<std::size_t, 3> > vec = 
+    generate_sequence<std::size_t, 3>("10:+3:17,100:*2:2000");
+  // should generate (10, 100) (13, 200) (16, 400) 
+  BOOST_CHECK(vec.size() == 3); 
+  BOOST_CHECK(vec[0][0] == 10);
+  BOOST_CHECK(vec[0][1] == 100);
+  BOOST_CHECK(vec[1][0] == 13);
+  BOOST_CHECK(vec[1][1] == 200);
+  BOOST_CHECK(vec[2][0] == 16);
+  BOOST_CHECK(vec[2][1] == 400);
+}
+
