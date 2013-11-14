@@ -24,7 +24,6 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
   for(std::size_t i=0; i<a.size(); i++) {
     AURA_OPENCL_SAFE_CALL(clSetKernelArg(k, i, a[i].second, a[i].first));
   }
-  
   // handling for non 3-dimensional mesh and bundle sizes
   mesh tm;
   tm.push_back(m[0]);
@@ -33,7 +32,7 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
   bundle tb; 
   tb.push_back(1);
   tb.push_back(1);
-  tb.push_back(b[0]);
+  tb.push_back(1);
 
   if(m.size() > 1) {
     tm[1] = m[1];
@@ -41,15 +40,18 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
   if(m.size() > 2) {
     tm[2] = m[2];
   }
-  if(b.size() > 1) {
-    tb[1] = b[1];
+  if(b.size() > 0 && m.size() > 0) {
+    tb[m.size()-1] = b[b.size()-1];
   }
-  if(b.size() > 2) {
-    tb[2] = b[2];
+  if(b.size() > 1 && m.size() > 0) {
+    tb[m.size()-2] = b[b.size()-2];
+  }
+  if(b.size() > 2 && m.size() > 2) {
+    tb[m.size()-3] = b[b.size()-3];
   }
   // call kernel
   AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(
-    f.get_backend_stream(), k, tm.size(), NULL, 
+    f.get_backend_stream(), k, m.size(), NULL, 
     &tm[0], &tb[0], 0, NULL, NULL)); 
 } 
 

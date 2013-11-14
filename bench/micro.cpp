@@ -58,11 +58,10 @@ inline void bench_onearg_expr(std::vector<feed> & feeds,
   std::vector<kernel> & kernels, std::vector<memory> & device_memory,
   std::size_t meshx, std::size_t meshy, std::size_t meshz, 
   std::size_t bundlex, std::size_t num) {
-  for(int i=0; i<20; i++) {
+
   for(std::size_t n=0; n<num; n++) {
-    invoke(kernels[n], mesh(meshx, meshy, meshz), bundle(bundlex),
+    invoke(kernels[n], mesh(meshx, meshy, meshz), bundle(bundlex, 1, 1),
       args(device_memory[n]), feeds[n]);
-  } 
   }
   for(std::size_t n=0; n<num; n++) {
     wait_for(feeds[n]); 
@@ -88,7 +87,7 @@ void bench_onearg(std::vector<device> & devices,
     kernels[n] = create_kernel(modules[n], kernel_name);
     device_memory[n] = device_malloc(size*sizeof(float), devices[n]);
     copy(&host_memory[0], device_memory[n], size*sizeof(float), feeds[n]);
-    invoke(kernels[n], mesh(meshx, meshy, meshz), bundle(bundlex), 
+    invoke(kernels[n], mesh(meshx, meshy, meshz), bundle(bundlex, 1, 1), 
       args(device_memory[n]), feeds[n]);
     wait_for(feeds[n]); 
   }
@@ -119,8 +118,8 @@ int main(void) {
   }
 
   bench_noarg(devices, feeds, "noarg");
-  bench_onearg(devices, feeds, "simple_add", 32, 32, 1, 32);
-  bench_onearg(devices, feeds, "four_mad", 32, 32, 1, 32);
+  bench_onearg(devices, feeds, "simple_add", 32, 32, 32, 32);
+  bench_onearg(devices, feeds, "four_mad", 32, 32, 32, 32);
   bench_onearg(devices, feeds, "peak_flop_empty", 256, 256, 256, 256);
   bench_onearg(devices, feeds, "peak_flop", 256, 256, 256, 256);
 }

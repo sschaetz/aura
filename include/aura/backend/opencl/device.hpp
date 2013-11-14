@@ -2,6 +2,7 @@
 #ifndef AURA_BACKEND_OPENCL_DEVICE_HPP
 #define AURA_BACKEND_OPENCL_DEVICE_HPP
 
+#include <cstddef>
 #include <cstring>
 #include <boost/move/move.hpp>
 #include <vector>
