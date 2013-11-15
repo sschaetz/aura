@@ -6,6 +6,7 @@
 #include <boost/preprocessor/arithmetic/inc.hpp>
 #include <boost/preprocessor/repetition/repeat_from_to.hpp>
 #include <boost/type_traits/has_multiplies_assign.hpp>
+#include <boost/type_traits/is_integral.hpp>
 #include <boost/mpl/assert.hpp>
 #include <boost/mpl/less_equal.hpp>
 #include <aura/config.hpp>
@@ -127,16 +128,32 @@ T product_impl(const svec<T, max_size_> & v, const boost::true_type &) {
 }
 
 template <typename T, std::size_t max_size_, bool b>
-T product_impl(const svec<T, max_size_> & v, const boost::integral_constant<bool, b>&) {
+T product_impl(const svec<T, max_size_> & v, 
+    const boost::integral_constant<bool, b> &) {
   // FIXME
   assert(false);
 }
 
-// calculate the product of all elements of svec (if *= operator exists for T)
+/// calculate the product of all elements of svec (if *= operator exists for T)
 template <typename T, std::size_t max_size_>
 T product(const svec<T, max_size_> & v) {
   assert(0 < v.size());
   return product_impl(v, boost::has_multiplies_assign<T, T, T>());
+}
+
+/// write content of svec to sized buffer
+template <std::size_t max_size_>
+void svec_snprintf(char * c, std::size_t s, 
+  const svec<std::size_t, max_size_> & v) {
+  assert(0 < v.size());
+  std::size_t l = 0;
+  for(std::size_t i=0; i<v.size(); i++) {
+    l = snprintf(c, s, "%lu,", v[i]);
+    c+=l;
+    s-=l;
+  }
+  c-=1;
+  *c='\0';
 }
 
 } // namespace aura

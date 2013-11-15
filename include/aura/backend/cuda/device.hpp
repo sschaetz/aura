@@ -167,19 +167,19 @@ device_info device_get_info(device & d) {
   di.max_mesh.push_back(r);
 
   // bundle 
-  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X,
-    d.get_backend_device()));
+  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, 
+    CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X, d.get_backend_device()));
   di.max_bundle.push_back(r);
-  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y,
-    d.get_backend_device()));
+  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, 
+    CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y, d.get_backend_device()));
   di.max_bundle.push_back(r);
-  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z,
-    d.get_backend_device()));
+  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, 
+    CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z, d.get_backend_device()));
   di.max_bundle.push_back(r);
 
   // fibers in bundle
-  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK,
-    d.get_backend_device()));
+  AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, 
+    CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK, d.get_backend_device()));
   di.max_fibers_per_bundle = r;
   return di;
 }

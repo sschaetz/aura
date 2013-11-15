@@ -4,8 +4,9 @@
 #include <stdio.h>
 #include <cctype>
 #include <cstdlib>
-#include <vector>
 #include <cmath>
+#include <vector>
+#include <tuple>
 #include <aura/error.hpp>
 #include <aura/detail/svec.hpp>
 
@@ -27,6 +28,12 @@ struct sequence {
    * 4:+1:10
    * 4:-1:3;2:*2:32
    * start-dim0:op arg:stop-dim0;start-dim1:op arg:stop-dim1
+   *
+   * also supports explicit values in brackets like:
+   * (val1,val2);(val3,val4)
+   *
+   * if the string is malformed this will most likely not give
+   * an error but simply not work 
    */
   inline sequence(const char * definition) {
     const char * c = definition;

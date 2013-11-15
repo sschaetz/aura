@@ -21,6 +21,14 @@
 
 namespace aura {
 
+inline void print_benchmark_results(const char * name, 
+  double min, double max, double mean, double stdev, 
+  std::size_t runs, std::size_t runtime) {
+  printf("%s ", name);
+  printf("min %f max %f mean %f stdev %f runs %lu in %luus\n", 
+    min, max, mean, stdev, runs, runtime);
+}
+
 namespace details {
 
 
