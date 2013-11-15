@@ -3,6 +3,9 @@ Bench
 
 List of required/desired benchmarks:
 
+* (backend) synchronization without anything and with
+  empty kernel in between
+
 * (backend) empty kernel with different number of 
   parameters; test with different mesh and bundle sizes
 
