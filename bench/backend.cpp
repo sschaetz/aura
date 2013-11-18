@@ -15,7 +15,8 @@
 #include <aura/misc/benchmark.hpp>
 
 
-const char * ops_tbl[] = { "sync", "synck", "kern", "params" };
+const char * ops_tbl[] = { "sync", "synck", "kern", 
+  "params", "ctx", "ctxfeed" };
 
 using namespace aura;
 using namespace aura::backend;
@@ -26,6 +27,10 @@ const char * kernel_file = "bench/backend.cl";
 const char * kernel_file = "bench/backend.ptx"; 
 #endif
 
+inline void run_ctx(int dev_ordinal) {
+  device * d = new device(dev_ordinal);
+  delete d;
+}
 
 inline void run_sync(feed & f) {
   wait_for(f);
@@ -92,63 +97,78 @@ inline void run_tests(
   int dev_ordinal, std::size_t runtime,
   std::bitset< sizeof(ops_tbl)/sizeof(ops_tbl[0]) > & ops) {
 
-  device d(dev_ordinal);
-  feed f(d);
-
-  module m = create_module_from_file(kernel_file, d, 
-    AURA_BACKEND_COMPILE_FLAGS);
-  
   // benchmark result variables
   double min, max, mean, stdev;
   std::size_t runs;
+ 
+  // benchmarks working with device and feed 
+  if(ops[4]) { // ctx
+    run_ctx(dev_ordinal); // dry run
+    AURA_BENCHMARK(run_ctx(dev_ordinal), runtime, min, max, mean, stdev, runs);
+    print_benchmark_results(ops_tbl[4], min, max, mean, stdev, runs, runtime);
+  }
   
-  if(ops[0]) { // sync
-    run_sync(f); // dry run
-    AURA_BENCHMARK(run_sync(f), runtime, min, max, mean, stdev, runs);
-    print_benchmark_results(ops_tbl[0], min, max, mean, stdev, runs, runtime);
+  if(ops[5]) { // ctxfeed
+    run_ctxfeed(dev_ordinal); // dry run
+    AURA_BENCHMARK(run_ctxfeed(dev_ordinal), runtime, min, max, mean, stdev, runs);
+    print_benchmark_results(ops_tbl[5], min, max, mean, stdev, runs, runtime);
   }
-  if(ops[1]) { // synck 
-    kernel nak = create_kernel(m, "kernel_0arg");
-    run_synck(f, nak); // dry run
-    AURA_BENCHMARK(run_synck(f, nak), runtime, min, max, mean, stdev, runs);
-    print_benchmark_results(ops_tbl[1], min, max, mean, stdev, runs, runtime);
-  }
-  if(ops[2]) { // kern 
-    kernel nak = create_kernel(m, "kernel_0arg");
-    run_kern(f, nak); // dry run
-    AURA_BENCHMARK(run_kern(f, nak), runtime, min, max, mean, stdev, runs);
-    print_benchmark_results(ops_tbl[2], min, max, mean, stdev, runs, runtime);
-    wait_for(f); // we did not synchronize in this benchmark
-  }
-  if(ops[3]) { // params
-    for(std::size_t p=0; p<params.size(); p++) {
-      
-      char kernel_name[] = "kernel_XXXarg";
-      assert(0 <= params[p][0] && 11 > params[p][0]);
-      snprintf(kernel_name, sizeof(kernel_name)-1, 
-        "kernel_%luarg", params[p][0]);
-      kernel k = create_kernel(m, kernel_name);
-      
-      for(std::size_t m=0; m<meshes.size(); m++) {
-        for(std::size_t b=0; b<bundles.size(); b++) {
-          run_params(f, k, meshes[m], bundles[b], params[p][0]);      
-          AURA_BENCHMARK(run_params(f, k, meshes[m], bundles[b], params[p][0]), 
-            runtime, min, max, mean, stdev, runs);
-          char tmp1[200];
-          char tmp2[200];
-          char name[600];
-          svec_snprintf(tmp1, sizeof(tmp1), meshes[m]);
-          svec_snprintf(tmp2, sizeof(tmp2), bundles[m]);
-          snprintf(name, sizeof(name), "%s m (%s) b (%s) p %lu", 
-            ops_tbl[3], tmp1, tmp2, params[p][0]); 
-          print_benchmark_results(name, min, max, mean, 
-            stdev, runs, runtime);
+
+  // benchmarks requiring device and feed 
+  {
+    device d(dev_ordinal);
+    feed f(d);
+
+    module m = create_module_from_file(kernel_file, d, 
+      AURA_BACKEND_COMPILE_FLAGS);
+    
+    
+    if(ops[0]) { // sync
+      run_sync(f); // dry run
+      AURA_BENCHMARK(run_sync(f), runtime, min, max, mean, stdev, runs);
+      print_benchmark_results(ops_tbl[0], min, max, mean, stdev, runs, runtime);
+    }
+    if(ops[1]) { // synck 
+      kernel nak = create_kernel(m, "kernel_0arg");
+      run_synck(f, nak); // dry run
+      AURA_BENCHMARK(run_synck(f, nak), runtime, min, max, mean, stdev, runs);
+      print_benchmark_results(ops_tbl[1], min, max, mean, stdev, runs, runtime);
+    }
+    if(ops[2]) { // kern 
+      kernel nak = create_kernel(m, "kernel_0arg");
+      run_kern(f, nak); // dry run
+      AURA_BENCHMARK(run_kern(f, nak), runtime, min, max, mean, stdev, runs);
+      print_benchmark_results(ops_tbl[2], min, max, mean, stdev, runs, runtime);
+      wait_for(f); // we did not synchronize in this benchmark
+    }
+    if(ops[3]) { // params
+      for(std::size_t p=0; p<params.size(); p++) {
+        
+        char kernel_name[] = "kernel_XXXarg";
+        assert(0 <= params[p][0] && 11 > params[p][0]);
+        snprintf(kernel_name, sizeof(kernel_name)-1, 
+          "kernel_%luarg", params[p][0]);
+        kernel k = create_kernel(m, kernel_name);
+        
+        for(std::size_t m=0; m<meshes.size(); m++) {
+          for(std::size_t b=0; b<bundles.size(); b++) {
+            run_params(f, k, meshes[m], bundles[b], params[p][0]);      
+            AURA_BENCHMARK(run_params(f, k, meshes[m], bundles[b], 
+              params[p][0]), runtime, min, max, mean, stdev, runs);
+            char tmp1[200];
+            char tmp2[200];
+            char name[600];
+            svec_snprintf(tmp1, sizeof(tmp1), meshes[m]);
+            svec_snprintf(tmp2, sizeof(tmp2), bundles[m]);
+            snprintf(name, sizeof(name), "%s m (%s) b (%s) p %lu", 
+              ops_tbl[3], tmp1, tmp2, params[p][0]); 
+            print_benchmark_results(name, min, max, mean, 
+              stdev, runs, runtime);
+          }
         }
       }
     }
   }
-
-
   
 }
 
@@ -158,11 +178,11 @@ int main(int argc, char *argv[]) {
   initialize();
   
   // parse command line arguments:
-  // -m mesh sizes (sequence, max rank)
-  // -b bundle sizes (sequence, max rank)
+  // -m mesh sizes (sequence, max rank 3)
+  // -b bundle sizes (sequence, max rank 3)
   // -p number of params (sequence, range 0-10)
   // -d device (single value)
-  // -t time (time per test in ms)
+  // -t time (time per benchmark in ms)
 
   // config params
   std::bitset< sizeof(ops_tbl)/sizeof(ops_tbl[0]) > ops;

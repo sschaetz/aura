@@ -3,6 +3,8 @@ Bench
 
 List of required/desired benchmarks:
 
+* (backend) creation of context
+
 * (backend) synchronization without anything and with
   empty kernel in between
 
@@ -10,7 +12,7 @@ List of required/desired benchmarks:
   parameters; test with different mesh and bundle sizes
 
 * (computation) kernel doing many MAD ops to try to get
-  max peak GFLOP performance
+  max GFLOP performance
 
 * (bandwidth) kernel accessing device memory to 
   determine max throughput
