@@ -33,7 +33,8 @@ public:
    * @param ordinal device number
    */
   inline explicit device(std::size_t ordinal) : 
-    context_(new detail::context(ordinal)) {}
+    context_(new detail::context(ordinal)),
+    ordinal_(ordinal) {}
 
   /// destroy device
   inline ~device() {
@@ -45,7 +46,8 @@ public:
    *
    * @param d device to move here
    */
-  device(BOOST_RV_REF(device) d) : context_(d.context_) { 
+  device(BOOST_RV_REF(device) d) : 
+    context_(d.context_), ordinal_(d.ordinal_) {
     d.context_ = nullptr;
   }
 
@@ -58,6 +60,7 @@ public:
   {
     finalize();
     context_ = d.context_;
+    ordinal_ = d.ordinal_;
     d.context_ = nullptr;
     return *this;
   }
@@ -103,6 +106,11 @@ public:
     return context_; 
   }
 
+  /// access the device ordinal 
+  inline std::size_t get_ordinal() const {
+    return ordinal_; 
+  }
+
 private:
   /// finalize object (called from dtor and move assign)
   void finalize() {
@@ -113,7 +121,10 @@ private:
 
 private:
   /// device context
-  detail::context * context_;
+  detail::context * context_; 
+  
+  /// device ordinal
+  std::size_t ordinal_;
 };
   
 /**

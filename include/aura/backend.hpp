@@ -13,6 +13,7 @@
     #include <aura/backend/cuda/bundle.hpp>
     #include <aura/backend/cuda/call.hpp>
     #include <aura/backend/cuda/device.hpp>
+    #include <aura/backend/cuda/device_ptr.hpp>
     #include <aura/backend/cuda/feed.hpp>
     #include <aura/backend/cuda/fft.hpp>
     #include <aura/backend/cuda/mesh.hpp>
@@ -33,6 +34,7 @@
     #include <aura/backend/opencl/bundle.hpp>
     #include <aura/backend/opencl/call.hpp>
     #include <aura/backend/opencl/device.hpp>
+    #include <aura/backend/opencl/device_ptr.hpp>
     #include <aura/backend/opencl/feed.hpp>
     #if AURA_FFT_CLFFT
       #include <aura/backend/opencl/fft.hpp>
@@ -47,7 +49,6 @@
 
 #endif 
 
-// FIXME create AURA_HOST_COMPILATION AURA_DEVICE_COMPILATION
 #if !defined __OPENCL_VERSION__ && !defined __CUDACC__
 #include <aura/backend/shared/call.hpp>
 

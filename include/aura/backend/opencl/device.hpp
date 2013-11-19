@@ -36,7 +36,9 @@ public:
    *
    * @param ordinal device number
    */
-  inline device(int ordinal) : context_(new detail::context(ordinal)) {}
+  inline device(int ordinal) : 
+    context_(new detail::context(ordinal)), 
+    ordinal_(ordinal) {}
 
   /**
    * move constructor, move device information here, invalidate other
@@ -44,7 +46,7 @@ public:
    * @param d device to move here
    */
   device(BOOST_RV_REF(device) d) : 
-    context_(d.context_) {
+    context_(d.context_), ordinal_(d.ordinal_) {
     d.context_ = nullptr;
   }
 
@@ -57,6 +59,7 @@ public:
   { 
     finalize();
     context_ = d.context_;
+    ordinal_ = d.ordinal_;
     d.context_ = nullptr;
     return *this;
   }
@@ -95,6 +98,11 @@ public:
   inline detail::context * get_context() {
     return context_; 
   }
+  
+  /// access the device ordinal 
+  inline std::size_t get_ordinal() const {
+    return ordinal_; 
+  }
 
 private:
   /// finalize object (called from dtor and move assign)
@@ -107,6 +115,9 @@ private:
 private:
   /// context handle
   detail::context * context_;
+  
+  /// device ordinal
+  std::size_t ordinal_;
 };
  
 
