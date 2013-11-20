@@ -1,5 +1,7 @@
 // run backend benchmarks:
 //
+// * create context
+// * create context and feed
 // * synchronization only
 // * synchronization with kernel launch
 // * kernel launch without synchronization
@@ -190,7 +192,7 @@ int main(int argc, char *argv[]) {
   std::vector<svec<std::size_t, AURA_MAX_BUNDLE_DIMS> > bundles;
   std::vector<svec<std::size_t, 1> > params;
   int dev_ordinal = 0;
-  std::size_t runtime = 500 * 1000;
+  std::size_t runtime = 0;
  
   // parse config
   int opt;
@@ -250,11 +252,12 @@ int main(int argc, char *argv[]) {
   printf("\n");
   
   // output info about selected device  
-  device d(dev_ordinal);
-  device_info di = device_get_info(d);
-  printf("selected device: ");
-  print_device_info(di); 
-
+  {
+    device d(dev_ordinal);
+    device_info di = device_get_info(d);
+    printf("selected device: ");
+    print_device_info(di); 
+  }
   run_tests(meshes, bundles, params, dev_ordinal, runtime, ops);
 
 }

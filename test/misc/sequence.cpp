@@ -51,7 +51,6 @@ BOOST_AUTO_TEST_CASE(generator) {
   BOOST_CHECK(vec[2][1] == 400);
 }
 
-
 // explicitvals
 // _____________________________________________________________________________
 
@@ -76,4 +75,10 @@ BOOST_AUTO_TEST_CASE(explicitvals) {
   BOOST_CHECK(vec[1][1] == 2);
   BOOST_CHECK(vec[2][0] == 300);
   BOOST_CHECK(vec[2][1] == 3);
+  
+  std::vector<aura::svec<std::size_t, 1> > vec2 = 
+    generate_sequence<std::size_t, 1>("(100,200,300)");
+  BOOST_CHECK(vec2[0][0] == 100);
+  BOOST_CHECK(vec2[1][0] == 200);
+  BOOST_CHECK(vec2[2][0] == 300);
 }

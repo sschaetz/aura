@@ -11,13 +11,13 @@ List of required/desired benchmarks:
 * (backend) empty kernel with different number of 
   parameters; test with different mesh and bundle sizes
 
-* (computation) kernel doing many MAD ops to try to get
+* (peak) kernel doing many MAD ops to try to get
   max GFLOP performance
 
-* (bandwidth) kernel accessing device memory to 
+* (peak) kernel accessing device memory to 
   determine max throughput
   
-* (bandwidth) kernel accessing shared memory to 
+* (peak) kernel accessing shared memory to 
   determine max throughput
 
 * (mri-domain) 2D and 3D FFT transforms
