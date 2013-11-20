@@ -34,6 +34,12 @@ inline void run_ctx(int dev_ordinal) {
   delete d;
 }
 
+inline void run_ctxfeed(int dev_ordinal) {
+  device * d = new device(dev_ordinal);
+  feed f(*d);
+  delete d;
+}
+
 inline void run_sync(feed & f) {
   wait_for(f);
 }
@@ -157,15 +163,10 @@ inline void run_tests(
             run_params(f, k, meshes[m], bundles[b], params[p][0]);      
             AURA_BENCHMARK(run_params(f, k, meshes[m], bundles[b], 
               params[p][0]), runtime, min, max, mean, stdev, runs);
-            char tmp1[200];
-            char tmp2[200];
-            char name[600];
-            svec_snprintf(tmp1, sizeof(tmp1), meshes[m]);
-            svec_snprintf(tmp2, sizeof(tmp2), bundles[m]);
-            snprintf(name, sizeof(name), "%s m (%s) b (%s) p %lu", 
-              ops_tbl[3], tmp1, tmp2, params[p][0]); 
-            print_benchmark_results(name, min, max, mean, 
-              stdev, runs, runtime);
+            std::cout << ops_tbl[6] << "m (" << meshes[m] << ") b (" << 
+              bundles[m] << ") p " << params[p][0] << " min " << min << 
+              " max " << max << " mean " << mean << " stdev " << stdev << 
+              " runs " << runs << " runtime " << runtime << std::endl;
           }
         }
       }

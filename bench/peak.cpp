@@ -10,6 +10,7 @@
 // * bus throughput (device to host) 
 
 
+#include <iostream>
 #include <bitset>
 #include <algorithm>
 #include <vector>
@@ -55,48 +56,49 @@ inline void run_tests(
   device d(dev_ordinals[0][0]);
   feed f(d);
 
-  if(ops[6] || ops[7] || ops[8] || ops[9]) {
-    for(std::size_t s=0; s<sizes.size(); s++) {
-      std::vector<float> a1(sizes[s][0], 42.);
-      std::vector<float> a2(sizes[s][0]);
-      memory m = device_malloc(sizes[s][0]*sizeof(float), d);
-      if(ops[6]) { // tphtd
-        run_host_to_device(f, m, a1);
-        copy(&a2[0], m, a2.size()*sizeof(float), f);
-        wait_for(f);
-        if(!std::equal(a1.begin(), a1.end(), a2.begin())) {
-          printf("%s failed!\n", ops_tbl[6]);
-        } else {
-          AURA_BENCHMARK(run_host_to_device(f, m, a1), runtime, min, max, 
-            mean, stdev, runs);
-          char tmp1[200];
-          char name[600];
-          svec_snprintf(tmp1, sizeof(tmp1), sizes[s]);
-          snprintf(name, sizeof(name), "%s (%s)", ops_tbl[6], tmp1); 
-          print_benchmark_results(name, min, max, 
-            mean, stdev, runs, runtime);
-        }
-      }
-      if(ops[7]) { // tpdth
-        std::fill(a2.begin(), a2.end(), 0.0);
-        copy(m, &a1[0], a1.size()*sizeof(float), f);
-        run_device_to_host(f, a2, m);
-        if(!std::equal(a1.begin(), a1.end(), a2.begin())) {
-          printf("%s failed!\n", ops_tbl[7]);
-        } else {
-          AURA_BENCHMARK(run_device_to_host(f, a2, m), runtime, min, max,
-            mean, stdev, runs);
-          char tmp1[200];
-          char name[600];
-          svec_snprintf(tmp1, sizeof(tmp1), sizes[s]);
-          snprintf(name, sizeof(name), "%s (%s)", ops_tbl[7], tmp1); 
-          print_benchmark_results(name, min, max, 
-            mean, stdev, runs, runtime);        
-        }
-      }
-    }
+  if(!ops[6] && !ops[7]) {
+    return;
   }
 
+  for(std::size_t s=0; s<sizes.size(); s++) {
+    std::vector<float> a1(sizes[s][0], 42.);
+    std::vector<float> a2(sizes[s][0]);
+    memory m = device_malloc(sizes[s][0]*sizeof(float), d);
+    
+    if(ops[6]) { // tphtd
+      run_host_to_device(f, m, a1);
+      copy(&a2[0], m, a2.size()*sizeof(float), f);
+      wait_for(f);
+      
+      if(!std::equal(a1.begin(), a1.end(), a2.begin())) {
+        printf("%s failed!\n", ops_tbl[6]);
+        return;
+      } 
+      
+      AURA_BENCHMARK(run_host_to_device(f, m, a1), runtime, min, max, 
+        mean, stdev, runs);
+      std::cout << ops_tbl[6] << " (" << sizes[s] << ") min " << min << 
+        " max " << max << " mean " << mean << " stdev " << stdev << 
+        " runs " << runs << " runtime " << runtime << std::endl;
+    }
+    
+    if(ops[7]) { // tpdth
+      std::fill(a2.begin(), a2.end(), 0.0);
+      copy(m, &a1[0], a1.size()*sizeof(float), f);
+      run_device_to_host(f, a2, m);
+      
+      if(!std::equal(a1.begin(), a1.end(), a2.begin())) {
+        printf("%s failed!\n", ops_tbl[7]);
+        return;
+      } 
+      
+      AURA_BENCHMARK(run_device_to_host(f, a2, m), runtime, min, max,
+        mean, stdev, runs);
+      std::cout << ops_tbl[6] << " (" << sizes[s] << ") min " << min << 
+        " max " << max << " mean " << mean << " stdev " << stdev << 
+        " runs " << runs << " runtime " << runtime << std::endl;
+    }
+  }
 }
 
 

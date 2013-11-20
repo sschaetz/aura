@@ -1,6 +1,7 @@
 #ifndef AURA_DETAIL_SVEC_HPP
 #define AURA_DETAIL_SVEC_HPP
 
+#include <iostream> 
 #include <assert.h>
 #include <array>
 #include <boost/preprocessor/arithmetic/inc.hpp>
@@ -154,6 +155,17 @@ void svec_snprintf(char * c, std::size_t s,
   }
   c-=1;
   *c='\0';
+}
+
+/// output content of svec to ostream
+template <typename T, std::size_t max_size_>
+std::ostream& operator << (std::ostream & o, svec<T, max_size_> & a) {
+  std::size_t i;
+  for(i=0; i<a.size()-1; i++) {
+    o << a[i] << " ";
+  }
+  o << a[i];
+  return o;
 }
 
 } // namespace aura
