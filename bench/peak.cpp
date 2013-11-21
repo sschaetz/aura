@@ -19,16 +19,12 @@
 #include <aura/misc/benchmark.hpp>
 
 const char * ops_tbl[] = { "sflop", "dflop", "devcopy", "devscale", 
-  "devsum", "devtriad", "tphtd", "tpdth" };
+  "devadd", "devtriad", "tphtd", "tpdth" };
 
 using namespace aura;
 using namespace aura::backend;
 
-#if AURA_BACKEND_OPENCL
-const char * kernel_file = "bench/peak.cl"; 
-#elif AURA_BACKEND_CUDA
-const char * kernel_file = "bench/peak.ptx"; 
-#endif
+const char * kernel_file = "bench/peak.cc"; 
 
 inline void run_host_to_device(feed & f, memory dst, 
   std::vector<float> & src) {
@@ -40,6 +36,36 @@ inline void run_device_to_host(feed & f, std::vector<float> & dst,
   memory src) {
   copy(&dst[0], src, dst.size()*sizeof(float), f); 
   wait_for(f);
+}
+
+inline void run_kernel(feed & f, kernel & k, 
+  mesh & m, bundle & b, memory m1) {
+  invoke(k, m, b, args(m1), f);
+  wait_for(f); 
+}
+
+inline void run_kernel(feed & f, kernel & k, 
+  mesh & m, bundle & b, memory m1, memory m2) {
+  invoke(k, m, b, args(m1, m2), f);
+  wait_for(f); 
+}
+
+inline void run_kernel_f(feed & f, kernel & k, 
+  mesh & m, bundle & b, memory m1, memory m2, float s) {
+  invoke(k, m, b, args(m1, m2, s), f);
+  wait_for(f); 
+}
+
+inline void run_kernel(feed & f, kernel & k, 
+  mesh & m, bundle & b, memory m1, memory m2, memory m3) {
+  invoke(k, m, b, args(m1, m2, m3), f);
+  wait_for(f); 
+}
+
+inline void run_kernel_f(feed & f, kernel & k, 
+  mesh & m, bundle & b, memory m1, memory m2, memory m3, float s) {
+  invoke(k, m, b, args(m1, m2, m3, s), f);
+  wait_for(f); 
 }
 
 inline void run_tests(
@@ -56,47 +82,136 @@ inline void run_tests(
   device d(dev_ordinals[0][0]);
   feed f(d);
 
-  if(!ops[6] && !ops[7]) {
-    return;
+  module m = create_module_from_file(kernel_file, d, 
+    AURA_BACKEND_COMPILE_FLAGS);
+ 
+  if(ops[0] || ops[1]) {
+    kernel ksflop = create_kernel(m, "peak_flop_single"); 
+    kernel kdflop = create_kernel(m, "peak_flop_double"); 
+    for(std::size_t m=0; m<meshes.size(); m++) {
+      std::size_t vsize = product(meshes[m]);
+      memory mems = device_malloc(vsize*sizeof(float), d);
+      memory memd = device_malloc(vsize*sizeof(double), d);
+      for(std::size_t b=0; b<bundles.size(); b++) {
+        if(ops[0]) { // sflop
+          run_kernel(f, ksflop, meshes[m], bundles[b], mems);
+          AURA_BENCHMARK(run_kernel(f, ksflop, meshes[m], 
+            bundles[b], mems), runtime, min, max, mean, stdev, runs);
+          std::cout << ops_tbl[0] << " (" << vsize << ") mesh (" << 
+            meshes[m] << ") bundle (" << bundles[b] << ") min " << min << 
+            " max " << max << " mean " << mean << " stdev " << stdev << 
+            " runs " << runs << " runtime " << runtime << std::endl;
+        }
+        if(ops[1]) { // dflop
+          run_kernel(f, kdflop, meshes[m], bundles[b], memd);
+          AURA_BENCHMARK(run_kernel(f, kdflop, meshes[m], 
+            bundles[b], memd), runtime, min, max, mean, stdev, runs);
+          std::cout << ops_tbl[1] << " (" << vsize << ") mesh (" <<
+            meshes[m] << ") bundle (" << bundles[b] << ") min " << min <<
+            " max " << max << " mean " << mean << " stdev " << stdev <<
+            " runs " << runs << " runtime " << runtime << std::endl;
+        }
+      }
+      device_free(mems, d);
+      device_free(memd, d);
+    }
   }
 
-  for(std::size_t s=0; s<sizes.size(); s++) {
-    std::vector<float> a1(sizes[s][0], 42.);
-    std::vector<float> a2(sizes[s][0]);
-    memory m = device_malloc(sizes[s][0]*sizeof(float), d);
-    
-    if(ops[6]) { // tphtd
-      run_host_to_device(f, m, a1);
-      copy(&a2[0], m, a2.size()*sizeof(float), f);
-      wait_for(f);
-      
-      if(!std::equal(a1.begin(), a1.end(), a2.begin())) {
-        printf("%s failed!\n", ops_tbl[6]);
-        return;
-      } 
-      
-      AURA_BENCHMARK(run_host_to_device(f, m, a1), runtime, min, max, 
-        mean, stdev, runs);
-      std::cout << ops_tbl[6] << " (" << sizes[s] << ") min " << min << 
-        " max " << max << " mean " << mean << " stdev " << stdev << 
-        " runs " << runs << " runtime " << runtime << std::endl;
+  if(ops[2] || ops[3] || ops[4] || ops[5]) {
+    kernel kcopy = create_kernel(m, "peak_copy"); 
+    kernel kscale = create_kernel(m, "peak_scale"); 
+    kernel kadd = create_kernel(m, "peak_add"); 
+    kernel ktriad = create_kernel(m, "peak_triad"); 
+    for(std::size_t m=0; m<meshes.size(); m++) {
+      std::size_t vsize = product(meshes[m])*64;
+      memory mem1 = device_malloc(vsize*sizeof(float), d);
+      memory mem2 = device_malloc(vsize*sizeof(float), d);
+      memory mem3 = device_malloc(vsize*sizeof(float), d);
+      for(std::size_t b=0; b<bundles.size(); b++) {
+        if(ops[2]) { // copy 
+          run_kernel(f, kcopy, meshes[m], bundles[b], mem1, mem2);
+          AURA_BENCHMARK(run_kernel(f, kcopy, meshes[m], bundles[b], 
+            mem1, mem2), runtime, min, max, mean, stdev, runs);
+          std::cout << ops_tbl[2] << " (" << vsize << ") mesh (" << 
+            meshes[m] << ") bundle (" << bundles[b] << ") min " << min << 
+            " max " << max << " mean " << mean << " stdev " << stdev << 
+            " runs " << runs << " runtime " << runtime << std::endl;
+        }
+        if(ops[3]) { // scale 
+          run_kernel_f(f, kscale, meshes[m], bundles[b], mem1, mem2, 42.);
+          AURA_BENCHMARK(run_kernel_f(f, kscale, meshes[m], bundles[b], 
+            mem1, mem2, 42.), runtime, min, max, mean, stdev, runs);
+          std::cout << ops_tbl[3] << " (" << vsize << ") mesh (" << 
+            meshes[m] << ") bundle (" << bundles[b] << ") min " << min << 
+            " max " << max << " mean " << mean << " stdev " << stdev << 
+            " runs " << runs << " runtime " << runtime << std::endl;
+        }
+        if(ops[4]) { // add 
+          run_kernel(f, kadd, meshes[m], bundles[b], mem1, mem2, mem3);
+          AURA_BENCHMARK(run_kernel(f, kadd, meshes[m], bundles[b], 
+            mem1, mem2, mem3), runtime, min, max, mean, stdev, runs);
+          std::cout << ops_tbl[4] << " (" << vsize << ") mesh (" << 
+            meshes[m] << ") bundle (" << bundles[b] << ") min " << min << 
+            " max " << max << " mean " << mean << " stdev " << stdev << 
+            " runs " << runs << " runtime " << runtime << std::endl;
+        }
+        if(ops[5]) { // triad 
+          run_kernel_f(f, ktriad, meshes[m], bundles[b], mem1, mem2, mem3, 42.);
+          AURA_BENCHMARK(run_kernel_f(f, ktriad, meshes[m], bundles[b], mem1, 
+            mem2, mem3, 42.), runtime, min, max, mean, stdev, runs);
+          std::cout << ops_tbl[5] << " (" << vsize << ") mesh (" << 
+            meshes[m] << ") bundle (" << bundles[b] << ") min " << min << 
+            " max " << max << " mean " << mean << " stdev " << stdev << 
+            " runs " << runs << " runtime " << runtime << std::endl;
+        }
+      }
+      device_free(mem1, d);
+      device_free(mem2, d);
+      device_free(mem3, d);
     }
-    
-    if(ops[7]) { // tpdth
-      std::fill(a2.begin(), a2.end(), 0.0);
-      copy(m, &a1[0], a1.size()*sizeof(float), f);
-      run_device_to_host(f, a2, m);
+  }
+
+
+  if(ops[6] || ops[7]) {
+    for(std::size_t s=0; s<sizes.size(); s++) {
+      std::vector<float> a1(sizes[s][0], 42.);
+      std::vector<float> a2(sizes[s][0]);
+      memory m = device_malloc(sizes[s][0]*sizeof(float), d);
       
-      if(!std::equal(a1.begin(), a1.end(), a2.begin())) {
-        printf("%s failed!\n", ops_tbl[7]);
-        return;
-      } 
+      if(ops[6]) { // tphtd
+        run_host_to_device(f, m, a1);
+        copy(&a2[0], m, a2.size()*sizeof(float), f);
+        wait_for(f);
+        
+        if(!std::equal(a1.begin(), a1.end(), a2.begin())) {
+          printf("%s failed!\n", ops_tbl[6]);
+          return;
+        } 
+        
+        AURA_BENCHMARK(run_host_to_device(f, m, a1), runtime, min, max, 
+          mean, stdev, runs);
+        std::cout << ops_tbl[6] << " (" << sizes[s] << ") min " << min << 
+          " max " << max << " mean " << mean << " stdev " << stdev << 
+          " runs " << runs << " runtime " << runtime << std::endl;
+      }
       
-      AURA_BENCHMARK(run_device_to_host(f, a2, m), runtime, min, max,
-        mean, stdev, runs);
-      std::cout << ops_tbl[6] << " (" << sizes[s] << ") min " << min << 
-        " max " << max << " mean " << mean << " stdev " << stdev << 
-        " runs " << runs << " runtime " << runtime << std::endl;
+      if(ops[7]) { // tpdth
+        std::fill(a2.begin(), a2.end(), 0.0);
+        copy(m, &a1[0], a1.size()*sizeof(float), f);
+        run_device_to_host(f, a2, m);
+        
+        if(!std::equal(a1.begin(), a1.end(), a2.begin())) {
+          printf("%s failed!\n", ops_tbl[7]);
+          return;
+        } 
+        
+        AURA_BENCHMARK(run_device_to_host(f, a2, m), runtime, min, max,
+          mean, stdev, runs);
+        std::cout << ops_tbl[6] << " (" << sizes[s] << ") min " << min << 
+          " max " << max << " mean " << mean << " stdev " << stdev << 
+          " runs " << runs << " runtime " << runtime << std::endl;
+      }
+      device_free(m, d);
     }
   }
 }

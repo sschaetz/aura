@@ -11,10 +11,20 @@ FUNCTION(AURA_ADD_TARGET TARGET_NAME FIRST_SOURCE_FILENAME)
     # check if source file, kernel file or library
     IF(${ARG} MATCHES "^[a-z/_]*.cpp$")
       SET(EXECUTABLE_SOURCE_FILES ${EXECUTABLE_SOURCE_FILES} ${ARG})
-    ELSEIF(${ARG} MATCHES "^[a-z/_]*.cu$")
+    ELSEIF(${ARG} MATCHES "^[a-z/_]*.cu$" OR ${ARG} MATCHES "^[a-z/_]*.cc$")
       IF(AURA_BACKEND_CUDA) 
         # Get name of CUDA module
         GET_FILENAME_COMPONENT(TMP ${ARG} NAME_WE)
+        SET(ENDING ".ptx")
+        IF(${ARG} MATCHES "^[a-z/_]*.cc$")
+          # Copy file to binary dir and change ending
+          FILE(COPY ${ARG} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+          FILE(RENAME ${CMAKE_CURRENT_BINARY_DIR}/${TMP}.cc 
+            ${CMAKE_CURRENT_BINARY_DIR}/${TMP}.cu)
+          SET(ENDING ".cc")
+          SET(ARG ${CMAKE_CURRENT_BINARY_DIR}/${TMP}.cu)
+        ENDIF()
+
         # FindCUDA command to build PTX 
         CUDA_COMPILE_PTX(SRC ${ARG})
         # Add a custom target to force PTX to be built
@@ -24,9 +34,9 @@ FUNCTION(AURA_ADD_TARGET TARGET_NAME FIRST_SOURCE_FILENAME)
         # Rename the file after it was built
         ADD_CUSTOM_COMMAND(TARGET ${TARGET_NAME}_${TMP} POST_BUILD COMMAND
           ${CMAKE_COMMAND} -E copy_if_different 
-          ${SRC} ${CMAKE_CURRENT_BINARY_DIR}/${TMP}.ptx)
+          ${SRC} ${CMAKE_CURRENT_BINARY_DIR}/${TMP}${ENDING})
       ENDIF()
-    ELSEIF(${ARG} MATCHES "^[a-z/_]*.cl$")
+    ELSEIF(${ARG} MATCHES "^[a-z/_]*.cl$" OR ${ARG} MATCHES "^[a-z/_]*.cc$")
       IF(AURA_BACKEND_OPENCL) 
         # copy file
         FILE(COPY ${ARG} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
