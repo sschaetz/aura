@@ -36,13 +36,14 @@ FUNCTION(AURA_ADD_TARGET TARGET_NAME FIRST_SOURCE_FILENAME)
           ${CMAKE_COMMAND} -E copy_if_different 
           ${SRC} ${CMAKE_CURRENT_BINARY_DIR}/${TMP}${ENDING})
       ENDIF()
-    ELSEIF(${ARG} MATCHES "^[a-z/_]*.cl$" OR ${ARG} MATCHES "^[a-z/_]*.cc$")
+    ELSE()
+      SET(EXECUTABLE_LINK_LIBRARIES ${EXECUTABLE_LINK_LIBRARIES} ${ARG})
+    ENDIF()
+    IF(${ARG} MATCHES "^[a-z/_]*.cl$" OR ${ARG} MATCHES "^[a-z/_]*.cc$")
       IF(AURA_BACKEND_OPENCL) 
         # copy file
         FILE(COPY ${ARG} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
       ENDIF()
-    ELSE()
-      SET(EXECUTABLE_LINK_LIBRARIES ${EXECUTABLE_LINK_LIBRARIES} ${ARG})
     ENDIF()
   ENDFOREACH()
   # Debug messages:
