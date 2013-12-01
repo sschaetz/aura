@@ -127,10 +127,19 @@ inline void run_tests(
       memory mem1 = device_malloc(vsize*sizeof(float), d);
       memory mem2 = device_malloc(vsize*sizeof(float), d);
       memory mem3 = device_malloc(vsize*sizeof(float), d);
+      std::vector<float> src(vsize, 42.0);
+      std::vector<float> dst(vsize, 0.0);
       for(std::size_t b=0; b<bundles.size(); b++) {
-        if(ops[2]) { // copy 
+        if(ops[2]) { // copy
+	  copy(mem2, &src[0], vsize*sizeof(float), f);
           run_kernel(f, kcopy, meshes[m], bundles[b], mem1, mem2);
-          AURA_BENCHMARK(run_kernel(f, kcopy, meshes[m], bundles[b], 
+	  copy(&dst[0], mem1, vsize*sizeof(float), f);
+	  wait_for(f);
+          if(!std::equal(dst.begin(), dst.end(), src.begin())) {
+	    printf("%s failed!\n", ops_tbl[2]);
+            return;
+          }
+	  AURA_BENCHMARK(run_kernel(f, kcopy, meshes[m], bundles[b], 
             mem1, mem2), runtime, min, max, mean, stdev, runs);
           std::cout << ops_tbl[2] << " (" << vsize << ") mesh (" << 
             meshes[m] << ") bundle (" << bundles[b] << ") min " << min << 

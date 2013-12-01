@@ -16,6 +16,7 @@ INCLUDE(cmake/functions.cmake)
 # find Boost libraries #####
 SET(Boost_USE_STATIC_LIBS ON)
 SET(BOOST_ROOT "/usr/local/boost")
+SET(BOOST_ROOT "/afs/rzg/.cs/boost/1.49.0/amd64_sles11/gcc/4.3.4")
 SET(Boost_ADDITIONAL_VERSIONS "1.54" "1.54.0" "1.48" "1.48.0" "1.51" "1.51.0")
 FIND_PACKAGE(Boost 1.45.0 COMPONENTS system thread unit_test_framework)
 
