@@ -60,7 +60,7 @@ public:
     std::size_t istride = 1, std::size_t idist = 0,
     const fft_embed & oembed = fft_embed(),
     std::size_t ostride = 1, std::size_t odist = 0) : 
-    context_(d.get_context()), buffer_(nullptr), type_(type) {
+    context_(d.get_context()), buffer_(), type_(type) {
 
     // FIXME handle strides and embed etc.
     // we need to create a default plan
@@ -96,9 +96,8 @@ public:
     std::size_t buffer_size1, buffer_size2;
     AURA_CLFFT_SAFE_CALL(clfftGetTmpBufSize(inplace_handle_, &buffer_size1));
     AURA_CLFFT_SAFE_CALL(clfftGetTmpBufSize(outofplace_handle_, &buffer_size2));
-    printf("%lu %lu\n", buffer_size1, buffer_size2);		
     if(0 < buffer_size1 || 0 < buffer_size2) {
-      buffer_ = device_malloc((buffer_size1 > buffer_size2) ? 
+      buffer_ = device_malloc<char>((buffer_size1 > buffer_size2) ? 
         buffer_size1 : buffer_size2, d);
     }
   }
@@ -111,8 +110,7 @@ public:
   fft(BOOST_RV_REF(fft) f) :
     context_(f.context_), inplace_handle_(f.inplace_handle_), 
     outofplace_handle_(f.outofplace_handle_),
-    buffer_(f.buffer_) 
-  {  
+    buffer_(f.buffer_) {  
     f.context_ = nullptr; 
   }
 
@@ -121,8 +119,7 @@ public:
    *
    * @param f fft to move here
    */
-  fft& operator=(BOOST_RV_REF(fft) f)
-  {
+  fft& operator=(BOOST_RV_REF(fft) f) {
     finalize();
     context_= f.context_;
     inplace_handle_ = f.inplace_handle_;
@@ -195,7 +192,7 @@ private:
       AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&inplace_handle_));
       AURA_CLFFT_SAFE_CALL(clfftDestroyPlan(&outofplace_handle_));
       if(nullptr != buffer_) {
-        AURA_OPENCL_SAFE_CALL(clReleaseMemObject(buffer_));
+        device_free(buffer_);
       }
     }
   }
@@ -207,7 +204,7 @@ private:
   clfftPlanHandle outofplace_handle_; 
   
   /// temporary buffer for transforms 
-  memory buffer_;
+  device_ptr<char> buffer_;
 
   /// fft type
   type type_;
@@ -244,11 +241,11 @@ inline void fft_forward(memory & dst, memory & src,
   if(dst == src) {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_, 
       CLFFT_FORWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
-      0, NULL, NULL, &src, NULL, plan.buffer_));
+      0, NULL, NULL, &src, NULL, plan.buffer_.get()));
   } else {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle_, 
       CLFFT_FORWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
-      0, NULL, NULL, &src, &dst, plan.buffer_));
+      0, NULL, NULL, &src, &dst, plan.buffer_.get()));
   }
 }
 
@@ -266,11 +263,11 @@ inline void fft_inverse(memory & dst, memory & src,
   if(dst == src) {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_, 
       CLFFT_BACKWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
-      0, NULL, NULL, &src, NULL, plan.buffer_));
+      0, NULL, NULL, &src, NULL, plan.buffer_.get()));
   } else {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle_, 
       CLFFT_BACKWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
-      0, NULL, NULL, &src, &dst, plan.buffer_));
+      0, NULL, NULL, &src, &dst, plan.buffer_.get()));
   }
 }
 

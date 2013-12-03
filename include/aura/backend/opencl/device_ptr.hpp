@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <CL/cl.h>
 #include <aura/backend/opencl/device.hpp>
-#include <aura/backend/opencl/memory.hpp>
 
 
 namespace aura {
@@ -48,7 +47,13 @@ public:
   device_ptr(const const_backend_type & m, const std::size_t & o, const device & d) :
     memory_(const_cast<backend_type>(m)), offset_(o),
     device_(const_cast<device *>(&d)) {}
-
+  
+  void invalidate() {
+    memory_ = nullptr;
+    device_ = nullptr;
+    offset_ = 0;
+  }
+  
   /// returns a pointer to the device memory 
   backend_type get() { return memory_; }
   
@@ -112,13 +117,29 @@ public:
 
   /// equal to operator
   bool operator ==(const device_ptr<T> & b) const  {
-    return (device_->get_ordinal() == b.device_->get_ordinal() && 
-      offset_ == b.offset_ && memory_ == b.memory_);
+    if(nullptr == device_ || nullptr == b.device_) {
+      return (nullptr == device_ && nullptr == b.device_ && 
+        offset_ == b.offset_ && memory_ == b.memory_);
+    }
+    else {
+      return (device_->get_ordinal() == b.device_->get_ordinal() && 
+        offset_ == b.offset_ && memory_ == b.memory_);
+    }
   }
+  
+  bool operator ==(std::nullptr_t) const {
+    return (nullptr == device_ && 0 == offset_ && nullptr == memory_);
+  }
+
+ 
 
   /// not equal to operator
   bool operator !=(const device_ptr<T> & b) const {
     return !(*this == b);
+  }
+  
+  bool operator !=(std::nullptr_t) const {
+    return !(*this == nullptr);
   }
 
 private:
@@ -133,6 +154,18 @@ private:
   device * device_;
 
 };
+
+/// equal to operator (reverse order)
+template<typename T>
+bool operator ==(std::nullptr_t, const device_ptr<T> & ptr) {
+  return (ptr == nullptr);
+}
+
+/// not equal to operator (reverse order)
+template<typename T>
+bool operator !=(std::nullptr_t, const device_ptr<T> & ptr) {
+  return (ptr != nullptr);
+}
 
 } // opencl 
 } // backend_detail

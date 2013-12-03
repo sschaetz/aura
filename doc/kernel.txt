@@ -1,6 +1,53 @@
 Kernel
 ======
 
+
+OpenCL and Mobile
+-----------------
+
+There is a discussion about the viability of the OpenCL programming model
+on Android. Google argues:
+
+"
+OpenCL uses the execution model first introduced in CUDA. In this model, 
+a kernel is made up of one or many groups of workers, and each group has 
+fast shared memory and synchronization primitives within that group. What 
+this does is cause the description of an algorithm to be intermingled with 
+how that algorithm should be scheduled on a particular architecture 
+(because you’re deciding the size of a group and when to synchronize within 
+that group).
+" 
+from stackoverflow.com/questions/14385843#14389506
+
+This is true and an interesting disadvantage of OpenCL/CUDA programming
+models. How can we work around this? We can let the OpenCL driver decide 
+the work group size. We can further specify minimum, maximum and required
+sizes for a kernel to work (important for the algorithm and internal 
+synchronization). Thus we can work around this problem.
+
+kernel.set_min_mesh_elements()
+kernel.set_max_mesh_elements()
+kernel.set_min_bundle_elements()
+kernel.set_max_bundle_elements()
+
+This interface is not so nice, have to think about something better. maybe:
+
+kernel.set_mesh_range(min, max);
+kernel.set_bundle_range(min, max);
+
+If a kernel can not execute on a device, how could we allow for a serial
+implementation to execute?
+
+Development for mobile should be observed very carefully. With such a huge
+market force behind mobile development, mobile is bound to leap ahead of
+HPC. While they have different requirements, they might still come up with
+something ingenious.
+
+
+
+Other
+-----
+
 A big difference betwen OpenCL and CUDA in terms of how kernels are
 launched is:
 

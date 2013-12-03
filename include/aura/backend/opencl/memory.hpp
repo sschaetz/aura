@@ -5,6 +5,8 @@
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/feed.hpp>
 #include <aura/backend/opencl/device.hpp>
+#include <aura/backend/opencl/device_ptr.hpp>
+#include <aura/misc/deprecate.hpp>
 
 
 namespace aura {
@@ -31,6 +33,17 @@ inline memory device_malloc(std::size_t size, device & d) {
   return m;
 }
 
+DEPRECATED(memory device_malloc(std::size_t size, device & d));
+
+template <typename T>
+device_ptr<T> device_malloc(std::size_t size, device & d) {
+  int errorcode = 0;
+  typename device_ptr<T>::backend_type m = 
+    clCreateBuffer(d.get_backend_context(), 
+    CL_MEM_READ_WRITE, size, 0, &errorcode);
+  AURA_OPENCL_CHECK_ERROR(errorcode);
+  return device_ptr<T>(m, d);
+}
 
 /**
  * free device memory
@@ -41,6 +54,13 @@ inline void device_free(memory m, device &) {
   AURA_OPENCL_SAFE_CALL(clReleaseMemObject(m));
 }
 
+DEPRECATED(void device_free(memory m, device &));
+
+template <typename T>
+void device_free(device_ptr<T> & ptr) {
+  AURA_OPENCL_SAFE_CALL(clReleaseMemObject(ptr.get()));
+  ptr.invalidate();
+}
 
 /**
  * copy host to device memory
