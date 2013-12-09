@@ -40,7 +40,7 @@ device_ptr<T> device_malloc(std::size_t size, device & d) {
   int errorcode = 0;
   typename device_ptr<T>::backend_type m = 
     clCreateBuffer(d.get_backend_context(), 
-    CL_MEM_READ_WRITE, size, 0, &errorcode);
+    CL_MEM_READ_WRITE, size*sizeof(T), 0, &errorcode);
   AURA_OPENCL_CHECK_ERROR(errorcode);
   return device_ptr<T>(m, d);
 }
@@ -68,15 +68,33 @@ void device_free(device_ptr<T> & ptr) {
  * @param dst device memory (destination)
  * @param src host memory (source)
  * @param size size of copy in bytes
- * @param s stream the transfer is executed in
+ * @param f feed the transfer is executed in
  * @param offset offset in bytes of the device memory
  */
 inline void copy(memory dst, const void * src, std::size_t size, 
   feed & f, std::size_t offset=0) {
   AURA_OPENCL_SAFE_CALL(clEnqueueWriteBuffer(f.get_backend_stream(),
-  	dst, CL_FALSE, offset, size, src, 0, NULL, NULL))
+  	dst, CL_FALSE, offset, size, src, 0, NULL, NULL));
 } 
 
+DEPRECATED(void copy(memory dst, const void * src, std::size_t size, 
+  feed & f, std::size_t offset));
+
+/**
+ * copy host to device memory
+ *
+ * @param dst device memory (destination)
+ * @param src host memory (source)
+ * @param size size of copy in number of T 
+ * @param f feed the transfer is executed in
+ */
+template <typename T>
+void copy(device_ptr<T> dst, const T * src, std::size_t size, 
+  feed & f) {
+  AURA_OPENCL_SAFE_CALL(clEnqueueWriteBuffer(f.get_backend_stream(),
+  	dst.get(), CL_FALSE, dst.get_offset()*sizeof(T), size*sizeof(T), 
+    src, 0, NULL, NULL));
+}
 
 /**
  * copy device to host memory
@@ -84,7 +102,7 @@ inline void copy(memory dst, const void * src, std::size_t size,
  * @param dst host memory (destination)
  * @param src device memory (source)
  * @param size size of copy in bytes
- * @param s stream the transfer is executed in
+ * @param f feed the transfer is executed in
  * @param offset offset in bytes of the device memory
  */
 inline void copy(void * dst, memory src, std::size_t size, 
@@ -93,6 +111,23 @@ inline void copy(void * dst, memory src, std::size_t size,
   	src, CL_FALSE, offset, size, dst, 0, NULL, NULL));
 }
 
+DEPRECATED(inline void copy(void * dst, memory src, std::size_t size, 
+  feed & f, std::size_t offset));
+
+/**
+ * copy device to host memory
+ *
+ * @param dst host memory (destination)
+ * @param src device memory (source)
+ * @param size size of copy in bytes
+ * @param f feed the transfer is executed in
+ */
+template <typename T>
+void copy(T * dst, const device_ptr<T> src, std::size_t size, feed & f) {
+  AURA_OPENCL_SAFE_CALL(clEnqueueReadBuffer(f.get_backend_stream(),
+  	src.get(), CL_FALSE, src.get_offset()*sizeof(T), size*sizeof(T), 
+    dst, 0, NULL, NULL));
+}
 
 /**
  * copy device to device memory
@@ -100,7 +135,7 @@ inline void copy(void * dst, memory src, std::size_t size,
  * @param dst host memory (destination)
  * @param src device memory (source)
  * @param size size of copy in bytes
- * @param s stream the transfer is executed in
+ * @param f feed the transfer is executed in
  * @param offset offset in bytes of the device memory
  */
 inline void copy(memory dst, memory src, std::size_t size, 
@@ -109,6 +144,25 @@ inline void copy(memory dst, memory src, std::size_t size,
     src, dst, src_offset, dst_offset, size, 0, 0, 0)); 	
 }
 
+DEPRECATED(void copy(memory dst, memory src, std::size_t size, 
+  feed & f, std::size_t dst_offset, std::size_t src_offset));
+
+/**
+ * copy device to device memory
+ *
+ * @param dst host memory (destination)
+ * @param src device memory (source)
+ * @param size size of copy in bytes
+ * @param f feed the transfer is executed in
+ */
+template <typename T>
+inline void copy(device_ptr<T> dst, const device_ptr<T> src, 
+  std::size_t size, feed & f) {
+  AURA_OPENCL_SAFE_CALL(clEnqueueCopyBuffer(f.get_backend_stream(),
+    src.get(), dst.get(), src.get_offset()*sizeof(T), 
+    dst.get_offset()*sizeof(T), size*sizeof(T), 
+    0, 0, 0)); 	
+}
 
 } // opencl 
 } // backend_detail

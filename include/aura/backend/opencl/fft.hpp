@@ -210,9 +210,11 @@ private:
   type type_;
 
   // give free functions access to context 
-  friend void fft_forward(memory & dst, memory & src, 
+  template <typename T1, typename T2>
+  friend void fft_forward(device_ptr<T1> & dst, device_ptr<T2> & src, 
     fft & plan, const feed & f);
-  friend void fft_inverse(memory & dst, memory & src, 
+  template <typename T1, typename T2>
+  friend void fft_inverse(device_ptr<T1> & dst, device_ptr<T2> & src, 
     fft & plan, const feed & f);
 
 };
@@ -236,16 +238,19 @@ inline void fft_terminate() {
  * @param plan that is used to calculate the fourier transform
  * @param f feed the fourier transform should be calculated in
  */
-inline void fft_forward(memory & dst, memory & src, 
+template <typename T1, typename T2>
+void fft_forward(device_ptr<T1> & dst, device_ptr<T2> & src, 
   fft & plan, const feed & f) {
+  typename device_ptr<T1>::backend_type dm = dst.get();
+  typename device_ptr<T1>::backend_type sm = src.get();
   if(dst == src) {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_, 
       CLFFT_FORWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
-      0, NULL, NULL, &src, NULL, plan.buffer_.get()));
+      0, NULL, NULL, &sm, NULL, plan.buffer_.get()));
   } else {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle_, 
       CLFFT_FORWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
-      0, NULL, NULL, &src, &dst, plan.buffer_.get()));
+      0, NULL, NULL, &sm, &dm, plan.buffer_.get()));
   }
 }
 
@@ -258,16 +263,19 @@ inline void fft_forward(memory & dst, memory & src,
  * @param plan that is used to calculate the fourier transform
  * @param f feed the fourier transform should be calculated in
  */
-inline void fft_inverse(memory & dst, memory & src, 
+template <typename T1, typename T2>
+void fft_inverse(device_ptr<T1> & dst, device_ptr<T2> & src, 
   fft & plan, const feed & f) {
+  typename device_ptr<T1>::backend_type dm = dst.get();
+  typename device_ptr<T1>::backend_type sm = src.get();
   if(dst == src) {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_, 
       CLFFT_BACKWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
-      0, NULL, NULL, &src, NULL, plan.buffer_.get()));
+      0, NULL, NULL, &sm, NULL, plan.buffer_.get()));
   } else {
     AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.outofplace_handle_, 
       CLFFT_BACKWARD, 1, const_cast<cl_command_queue*>(&f.get_backend_stream()), 
-      0, NULL, NULL, &src, &dst, plan.buffer_.get()));
+      0, NULL, NULL, &sm, &dm, plan.buffer_.get()));
   }
 }
 

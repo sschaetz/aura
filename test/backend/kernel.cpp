@@ -54,18 +54,18 @@ BOOST_AUTO_TEST_CASE(invoke_simple) {
       AURA_BACKEND_COMPILE_FLAGS);
     print_module_build_log(mod, d);
     kernel k = create_kernel(mod, "simple_add"); 
-    memory mem = device_malloc(xdim*ydim*sizeof(float), d);
+    device_ptr<float> mem = device_malloc<float>(xdim*ydim, d);
     
-    copy(mem, &a1[0], xdim*ydim*sizeof(float), f); 
-    invoke(k, mesh(ydim, xdim), bundle(xdim), args(mem), f);
-    copy(&a2[0], mem, xdim*ydim*sizeof(float), f);
+    copy(mem, &a1[0], xdim*ydim, f); 
+    invoke(k, mesh(ydim, xdim), bundle(xdim), args(mem.get()), f);
+    copy(&a2[0], mem, xdim*ydim, f);
     wait_for(f);
 
     for(std::size_t i=0; i<a1.size(); i++) {
       a1[i] += 1.0;
     }
     BOOST_CHECK(std::equal(a1.begin(), a1.end(), a2.begin()));
-    device_free(mem, d);
+    device_free(mem);
   }
 }
 

@@ -8,8 +8,8 @@ IF(NOT ${AURA_FFT_LIBRARIES} STREQUAL "")
     ${AURA_BACKEND_LIBRARIES} ${AURA_FFT_LIBRARIES})
 ENDIF()
 
-AURA_ADD_TEST(backend/kernel.cpp backend/kernel.cu 
-  backend/kernel.cl ${AURA_BACKEND_LIBRARIES})
+AURA_ADD_TEST(backend/kernel.cpp backend/kernel.cc 
+  ${AURA_BACKEND_LIBRARIES})
 
 AURA_ADD_TEST(detail/svec.cpp)
 AURA_ADD_TEST(misc/profile.cpp pthread)

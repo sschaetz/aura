@@ -21,8 +21,8 @@ namespace detail {
 void invoke_impl(kernel & k, const mesh & m, const bundle & b, 
   const args_t & a, feed & f) {
   // set parameters
-  for(std::size_t i=0; i<a.size(); i++) {
-    AURA_OPENCL_SAFE_CALL(clSetKernelArg(k, i, a[i].second, a[i].first));
+  for(std::size_t i=0; i<a.second.size(); i++) {
+    AURA_OPENCL_SAFE_CALL(clSetKernelArg(k, i, a.second[i].second, a.second[i].first));
   }
   // handling for non 3-dimensional mesh and bundle sizes
   mesh tm;
@@ -52,6 +52,7 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
   AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(
     f.get_backend_stream(), k, m.size(), NULL, 
     &tm[0], &tb[0], 0, NULL, NULL)); 
+  free(a.first);
 } 
 
 } // namespace detail

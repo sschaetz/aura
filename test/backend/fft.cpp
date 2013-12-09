@@ -29,19 +29,19 @@ BOOST_AUTO_TEST_CASE(basic) {
     device d(0);
     feed f(d); 
     
-    memory m1 = device_malloc(samples*sizeof(cfloat), d);
-    memory m2 = device_malloc(samples*sizeof(cfloat), d);
-    copy(m1, &input[0], samples*sizeof(cfloat), f);
-    copy(m2, &output[0], samples*sizeof(cfloat), f);
+    device_ptr<cfloat> m1 = device_malloc<cfloat>(samples, d);
+    device_ptr<cfloat> m2 = device_malloc<cfloat>(samples, d);
+    copy(m1, &input[0], samples, f);
+    copy(m2, &output[0], samples, f);
     
     fft fh(d, f, fft_dim(samples), fft::type::c2c);
     fft_forward(m2, m1, fh, f);
     
-    copy(&output[0], m2, samples*sizeof(cfloat), f);
+    copy(&output[0], m2, samples, f);
     wait_for(f);
     BOOST_CHECK(std::equal(output.begin(), output.end(), spectrum));
-    device_free(m1, d);
-    device_free(m2, d);
+    device_free(m1);
+    device_free(m2);
   }
   fft_terminate();
 }
