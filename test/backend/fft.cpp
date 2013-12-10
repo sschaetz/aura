@@ -25,7 +25,6 @@ BOOST_AUTO_TEST_CASE(basic) {
     
     std::vector<cfloat> input(signal, signal+samples);
     std::vector<cfloat> output(samples, cfloat(555., 666.));
-    
     device d(0);
     feed f(d); 
     

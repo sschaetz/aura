@@ -5,7 +5,7 @@
 #include <cuda.h> 
 #include <cufft.h>
 #include <aura/backend/cuda/call.hpp>
-#include <aura/backend/cuda/memory.hpp>
+#include <aura/backend/cuda/device_ptr.hpp>
 #include <aura/detail/svec.hpp>
 #include <aura/backend/cuda/device.hpp>
 
@@ -174,12 +174,12 @@ private:
   /// fft type
   type type_;
 
-  // give free functions access to device
-  friend void fft_forward(memory & dst, memory & src, 
-    fft & plan, const feed & f);
-  friend void fft_inverse(memory & dst, memory & src, 
-    fft & plan, const feed & f);
-
+  template <typename T1, typename T2>
+  friend void fft_forward(device_ptr<T1> & dst, device_ptr<T2> & src, 
+    fft & plan, const feed & f); 
+  template <typename T1, typename T2>
+  friend void fft_inverse(device_ptr<T1> & dst, device_ptr<T2> & src, 
+    fft & plan, const feed & f); 
 };
 
 /// initialize fft library
@@ -197,7 +197,8 @@ inline void fft_terminate() {
  * @param plan that is used to calculate the fourier transform
  * @param f feed the fourier transform should be calculated in
  */
-inline void fft_forward(memory & dst, memory & src, 
+template <typename T1, typename T2>
+void fft_forward(device_ptr<T1> & dst, device_ptr<T2> & src, 
   fft & plan, const feed & f) {
   plan.context_->set();
   plan.set_feed(f);
@@ -205,7 +206,9 @@ inline void fft_forward(memory & dst, memory & src,
     case fft::type::r2c: {
       AURA_CUFFT_SAFE_CALL(
         cufftExecR2C(
-          plan.get_handle(), (cufftReal*)src, (cufftComplex*)dst)
+          plan.get_handle(), 
+          (cufftReal*)src.get(), 
+          (cufftComplex*)dst.get())
       );
       break;
     }
@@ -217,8 +220,8 @@ inline void fft_forward(memory & dst, memory & src,
       AURA_CUFFT_SAFE_CALL(
         cufftExecC2C(
           plan.get_handle(), 
-          (cufftComplex*)src, 
-          (cufftComplex*)dst, 
+          (cufftComplex*)src.get(), 
+          (cufftComplex*)dst.get(), 
           fft::direction::fwd)
       );
       break;
@@ -226,7 +229,9 @@ inline void fft_forward(memory & dst, memory & src,
     case fft::type::d2z: {
       AURA_CUFFT_SAFE_CALL(
         cufftExecD2Z(
-          plan.get_handle(), (cufftDoubleReal*)src, (cufftDoubleComplex*)dst)
+          plan.get_handle(), 
+          (cufftDoubleReal*)src.get(), 
+          (cufftDoubleComplex*)dst.get())
       );
       break;
     }
@@ -238,8 +243,8 @@ inline void fft_forward(memory & dst, memory & src,
       AURA_CUFFT_SAFE_CALL(
         cufftExecZ2Z(
           plan.get_handle(), 
-          (cufftDoubleComplex*)src, 
-          (cufftDoubleComplex*)dst,
+          (cufftDoubleComplex*)src.get(), 
+          (cufftDoubleComplex*)dst.get(),
           fft::direction::fwd)
       );
       break;
@@ -257,7 +262,8 @@ inline void fft_forward(memory & dst, memory & src,
  * @param plan that is used to calculate the fourier transform
  * @param f feed the fourier transform should be calculated in
  */
-inline void fft_inverse(memory & dst, memory & src, 
+template <typename T1, typename T2>
+void fft_inverse(device_ptr<T1> & dst, device_ptr<T2> & src, 
   fft & plan, const feed & f) {
   plan.context_->set();
   plan.set_feed(f);
@@ -269,7 +275,9 @@ inline void fft_inverse(memory & dst, memory & src,
     case fft::type::c2r: {
       AURA_CUFFT_SAFE_CALL(
         cufftExecC2R(
-          plan.get_handle(), (cufftComplex*)src, (cufftReal*)dst)
+          plan.get_handle(), 
+          (cufftComplex*)src.get(), 
+          (cufftReal*)dst.get())
       );
       break;
     }
@@ -277,8 +285,8 @@ inline void fft_inverse(memory & dst, memory & src,
       AURA_CUFFT_SAFE_CALL(
         cufftExecC2C(
           plan.get_handle(), 
-          (cufftComplex*)src, 
-          (cufftComplex*)dst, 
+          (cufftComplex*)src.get(), 
+          (cufftComplex*)dst.get(), 
           fft::direction::inv)
       );
       break;
@@ -290,7 +298,9 @@ inline void fft_inverse(memory & dst, memory & src,
     case fft::type::z2d: {
       AURA_CUFFT_SAFE_CALL(
         cufftExecZ2D(
-          plan.get_handle(), (cufftDoubleComplex*)src, (cufftDoubleReal*)dst)
+          plan.get_handle(), 
+          (cufftDoubleComplex*)src.get(), 
+          (cufftDoubleReal*)dst.get())
       );
       break;
     }
@@ -298,8 +308,8 @@ inline void fft_inverse(memory & dst, memory & src,
       AURA_CUFFT_SAFE_CALL(
         cufftExecZ2Z(
           plan.get_handle(), 
-          (cufftDoubleComplex*)src, 
-          (cufftDoubleComplex*)dst,
+          (cufftDoubleComplex*)src.get(), 
+          (cufftDoubleComplex*)dst.get(),
           fft::direction::inv)
       );
       break;

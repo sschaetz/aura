@@ -29,7 +29,7 @@ std::bitset< sizeof(ops_tbl)/sizeof(ops_tbl[0]) > ops;
 
 // benchmark functions -----
 
-void run_fwdip(std::vector<memory> & mem1, 
+void run_fwdip(std::vector<device_ptr<cfloat> > & mem1, 
     std::vector<fft> & ffth, std::vector<feed> & feeds) {
   for(std::size_t n = 0; n<feeds.size(); n++) {
     fft_forward(mem1[n], mem1[n], ffth[n], feeds[n]);
@@ -37,7 +37,7 @@ void run_fwdip(std::vector<memory> & mem1,
   std::for_each(feeds.begin(), feeds.end(), &wait_for);
 }
 
-void run_invip(std::vector<memory> & mem1, 
+void run_invip(std::vector<device_ptr<cfloat> > & mem1, 
     std::vector<fft> & ffth, std::vector<feed> & feeds) {
   for(std::size_t n = 0; n<feeds.size(); n++) {
     fft_inverse(mem1[n], mem1[n], ffth[n], feeds[n]);
@@ -45,8 +45,8 @@ void run_invip(std::vector<memory> & mem1,
   std::for_each(feeds.begin(), feeds.end(), &wait_for);
 }
 
-void run_fwdop(std::vector<memory> & mem1, 
-    std::vector<memory> & mem2, 
+void run_fwdop(std::vector<device_ptr<cfloat> > & mem1, 
+    std::vector<device_ptr<cfloat> > & mem2, 
     std::vector<fft> & ffth, 
     std::vector<feed> & feeds) {
   for(std::size_t n = 0; n<feeds.size(); n++) {
@@ -55,8 +55,8 @@ void run_fwdop(std::vector<memory> & mem1,
   std::for_each(feeds.begin(), feeds.end(), &wait_for);
 }
 
-void run_invop(std::vector<memory> & mem1, 
-    std::vector<memory> & mem2, 
+void run_invop(std::vector<device_ptr<cfloat> > & mem1, 
+    std::vector<device_ptr<cfloat> > & mem2, 
     std::vector<fft> & ffth, 
     std::vector<feed> & feeds) {
   for(std::size_t n = 0; n<feeds.size(); n++) {
@@ -96,14 +96,14 @@ void run_tests() {
   
   for(std::size_t b=0; b<batch.size(); b++) {
     for(std::size_t s=0; s<size.size(); s++) {
-      // allocate memory, make fft plan
-      std::vector<aura::backend::memory> mem1;
-      std::vector<aura::backend::memory> mem2;
+      // allocate device_ptr<cfloat> , make fft plan
+      std::vector<aura::backend::device_ptr<cfloat> > mem1;
+      std::vector<aura::backend::device_ptr<cfloat> > mem2;
       std::vector<aura::backend::fft> ffth;
       for(std::size_t i=0; i<devices.size(); i++) {
-        std::size_t msize = aura::product(size[s]) * batch[b][0] * sizeof(cfloat);
-        mem1.push_back(aura::backend::device_malloc(msize, devices[i])); 
-        mem2.push_back(aura::backend::device_malloc(msize, devices[i]));
+        std::size_t msize = aura::product(size[s]) * batch[b][0];
+        mem1.push_back(aura::backend::device_malloc<cfloat>(msize, devices[i]));
+        mem2.push_back(aura::backend::device_malloc<cfloat>(msize, devices[i]));
         ffth.push_back(aura::backend::fft(devices[i], feeds[i], size[s], 
           aura::backend::fft::type::c2c, batch[b][0]));
       }
@@ -141,10 +141,10 @@ void run_tests() {
           size[s], batch[b]);
       }
 
-      // free memory 
+      // free device_ptr<cfloat>  
       for(std::size_t i=0; i<devices.size(); i++) {
-        aura::backend::device_free(mem1[i], devices[i]);
-        aura::backend::device_free(mem2[i], devices[i]);
+        aura::backend::device_free(mem1[i]);
+        aura::backend::device_free(mem2[i]);
       }
     }
   }

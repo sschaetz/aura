@@ -25,6 +25,17 @@ kernel create_kernel(module m, const char * kernel_name) {
   return k;
 }
 
+/**
+ * @brief print the module build log
+ *
+ * @param m the module that is built
+ * @param d the device the module is built for
+ */
+void print_module_build_log(module & m, device & d) {
+  // FIXME
+}
+
+
 } // cuda
 } // backend_detail
 } // aura

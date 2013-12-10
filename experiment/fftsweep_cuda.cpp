@@ -1,4 +1,5 @@
 
+#include <complex>
 #include <cufft.h>
 #include <aura/backend.hpp>
 #include <aura/misc/benchmark.hpp>
@@ -18,11 +19,12 @@ using namespace aura::backend;
 // runtime per test in seconds
 #define runtime 2 
 
+typedef std::complex<float> cfloat;
 
 void run_test(int size, device & d, feed & f) {
-  // allocate memory
-  memory m1 = device_malloc(size*size*sizeof(float)*2*batch_size, d);
-  memory m2 = device_malloc(size*size*sizeof(float)*2*batch_size, d);
+  // allocate memory 
+  device_ptr<cfloat> m1 = device_malloc<cfloat>(size*size*batch_size, d);
+  device_ptr<cfloat> m2 = device_malloc<cfloat>(size*size*batch_size, d);
  
   // allocate fft handle
   cufftHandle plan;
@@ -32,14 +34,14 @@ void run_test(int size, device & d, feed & f) {
     embed, 1, size * size, CUFFT_C2C, batch_size));
   
   // run test fft (warmup)
-  AURA_CUFFT_SAFE_CALL(cufftExecC2C(plan, (cufftComplex *)m1,
-    (cufftComplex *)m2, CUFFT_FORWARD));
+  AURA_CUFFT_SAFE_CALL(cufftExecC2C(plan, (cufftComplex *)m1.get(),
+    (cufftComplex *)m2.get(), CUFFT_FORWARD));
 
   // run benchmark
   double min, max, mean, stdev;
   int num;
-  AURA_BENCHMARK_ASYNC(cufftExecC2C(plan, (cufftComplex *)m1,
-    (cufftComplex *)m2, CUFFT_FORWARD), f.synchronize();, 
+  AURA_BENCHMARK_ASYNC(cufftExecC2C(plan, (cufftComplex *)m1.get(),
+    (cufftComplex *)m2.get(), CUFFT_FORWARD), f.synchronize();, 
     runtime, min, max, mean, stdev, num);
  
   // print result
@@ -48,8 +50,8 @@ void run_test(int size, device & d, feed & f) {
   f.synchronize();
   AURA_CUFFT_SAFE_CALL(cufftDestroy(plan));
   
-  device_free(m1, d);
-  device_free(m2, d);
+  device_free(m1);
+  device_free(m2);
 }
 
 

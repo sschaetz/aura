@@ -33,10 +33,10 @@ typedef std::complex<float> cfloat;
 // run each subtest for a specific number of seconds
 const int duration_per_test = 2*1e6;
 
-void bench_fft_only(std::vector<memory> & fftmem1, 
-    std::vector<memory> & fftmem2, 
-    std::vector<memory> & p2pmem1, 
-    std::vector<memory> & p2pmem2, 
+void bench_fft_only(std::vector<device_ptr<cfloat> > & fftmem1, 
+    std::vector<device_ptr<cfloat> > & fftmem2, 
+    std::vector<device_ptr<cfloat> > & p2pmem1, 
+    std::vector<device_ptr<cfloat> > & p2pmem2, 
     std::vector<fft> & ffth, 
     std::vector<kernel> & kernels, 
     std::vector<feed> & feeds1,
@@ -48,10 +48,10 @@ void bench_fft_only(std::vector<memory> & fftmem1,
   std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
 }
 
-void bench_overlap_same_feed(std::vector<memory> & fftmem1, 
-    std::vector<memory> & fftmem2, 
-    std::vector<memory> & p2pmem1, 
-    std::vector<memory> & p2pmem2, 
+void bench_overlap_same_feed(std::vector<device_ptr<cfloat> > & fftmem1, 
+    std::vector<device_ptr<cfloat> > & fftmem2, 
+    std::vector<device_ptr<cfloat> > & p2pmem1, 
+    std::vector<device_ptr<cfloat> > & p2pmem2, 
     std::vector<fft> & ffth, 
     std::vector<kernel> & kernels, 
     std::vector<feed> & feeds1,
@@ -69,10 +69,10 @@ void bench_overlap_same_feed(std::vector<memory> & fftmem1,
   std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
 }
 
-void bench_overlap_diff_feed(std::vector<memory> & fftmem1, 
-    std::vector<memory> & fftmem2, 
-    std::vector<memory> & p2pmem1, 
-    std::vector<memory> & p2pmem2, 
+void bench_overlap_diff_feed(std::vector<device_ptr<cfloat> > & fftmem1, 
+    std::vector<device_ptr<cfloat> > & fftmem2, 
+    std::vector<device_ptr<cfloat> > & p2pmem1, 
+    std::vector<device_ptr<cfloat> > & p2pmem2, 
     std::vector<fft> & ffth, 
     std::vector<kernel> & kernels, 
     std::vector<feed> & feeds1,
@@ -91,10 +91,10 @@ void bench_overlap_diff_feed(std::vector<memory> & fftmem1,
   std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
 }
 
-void bench_overlap_diff_feed_2(std::vector<memory> & fftmem1, 
-    std::vector<memory> & fftmem2, 
-    std::vector<memory> & p2pmem1, 
-    std::vector<memory> & p2pmem2, 
+void bench_overlap_diff_feed_2(std::vector<device_ptr<cfloat> > & fftmem1, 
+    std::vector<device_ptr<cfloat> > & fftmem2, 
+    std::vector<device_ptr<cfloat> > & p2pmem1, 
+    std::vector<device_ptr<cfloat> > & p2pmem2, 
     std::vector<fft> & ffth, 
     std::vector<kernel> & kernels, 
     std::vector<feed> & feeds1,
@@ -134,17 +134,17 @@ void bench_overlap_diff_feed_2(std::vector<memory> & fftmem1,
   std::for_each(feeds2.begin(), feeds2.end(), &wait_for);
 }
 
-void bench_overlap_diff_feed_copy_api(std::vector<memory> & fftmem1, 
-    std::vector<memory> & fftmem2, 
-    std::vector<memory> & p2pmem1, 
-    std::vector<memory> & p2pmem2, 
+void bench_overlap_diff_feed_copy_api(std::vector<device_ptr<cfloat> > & fftmem1, 
+    std::vector<device_ptr<cfloat> > & fftmem2, 
+    std::vector<device_ptr<cfloat> > & p2pmem1, 
+    std::vector<device_ptr<cfloat> > & p2pmem2, 
     std::vector<fft> & ffth, 
     std::vector<kernel> & kernels, 
     std::vector<feed> & feeds1,
     std::vector<feed> & feeds2,
     std::size_t dim) {
   
-  std::size_t s = (dim/2)*(dim/2)*sizeof(cfloat); 
+  std::size_t s = (dim/2)*(dim/2); 
   fft_forward(fftmem1[0], fftmem2[0], ffth[0], feeds2[0]);
   fft_forward(fftmem1[1], fftmem2[1], ffth[1], feeds2[1]);
   fft_forward(fftmem1[2], fftmem2[2], ffth[2], feeds2[2]);
@@ -177,16 +177,20 @@ void bench_overlap(std::vector<device> & devices,
   double min, max, mean, stdev;
   std::size_t num;
   
-  // allocate memory for fft and p2p test
-  std::vector<memory> fftmem1(devices.size()); 
-  std::vector<memory> fftmem2(devices.size()); 
-  std::vector<memory> p2pmem1(devices.size());
-  std::vector<memory> p2pmem2(devices.size());
+  // allocate device_ptr<cfloat>  for fft and p2p test
+  std::vector<device_ptr<cfloat> > fftmem1(devices.size()); 
+  std::vector<device_ptr<cfloat> > fftmem2(devices.size()); 
+  std::vector<device_ptr<cfloat> > p2pmem1(devices.size());
+  std::vector<device_ptr<cfloat> > p2pmem2(devices.size());
   for(std::size_t n=0; n<devices.size(); n++) {
-    fftmem1[n] = device_malloc(batch*dim*dim*sizeof(cfloat), devices[n]);
-    fftmem2[n] = device_malloc(batch*dim*dim*sizeof(cfloat), devices[n]);
-    p2pmem1[n] = device_malloc(dim*dim*sizeof(cfloat), devices[n]);
-    p2pmem2[n] = device_malloc(dim*dim*sizeof(cfloat), devices[n]);
+    fftmem1[n] = device_malloc<cfloat>(
+      batch*dim*dim, devices[n]);
+    fftmem2[n] = device_malloc<cfloat>(
+      batch*dim*dim, devices[n]);
+    p2pmem1[n] = device_malloc<cfloat>(
+      dim*dim, devices[n]);
+    p2pmem2[n] = device_malloc<cfloat>(
+      dim*dim, devices[n]);
   }
 
   // create fft handle
@@ -250,10 +254,10 @@ void bench_overlap(std::vector<device> & devices,
     "bench_overlap_diff_feed_copy_api", num, min, max, mean, stdev);
 
     for(std::size_t n=0; n<devices.size(); n++) {
-    device_free(fftmem1[n], devices[n]);
-    device_free(fftmem2[n], devices[n]);
-    device_free(p2pmem1[n], devices[n]);
-    device_free(p2pmem2[n], devices[n]);
+    device_free(fftmem1[n]);
+    device_free(fftmem2[n]);
+    device_free(p2pmem1[n]);
+    device_free(p2pmem2[n]);
   }
 
 }

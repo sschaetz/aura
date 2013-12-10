@@ -43,8 +43,9 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
   f.set();
   AURA_CUDA_SAFE_CALL(cuLaunchKernel(k, meshx, meshy, meshz, 
     bundlex, bundley, bundlez, 0, f.get_backend_stream(), 
-    const_cast<void**>(&a[0]), NULL)); 
+    const_cast<void**>(&a.second[0]), NULL)); 
   f.unset();
+  free(a.first);
 }
 
 } // namespace detail

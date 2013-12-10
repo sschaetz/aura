@@ -6,6 +6,7 @@
 #include <aura/backend/cuda/call.hpp>
 #include <aura/backend/cuda/feed.hpp>
 #include <aura/backend/cuda/device.hpp>
+#include <aura/backend/cuda/device_ptr.hpp>
 
 
 namespace aura {
@@ -32,6 +33,17 @@ inline memory device_malloc(std::size_t size, device & d) {
   return m;
 }
 
+DEPRECATED(memory device_malloc(std::size_t size, device & d));
+
+template <typename T>
+device_ptr<T> device_malloc(std::size_t size, device & d) {
+  d.set();
+  memory m;
+  AURA_CUDA_SAFE_CALL(cuMemAlloc(&m, size*sizeof(T)));
+  d.unset();
+  return device_ptr<T>(m, d);
+}
+
 
 /**
  * free device memory
@@ -42,6 +54,16 @@ inline void device_free(memory m, device & d) {
   d.set();
   AURA_CUDA_SAFE_CALL(cuMemFree(m));
   d.unset();
+}
+
+DEPRECATED(void device_free(memory m, device &));
+
+template <typename T>
+void device_free(device_ptr<T> & ptr) {
+  ptr.get_device().set();
+  AURA_CUDA_SAFE_CALL(cuMemFree(ptr.get()));
+  ptr.get_device().unset();
+  ptr.invalidate();
 }
 
 
@@ -62,6 +84,27 @@ inline void copy(memory dst, const void * src, std::size_t size,
   f.unset();
 } 
 
+DEPRECATED(void copy(memory dst, const void * src, std::size_t size, 
+  feed & f, std::size_t offset));
+
+/**
+ * copy host to device memory
+ *
+ * @param dst device memory (destination)
+ * @param src host memory (source)
+ * @param size size of copy in number of T 
+ * @param f feed the transfer is executed in
+ */
+template <typename T>
+void copy(device_ptr<T> dst, const T * src, std::size_t size, 
+  feed & f) {
+  f.set(); 
+  AURA_CUDA_SAFE_CALL(cuMemcpyHtoDAsync(
+    dst.get()+dst.get_offset()*sizeof(T), src, 
+    size*sizeof(T), f.get_backend_stream()));
+  f.unset();
+}
+
 
 /**
  * copy device to host memory
@@ -77,6 +120,27 @@ inline void copy(void * dst, memory src, std::size_t size,
   f.set();
   AURA_CUDA_SAFE_CALL(cuMemcpyDtoHAsync(dst, src+offset, 
     size, f.get_backend_stream()));
+  f.unset();
+}
+
+
+DEPRECATED(inline void copy(void * dst, memory src, std::size_t size, 
+  feed & f, std::size_t offset));
+
+/**
+ * copy device to host memory
+ *
+ * @param dst host memory (destination)
+ * @param src device memory (source)
+ * @param size size of copy in bytes
+ * @param f feed the transfer is executed in
+ */
+template <typename T>
+void copy(T * dst, const device_ptr<T> src, std::size_t size, feed & f) {
+  f.set();
+  AURA_CUDA_SAFE_CALL(cuMemcpyDtoHAsync(dst, 
+    src.get()+src.get_offset()*sizeof(T), 
+    size*sizeof(T), f.get_backend_stream()));
   f.unset();
 }
 
@@ -98,6 +162,27 @@ inline void copy(memory dst, memory src, std::size_t size,
   f.unset();
 }
 
+DEPRECATED(void copy(memory dst, memory src, std::size_t size, 
+  feed & f, std::size_t dst_offset, std::size_t src_offset));
+
+/**
+ * copy device to device memory
+ *
+ * @param dst host memory (destination)
+ * @param src device memory (source)
+ * @param size size of copy in bytes
+ * @param f feed the transfer is executed in
+ */
+template <typename T>
+inline void copy(device_ptr<T> dst, const device_ptr<T> src, 
+  std::size_t size, feed & f) {
+  f.set();
+  AURA_CUDA_SAFE_CALL(cuMemcpyDtoDAsync(
+    dst.get()+dst.get_offset()*sizeof(T), 
+    src.get()+src.get_offset()*sizeof(T), size*sizeof(T), 
+    f.get_backend_stream()));
+  f.unset();
+}
 
 } // cuda 
 } // backend_detail

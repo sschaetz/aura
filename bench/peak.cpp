@@ -26,45 +26,48 @@ using namespace aura::backend;
 
 const char * kernel_file = "bench/peak.cc"; 
 
-inline void run_host_to_device(feed & f, memory dst, 
+inline void run_host_to_device(feed & f, device_ptr<float> dst, 
   std::vector<float> & src) {
   copy(dst, &src[0], src.size()*sizeof(float), f); 
   wait_for(f);
 }
 
 inline void run_device_to_host(feed & f, std::vector<float> & dst, 
-  memory src) {
+  device_ptr<float> src) {
   copy(&dst[0], src, dst.size()*sizeof(float), f); 
   wait_for(f);
 }
 
+template <typename T>
 inline void run_kernel(feed & f, kernel & k, 
-  mesh & m, bundle & b, memory m1) {
-  invoke(k, m, b, args(m1), f);
+  mesh & m, bundle & b, device_ptr<T> m1) {
+  invoke(k, m, b, args(m1.get()), f);
   wait_for(f); 
 }
 
 inline void run_kernel(feed & f, kernel & k, 
-  mesh & m, bundle & b, memory m1, memory m2) {
-  invoke(k, m, b, args(m1, m2), f);
+  mesh & m, bundle & b, device_ptr<float> m1, device_ptr<float> m2) {
+  invoke(k, m, b, args(m1.get(), m2.get()), f);
   wait_for(f); 
 }
 
 inline void run_kernel_f(feed & f, kernel & k, 
-  mesh & m, bundle & b, memory m1, memory m2, float s) {
-  invoke(k, m, b, args(m1, m2, s), f);
+  mesh & m, bundle & b, device_ptr<float> m1, device_ptr<float> m2, float s) {
+  invoke(k, m, b, args(m1.get(), m2.get(), s), f);
   wait_for(f); 
 }
 
 inline void run_kernel(feed & f, kernel & k, 
-  mesh & m, bundle & b, memory m1, memory m2, memory m3) {
-  invoke(k, m, b, args(m1, m2, m3), f);
+  mesh & m, bundle & b, device_ptr<float> m1, device_ptr<float> m2, 
+  device_ptr<float> m3) {
+  invoke(k, m, b, args(m1.get(), m2.get(), m3.get()), f);
   wait_for(f); 
 }
 
 inline void run_kernel_f(feed & f, kernel & k, 
-  mesh & m, bundle & b, memory m1, memory m2, memory m3, float s) {
-  invoke(k, m, b, args(m1, m2, m3, s), f);
+  mesh & m, bundle & b, device_ptr<float> m1, device_ptr<float> m2, 
+  device_ptr<float> m3, float s) {
+  invoke(k, m, b, args(m1.get(), m2.get(), m3.get(), s), f);
   wait_for(f); 
 }
 
@@ -90,8 +93,8 @@ inline void run_tests(
     kernel kdflop = create_kernel(m, "peak_flop_double"); 
     for(std::size_t m=0; m<meshes.size(); m++) {
       std::size_t vsize = product(meshes[m]);
-      memory mems = device_malloc(vsize*sizeof(float), d);
-      memory memd = device_malloc(vsize*sizeof(double), d);
+      device_ptr<float> mems = device_malloc<float>(vsize, d);
+      device_ptr<double> memd = device_malloc<double>(vsize, d);
       for(std::size_t b=0; b<bundles.size(); b++) {
         if(ops[0]) { // sflop
           run_kernel(f, ksflop, meshes[m], bundles[b], mems);
@@ -112,8 +115,8 @@ inline void run_tests(
             " runs " << runs << " runtime " << runtime << std::endl;
         }
       }
-      device_free(mems, d);
-      device_free(memd, d);
+      device_free(mems);
+      device_free(memd);
     }
   }
 
@@ -124,9 +127,9 @@ inline void run_tests(
     kernel ktriad = create_kernel(m, "peak_triad"); 
     for(std::size_t m=0; m<meshes.size(); m++) {
       std::size_t vsize = product(meshes[m])*64;
-      memory mem1 = device_malloc(vsize*sizeof(float), d);
-      memory mem2 = device_malloc(vsize*sizeof(float), d);
-      memory mem3 = device_malloc(vsize*sizeof(float), d);
+      device_ptr<float> mem1 = device_malloc<float>(vsize, d);
+      device_ptr<float> mem2 = device_malloc<float>(vsize, d);
+      device_ptr<float> mem3 = device_malloc<float>(vsize, d);
       for(std::size_t b=0; b<bundles.size(); b++) {
         if(ops[2]) { // copy 
           run_kernel(f, kcopy, meshes[m], bundles[b], mem1, mem2);
@@ -165,9 +168,9 @@ inline void run_tests(
             " runs " << runs << " runtime " << runtime << std::endl;
         }
       }
-      device_free(mem1, d);
-      device_free(mem2, d);
-      device_free(mem3, d);
+      device_free(mem1);
+      device_free(mem2);
+      device_free(mem3);
     }
   }
 
@@ -176,11 +179,11 @@ inline void run_tests(
     for(std::size_t s=0; s<sizes.size(); s++) {
       std::vector<float> a1(sizes[s][0], 42.);
       std::vector<float> a2(sizes[s][0]);
-      memory m = device_malloc(sizes[s][0]*sizeof(float), d);
+      device_ptr<float> m = device_malloc<float>(sizes[s][0], d);
       
       if(ops[6]) { // tphtd
         run_host_to_device(f, m, a1);
-        copy(&a2[0], m, a2.size()*sizeof(float), f);
+        copy(&a2[0], m, a2.size(), f);
         wait_for(f);
         
         if(!std::equal(a1.begin(), a1.end(), a2.begin())) {
@@ -197,7 +200,7 @@ inline void run_tests(
       
       if(ops[7]) { // tpdth
         std::fill(a2.begin(), a2.end(), 0.0);
-        copy(m, &a1[0], a1.size()*sizeof(float), f);
+        copy(m, &a1[0], a1.size(), f);
         run_device_to_host(f, a2, m);
         
         if(!std::equal(a1.begin(), a1.end(), a2.begin())) {
@@ -211,7 +214,7 @@ inline void run_tests(
           " max " << max << " mean " << mean << " stdev " << stdev << 
           " runs " << runs << " runtime " << runtime << std::endl;
       }
-      device_free(m, d);
+      device_free(m);
     }
   }
 }

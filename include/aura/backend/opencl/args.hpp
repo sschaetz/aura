@@ -29,7 +29,7 @@ args_t args(const T0 & a0) {
 }
 
 template <typename T0, typename T1>
-args_t args(T0 & a0, T1 & a1) {
+args_t args(const T0 & a0, const T1 & a1) {
   const std::size_t size = sizeof(T0) + sizeof(T1); 
   char * ptr = (char *)malloc(size);
   std::size_t offset = 0;
@@ -47,7 +47,7 @@ args_t args(T0 & a0, T1 & a1) {
 }
 
 template <typename T0, typename T1, typename T2>
-args_t args(T0 & a0, T1 & a1, T2 & a2) {
+args_t args(const T0 & a0, const T1 & a1, const T2 & a2) {
   const std::size_t size = sizeof(T0) + sizeof(T1) + sizeof(T2); 
   char * ptr = (char *)malloc(size);
   std::size_t offset = 0;
@@ -69,7 +69,7 @@ args_t args(T0 & a0, T1 & a1, T2 & a2) {
 }
 
 template <typename T0, typename T1, typename T2, typename T3>
-args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3) {
+args_t args(const T0 & a0, const T1 & a1, const T2 & a2, const T3 & a3) {
   const std::size_t size = sizeof(T0) + sizeof(T1) + sizeof(T2) +
     sizeof(T3);
   char * ptr = (char *)malloc(size);
@@ -97,7 +97,8 @@ args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3) {
 
 template <typename T0, typename T1, typename T2, typename T3,
           typename T4>
-args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3, T4 & a4) {
+args_t args(const T0 & a0, const T1 & a1, const T2 & a2, 
+  const T3 & a3, const T4 & a4) {
   const std::size_t size = sizeof(T0) + sizeof(T1) + sizeof(T2) +
     sizeof(T3) + sizeof(T4);
   char * ptr = (char *)malloc(size);
@@ -129,7 +130,8 @@ args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3, T4 & a4) {
 
 template <typename T0, typename T1, typename T2, typename T3,
           typename T4, typename T5>
-args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3, T4 & a4, T5 & a5) {
+args_t args(const T0 & a0, const T1 & a1, const T2 & a2, 
+  const T3 & a3, const T4 & a4, const T5 & a5) {
   const std::size_t size = sizeof(T0) + sizeof(T1) + sizeof(T2) +
     sizeof(T3) + sizeof(T4) + sizeof(T5);
   char * ptr = (char *)malloc(size);
@@ -165,8 +167,8 @@ args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3, T4 & a4, T5 & a5) {
 
 template <typename T0, typename T1, typename T2, typename T3,
           typename T4, typename T5, typename T6>
-args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3, T4 & a4, T5 & a5, 
-  T6 & a6) {
+args_t args(const T0 & a0, const T1 & a1, const T2 & a2, const T3 & a3, 
+  const T4 & a4, const T5 & a5, const T6 & a6) {
   const std::size_t size = sizeof(T0) + sizeof(T1) + sizeof(T2) +
     sizeof(T3) + sizeof(T4) + sizeof(T5) + sizeof(T6);
   char * ptr = (char *)malloc(size);
@@ -206,8 +208,8 @@ args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3, T4 & a4, T5 & a5,
 
 template <typename T0, typename T1, typename T2, typename T3,
           typename T4, typename T5, typename T6, typename T7>
-args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3, T4 & a4, T5 & a5, 
-  T6 & a6, T7 & a7) {
+args_t args(const T0 & a0, const T1 & a1, const T2 & a2, const T3 & a3, 
+  const T4 & a4, const T5 & a5, const T6 & a6, const T7 & a7) {
   const std::size_t size = sizeof(T0) + sizeof(T1) + sizeof(T2) +
     sizeof(T3) + sizeof(T4) + sizeof(T5) + sizeof(T6) + sizeof(T7);
   char * ptr = (char *)malloc(size);
@@ -252,8 +254,8 @@ args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3, T4 & a4, T5 & a5,
 template <typename T0, typename T1, typename T2, typename T3,
           typename T4, typename T5, typename T6, typename T7,
           typename T8>
-args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3, T4 & a4, T5 & a5, 
-  T6 & a6, T7 & a7, T8 & a8) {
+args_t args(const T0 & a0, const T1 & a1, const T2 & a2, const T3 & a3, 
+  const T4 & a4, const T5 & a5, const T6 & a6, const T7 & a7, const T8 & a8) {
   const std::size_t size = sizeof(T0) + sizeof(T1) + sizeof(T2) +
     sizeof(T3) + sizeof(T4) + sizeof(T5) + sizeof(T6) + sizeof(T7) +
     sizeof(T8);
@@ -303,8 +305,9 @@ args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3, T4 & a4, T5 & a5,
 template <typename T0, typename T1, typename T2, typename T3,
           typename T4, typename T5, typename T6, typename T7,
           typename T8, typename T9>
-args_t args(T0 & a0, T1 & a1, T2 & a2, T3 & a3, T4 & a4, T5 & a5, 
-  T6 & a6, T7 & a7, T8 & a8, T9 & a9) {
+args_t args(const T0 & a0, const T1 & a1, const T2 & a2, const T3 & a3, 
+  const T4 & a4, const T5 & a5, const T6 & a6, const T7 & a7, 
+  const T8 & a8, const T9 & a9) {
   const std::size_t size = sizeof(T0) + sizeof(T1) + sizeof(T2) +
     sizeof(T3) + sizeof(T4) + sizeof(T5) + sizeof(T6) + sizeof(T7) +
     sizeof(T8) + sizeof(T9);
