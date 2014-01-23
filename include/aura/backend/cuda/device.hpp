@@ -154,6 +154,25 @@ inline void print_device_info() {
 }
 DEPRECATED(void print_device_info());
 
+/// return the amount of free memory on the device
+inline std::size_t device_get_free_memory(device &d) {
+	std::size_t free; 
+	std::size_t total;
+	d.set();
+	AURA_CUDA_SAFE_CALL(cuMemGetInfo(&free, &total));
+	d.unset();
+	return free;
+}
+
+/// return the amount of total memory on the device
+inline std::size_t device_get_total_memory(device &d) {
+	std::size_t free; 
+	std::size_t total;
+	d.set();
+	AURA_CUDA_SAFE_CALL(cuMemGetInfo(&free, &total));
+	d.unset();
+	return total;
+}
 
 #include <aura/backend/shared/device_info.hpp>
 
