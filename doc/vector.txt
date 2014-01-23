@@ -23,7 +23,7 @@ Market research:
 boost compute has
 boost::compute::vector<T, allocator>
 
-vexvl has
+vexcl has
 vexcl::vector
 
 mtl4 has 
@@ -59,6 +59,9 @@ valid even if the original vector goes out of scope
 
 bolt has
 device_vector<T>
+
+cusp has 
+array1d array2d and matrix
 
 Memory Management
 =================

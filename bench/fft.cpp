@@ -148,7 +148,7 @@ void run_tests() {
       }
     }
   }
-  fft_terminate();
+  aura::backend::fft_terminate();
 }
 
 int main(int argc, char *argv[]) {

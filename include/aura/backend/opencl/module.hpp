@@ -25,7 +25,6 @@ typedef cl_program module;
  */
 module create_module_from_file(const char * filename, device & d, 
   const char * build_options=NULL) {
-  
   std::ifstream in(filename, std::ios::in);
   AURA_CHECK_ERROR(in);
   in.seekg(0, std::ios::end);
