@@ -3,6 +3,80 @@ Guidelines
 
 How should comments be written?
 * don't write stupid comments like
-  /// increment i
+  ///increment by i
   T increment(T i) {}
+
+From the Linux Kernel:
+======================
+
+Switch:
+~~~~~~~
+switch (suffix) {
+case 'G':
+case 'g':
+	mem <<= 30;
+	break;
+case 'M':
+case 'm':
+	mem <<= 20;
+	break;
+case 'K':
+case 'k':
+	mem <<= 10;
+	/* fall through */
+default:
+	break;
+}
+
+If-else:
+~~~~~~~~
+if (x == y) {
+	..
+} else if (x > y) {
+	...
+} else {
+	....
+}
+
+Function:
+~~~~~~~~~
+int function(int x)
+{
+	body of function
+}
+
+Do-while:
+~~~~~~~~~
+do {
+	body of do-loop
+} while (condition);
+
+Namespace:
+~~~~~~~~~~
+
+namespace foo {
+void func();
+} /* namespace foo */
+
+Struct/class:
+~~~~~~~~~~~~~
+template <typename T>
+struct blk_dev_struct {
+public:
+    void (*request_fn)(void);
+private:
+    T * current_request;
+};
+
+Spaces:
+~~~~~~~
+space after keywords: if, switch, case, for, do, while
+space before and after binary operators:
+	=  +  -  <  >  *  /  %  |  &  ^  <=  >=  ==  !=  ?  :
+no space after unary operators:
+	&  *  +  -  ~  !  sizeof  typeof  alignof  __attribute__  defined
+
+no trailing whitespaces
+
+
 

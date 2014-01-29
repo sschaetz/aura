@@ -76,6 +76,11 @@ public:
     return device_ptr<T>(memory_, offset_+b, *device_);
   }
 
+  /// assign nullptr operator
+  device_ptr<T>& operator =(std::nullptr_t) {
+	invalidate();
+  }
+
   /// addition assignment operator
   device_ptr<T>& operator +=(const std::size_t & b) {
     offset_ += b;
