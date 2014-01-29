@@ -5,6 +5,14 @@ We now have a buffer. Should the buffer be reference counted?
  * yes: probably easier to user
  * no: move semantics make multi-threading easier maybe?
 
+What should a multidimensional device vector be called?
+
+device_nvector?
+device_ndvector?
+and
+device_vector?
+
+
 What should a device vector be called?
 
 dev_vector

@@ -18,7 +18,7 @@ public:
 	device_buffer() : ptr_(), size_(0) {}
 
 	/// create buffer of size on device
-	device_buffer(std::size_t size, backend::device & d) : 
+	device_buffer(std::size_t size, backend::device & d) :
 		ptr_(backend::device_malloc<T>(size, d)), size_(size) {}
 
 	/// destroy object
@@ -31,7 +31,7 @@ public:
 	 *
 	 * @param db device_buffer to move here
 	 */
-	device_buffer(BOOST_RV_REF(device_buffer) db) : 
+	device_buffer(BOOST_RV_REF(device_buffer) db) :
 		ptr_(db.ptr_), size_(db.size_) {
 		db.ptr_.invalidate();
 		db.size_ = 0;
@@ -42,7 +42,7 @@ public:
 	 *
 	 * @param d device to move here
 	 */
-	device_buffer& operator=(BOOST_RV_REF(device_buffer) db) 
+	device_buffer& operator=(BOOST_RV_REF(device_buffer) db)
 	{
 		finalize();
 		ptr_ = db.ptr_;
@@ -53,8 +53,8 @@ public:
 	}
 
 
-	
-	
+
+
 private:
 	/// finalize object (called from dtor and move assign)
 	void finalize() {
@@ -65,7 +65,7 @@ private:
 		size_ = 0;
 	}
 
-private:	
+private:
 	/// pointer to device memory
 	backend::device_ptr<T> ptr_;
 	/// size of buffer
