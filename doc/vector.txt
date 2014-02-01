@@ -1,9 +1,40 @@
 Vector
 ======
 
+It seems to be a fundamental difference if we want to either have a
+library for linear algebra or a library with multi-dimensional vectors.
+At least some people think so:
+http://lists.boost.org/Archives/boost/2002/05/29151.php
+But maybe this is wrong, I think we can do linear algebra (BLAS) and
+multi-dimensional types.
+It does then not make sense to have specific 1- 2- or 3- dimensional
+types but only one type that is a multi-dimensional vector (including 
+1- 2- and 3-dimensional).
+
+so:
+
+device d(0);
+device_vector<T> v1(extent(d1, d2, d3, d4), d);
+
+creates a 4 dimensional vector.
+
+feed f(d);
+device_vector<T> v2(extent(512, 512), d);
+fft fh(d, f, v2.extent, fft::type::c2c);
+fft_inverse(v2, v2, fh, f);
+
+creates a 2 dimensional vector, an fft handle for that vector
+and calculates the inverse fourier transform.
+I like it.
+
+
 We now have a buffer. Should the buffer be reference counted?
  * yes: probably easier to user
  * no: move semantics make multi-threading easier maybe?
+
+Should a multi-dimensional densere array just be a view on a buffer
+with an extent? C++ AMP has a very nice API that has similar features.
+How would such a thing be passed to an API?
 
 What should a multidimensional device vector be called?
 
@@ -11,6 +42,11 @@ device_nvector?
 device_ndvector?
 and
 device_vector?
+or simply
+device_array?
+
+it is not an std::vector if it can have multiple dimensions
+it is also not an array for the same reasons.
 
 
 What should a device vector be called?
@@ -31,6 +67,14 @@ the standard now has shared_ptr, weak_ptr etc. This would favour
 device_vec but I still prefer device_vector.
 
 Market research:
+
+C++ AMP has:
+array<T, rank> that copies data directly from a CPU buffer to GPU
+array_view<T, rank> data is only copied if the view is used in 
+a kernel function
+index<rank> index point in array
+extent<rank> a vector of rank values that specify the bounds of 
+an ndim vector 
 
 boost compute has
 boost::compute::vector<T, allocator>
