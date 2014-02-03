@@ -1,12 +1,38 @@
 Vector
 ======
 
-It seems to be a fundamental difference if we want to either have a
-library for linear algebra or a library with multi-dimensional vectors.
-At least some people think so:
-http://lists.boost.org/Archives/boost/2002/05/29151.php
-But maybe this is wrong, I think we can do linear algebra (BLAS) and
-multi-dimensional types.
+Apparently extent was not well received since it already exists some-
+where within the STL. So they changed it to bounds. Let's see.
+
+Extent was nicer I guess.
+
+Then: there is the question of doing this:
+
+device d(0);
+device_vector<T> v(d1*d2*d3, d);
+device_vector_view<T> v(bounds(d1, d2, d3), v);
+
+or whould that be:
+
+device_view<T> v(bounds(d1, d2, d3), v);
+
+would fft_forward() then accept both device_view and device_vector?
+does not make so much sense here to have the view, maybe the vector
+should be multi-dimensional and have a buffer internally
+
+but can we then put a one-dimensional vector in a 2D fft of correct
+size? Does a device_vector own the data or not?
+
+or:
+
+device d(0);
+device_vector<T> v(bounds(d1*d2*d3), d);
+
+so: is there a multi-dimensional vector or is there only a multi-
+dimensional view on a one-dimensional buffer?
+
+---
+
 It does then not make sense to have specific 1- 2- or 3- dimensional
 types but only one type that is a multi-dimensional vector (including 
 1- 2- and 3-dimensional).
@@ -14,13 +40,13 @@ types but only one type that is a multi-dimensional vector (including
 so:
 
 device d(0);
-device_vector<T> v1(extent(d1, d2, d3, d4), d);
+device_vector<T> v1(bounds(d1, d2, d3, d4), d);
 
 creates a 4 dimensional vector.
 
 feed f(d);
-device_vector<T> v2(extent(512, 512), d);
-fft fh(d, f, v2.extent, fft::type::c2c);
+device_vector<T> v2(bounds(512, 512), d);
+fft fh(d, f, v2.bounds, fft::type::c2c);
 fft_inverse(v2, v2, fh, f);
 
 creates a 2 dimensional vector, an fft handle for that vector
