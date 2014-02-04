@@ -11,7 +11,7 @@ struct device_info {
 };
 
 /// print device info to stdout
-inline void print_device_info(device_info & di) {
+inline void print_device_info(const device_info & di) {
   printf("%s (%s) max mesh size: ", di.name, di.vendor);
   for(std::size_t i=0; i<di.max_mesh.size(); i++) {
     printf("%lu ", di.max_mesh[i]);

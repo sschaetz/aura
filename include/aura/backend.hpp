@@ -55,7 +55,19 @@
 namespace aura {
 
 namespace backend = backend_detail::AURA_BACKEND_LC;
- 
+
+using backend::initialize;
+
+using backend::device;
+using backend::device_info;
+using backend::device_get_info;
+using backend::device_get_count;
+using backend::print_device_info;
+
+using backend::feed;
+using backend::wait_for;
+
+
 }
 
 #endif 
