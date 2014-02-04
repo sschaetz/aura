@@ -1,6 +1,27 @@
 Vector
 ======
 
+So here is the plan:
+
+Data is stored in a device_buffer<T>. This type is not intended to be
+used on its own but forms a layer of abstraction for other types.
+
+Users allocate a device_array<T>. It is a multi-dimensional vector. 
+Users can create different views on device_array<T> through a
+device_view<T> type that is created from a device_array<T>, bounds
+and an optional index.
+
+The bounds type specifies the size in each dimension of an array or
+of a view. The index type specifies a location in the multi-dimensional
+vector device_array<T>.
+
+Ideas for bounds and index as well as device_view<T> types are similar
+to C++ AMP as described in N3851.
+
+
+-----
+
+
 Apparently extent was not well received since it already exists some-
 where within the STL. So they changed it to bounds. Let's see.
 

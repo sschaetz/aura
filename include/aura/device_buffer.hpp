@@ -7,9 +7,14 @@
 
 namespace aura {
 
+/// continuous block of memory holdin multiple instances of a type T
 template <typename T>
 class device_buffer {
 
+public:
+	typedef device_ptr<T> iterator;
+	typedef const device_ptr<T> const_iterator;
+	
 private:
 	BOOST_MOVABLE_BUT_NOT_COPYABLE(device_buffer)
 
@@ -22,7 +27,8 @@ public:
 		ptr_(backend::device_malloc<T>(size, d)), size_(size) {}
 
 	/// destroy object
-	~device_buffer() {
+	~device_buffer() 
+	{
 		finalize();
 	}
 
@@ -32,7 +38,8 @@ public:
 	 * @param db device_buffer to move here
 	 */
 	device_buffer(BOOST_RV_REF(device_buffer) db) :
-		ptr_(db.ptr_), size_(db.size_) {
+		ptr_(db.ptr_), size_(db.size_) 
+	{
 		db.ptr_.invalidate();
 		db.size_ = 0;
 	}
@@ -51,13 +58,30 @@ public:
 		db.size_ = 0;
 		return *this;
 	}
+	
+	/// return beginning of buffer
+	iterator begin() const
+	{
+		return ptr_;
+	}
+	
+	/// return end of buffer
+	iterator end() const
+	{
+		return ptr_+size_;
+	}
 
-
+	/// return size of buffer
+	std::size_t size() const 
+	{
+		return size_;
+	}
 
 
 private:
 	/// finalize object (called from dtor and move assign)
-	void finalize() {
+	void finalize() 
+	{
 		if(nullptr != ptr_) {
 			backend::device_free<T>(ptr_);
 		}
