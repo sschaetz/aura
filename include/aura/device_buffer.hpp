@@ -20,11 +20,13 @@ private:
 
 public:
 	/// create empty buffer
-	device_buffer() : ptr_(), size_(0) {}
+	device_buffer() : ptr_(), size_(0) 
+	{}
 
 	/// create buffer of size on device
 	device_buffer(std::size_t size, backend::device & d) :
-		ptr_(backend::device_malloc<T>(size, d)), size_(size) {}
+		ptr_(backend::device_malloc<T>(size, d)), size_(size) 
+	{}
 
 	/// destroy object
 	~device_buffer() 
