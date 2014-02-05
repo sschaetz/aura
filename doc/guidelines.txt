@@ -66,6 +66,16 @@ public:
     void (*request_fn)(void);
 private:
     T * current_request;
+
+    blk_dev_struct()
+    {}
+    
+    blk_dev_struct(arg1, arg2) : arg1_(arg1), arg2_(arg2)
+    {}
+    
+    blk_dev_struct(arg1, arg2, longarg3, longarg4) : 
+        arg1_(arg1), arg2_(arg2), longarg3_(longarg3), longarg4_(longarg4)
+    {}
 };
 
 Spaces:
