@@ -67,6 +67,7 @@ using backend::print_device_info;
 using backend::feed;
 using backend::wait_for;
 
+using backend::device_ptr;
 
 }
 

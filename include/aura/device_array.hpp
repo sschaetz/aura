@@ -4,10 +4,11 @@
 #include <cstddef>
 #include <boost/move/move.hpp>
 #include <aura/device_buffer.hpp>
+#include <aura/bounds.hpp>
 
 namespace aura {
 
-/// continuous block of memory holdin multiple instances of a type T
+/// continuous block of memory holding multiple instances of a type T
 template <typename T>
 class device_array {
 
@@ -22,11 +23,16 @@ public:
 	/// create empty array 
 	device_array() : data_() {}
 
-	/// create array of size on device
+	/// create one-dimensional array of size on device
 	device_array(std::size_t size, backend::device & d) :
-		data_(size, d) 
+		bounds_(size), data_(size, d) 
 	{}
-
+	
+	/// create multi-dimensional array of size on device
+	device_array(const bounds & b, backend::device & d) :
+		bounds_(b), data_(product(b), d) 
+	{}
+	
 	/// destroy object
 	~device_array() 
 	{}
@@ -37,8 +43,9 @@ public:
 	 * @param db device_array to move here
 	 */
 	device_array(BOOST_RV_REF(device_array) da) :
-		data_(da.data_)
+		bounds_(da.bounds_), data_(da.data_)
 	{
+		da.bounds_.clear();
 	}
 
 	/**
@@ -48,13 +55,23 @@ public:
 	 */
 	device_array & operator=(BOOST_RV_REF(device_array) da)
 	{
+		bounds_ = da.bounds_;
 		data_ = da.data_;
+		da.bounds.clear();
 		return *this;
+	}
+	
+	/// return number of elements in array
+	std::size_t size() const {
+		return data_.size();
 	}
 
 private:
+	/// bounds of array
+	bounds bounds_;
+
 	/// data in the array
-	device_buffer data_;
+	device_buffer<T> data_;
 };
 
 } // namespace arua

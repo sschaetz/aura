@@ -7,7 +7,7 @@
 
 namespace aura {
 
-/// continuous block of memory holdin multiple instances of a type T
+/// continuous block of memory holding multiple instances of a type T
 template <typename T>
 class device_buffer {
 
