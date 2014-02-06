@@ -197,7 +197,7 @@ void bench_overlap(std::vector<device> & devices,
   std::vector<fft> ffth(devices.size());
   for(std::size_t n=0; n<devices.size(); n++) {
     ffth[n] = fft(devices[n], feeds1[n], 
-      fft_dim(dim, dim), fft::type::c2c, batch);
+      bounds(dim, dim), fft::type::c2c, batch);
   }
 
   // create kernel handle

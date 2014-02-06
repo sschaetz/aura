@@ -8,13 +8,13 @@
 #include <aura/backend/cuda/device_ptr.hpp>
 #include <aura/detail/svec.hpp>
 #include <aura/backend/cuda/device.hpp>
+#include <aura/bounds.hpp>
 
 namespace aura {
 namespace backend_detail {
 namespace cuda {
 
-typedef int fft_size;
-typedef svec<fft_size, 3> fft_dim;
+typedef std::size_t fft_size;
 typedef svec<fft_size, 3> fft_embed;
 
 /**
@@ -53,7 +53,7 @@ public:
    * @param d device to create fft for
    */
   inline explicit fft(device & d, feed & f,
-    const fft_dim & dim, const fft::type & type,
+    const bounds & dim, const fft::type & type,
     std::size_t batch = 1, 
     const fft_embed & iembed = fft_embed(),
     std::size_t istride = 1, std::size_t idist = 0,
