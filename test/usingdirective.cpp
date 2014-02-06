@@ -14,7 +14,6 @@ BOOST_AUTO_TEST_CASE(basic) {
 	if(0 < num) {
 		device d(0);
 		print_device_info(device_get_info(d));
-		
 	}
 }
 

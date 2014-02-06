@@ -1,6 +1,14 @@
 Todo
 ====
 
+provide an invoke function that does not take mesh and bundle byt simply
+a bounds type that specifies how many threads should be launched. Aura
+should automatically calculate the number of fibres required. To handle
+too many fibres (bounds not divisible by any number that make sense for
+the given architecture), a count should be passable to the kernel so
+that the kernel can do 
+if(fiber_id >= count) return;
+
 OpenCL needs the path to AURA when building kernels. Generalize that.
 
 Kernels arguments probably have to copied into the args struct to
