@@ -127,6 +127,13 @@ public:
 		}
 	}
 
+	/**
+	 * @brief get data
+	 */
+	const std::array<T, max_size_> & array() const {
+		return data_;
+	}
+
 private:
 	/// number of Ts in object 
 	std::size_t size_;
@@ -136,30 +143,43 @@ private:
 };
 
 
-template <typename T, std::size_t max_size_>
-T product_impl(const svec<T, max_size_> & v, const boost::true_type &) 
+template <typename T, std::size_t size_>
+T product_impl(const std::array<T, size_> & v, std::size_t size, 
+		const boost::true_type &) 
 {
 	T r = v[0];
-	for(std::size_t i=1; i<v.size(); i++) {
+	for(std::size_t i=1; i<size; i++) {
 		r *= v[i];
 	}
 	return r;
 }
 
-template <typename T, std::size_t max_size_, bool b>
-T product_impl(const svec<T, max_size_> & v, 
+template <typename T, std::size_t size_, bool b>
+T product_impl(const std::array<T, size_> & v, std::size_t size,
 	const boost::integral_constant<bool, b> &) 
 {
 	// FIXME
 	assert(false);
 }
 
-/// calculate the product of all elements of svec (if *= operator exists for T)
+/// calculate the product of all elements of svec 
+/// (if *= operator exists for T)
 template <typename T, std::size_t max_size_>
 T product(const svec<T, max_size_> & v) 
 {
 	assert(0 < v.size());
-	return product_impl(v, boost::has_multiplies_assign<T, T, T>());
+	return product_impl(v.array(), v.size(), 
+			boost::has_multiplies_assign<T, T, T>());
+}
+
+/// calculate the product of all elements of std::array 
+/// (if *= operator exists for T)
+template <typename T, std::size_t size_>
+T product(const std::array<T, size_> & v) 
+{
+	assert(0 < v.size());
+	return product_impl(v, v.size(), 
+			boost::has_multiplies_assign<T, T, T>());
 }
 
 /// write content of svec to sized buffer

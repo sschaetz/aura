@@ -7,7 +7,9 @@
 #include <boost/test/unit_test.hpp>
 #include <aura/backend.hpp>
 #include <aura/config.hpp>
+#include <aura/device_array.hpp>
 
+using namespace aura;
 using namespace aura::backend;
 
 #if AURA_BACKEND_OPENCL
@@ -16,7 +18,7 @@ const char * kernel_file = "test/kernel.cl";
 
 #elif AURA_BACKEND_CUDA
 
-const char * kernel_file = "test/kernel.ptx"; 
+const char * kernel_file = "test/kernel.cc"; 
 
 #endif
 
@@ -86,6 +88,38 @@ BOOST_AUTO_TEST_CASE(invoke_noarg) {
     kernel k = create_kernel(mod, "noarg"); 
     invoke(k, mesh(ydim), bundle(xdim), f);
     wait_for(f);
+  }
+}
+
+// invoke_nomesh
+// _____________________________________________________________________________
+BOOST_AUTO_TEST_CASE(invoke_nomesh) {
+  initialize();
+  int num = device_get_count();
+  if(0 < num) {
+    device d(0);  
+    feed f(d);
+    bounds b(23, 65, 29);
+    std::vector<float> a1(product(b), 41.);
+    std::vector<float> a2(product(b));
+
+    
+    module mod = create_module_from_file(kernel_file, d, 
+      AURA_BACKEND_COMPILE_FLAGS);
+    print_module_build_log(mod, d);
+    
+    kernel k = create_kernel(mod, "simple_add"); 
+    device_array<float> v(b, d);
+    
+    copy(v.begin(), &a1[0], product(b), f); 
+    invoke(k, b, args(v.begin().get()), f);
+    copy(&a2[0], v.begin(), product(b), f);
+    wait_for(f);
+
+    for(std::size_t i=0; i<a1.size(); i++) {
+      a1[i] += 1.0;
+    }
+    BOOST_CHECK(std::equal(a1.begin(), a1.end(), a2.begin()));
   }
 }
 

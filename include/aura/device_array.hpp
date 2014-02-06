@@ -60,7 +60,19 @@ public:
 		da.bounds.clear();
 		return *this;
 	}
+
+	/// return beginning of buffer
+	iterator begin() const
+	{
+		return data_.begin();
+	}
 	
+	/// return end of buffer
+	iterator end() const
+	{
+		return data_.end();
+	}
+
 	/// return number of elements in array
 	std::size_t size() const {
 		return data_.size();

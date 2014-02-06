@@ -30,5 +30,14 @@
 /// used for runtime kernel compilation
 #define AURA_BACKEND_COMPILE_FLAGS "@AURA_BACKEND_COMPILE_FLAGS@"
 
+/// default threads if user does not want to specify mesh and bundle
+#define AURA_CUDA_NUM_DEFAULT_THREADS 512
+
+/// if kernel size is calculated, these are the max allowed values 
+#define AURA_CUDA_MAX_BUNDLE 512
+#define AURA_CUDA_MAX_MESH0 65536 
+#define AURA_CUDA_MAX_MESH1 65536 
+#define AURA_CUDA_MAX_MESH2 65536 
+
 #endif // AURA_CONFIG_HPP 
 

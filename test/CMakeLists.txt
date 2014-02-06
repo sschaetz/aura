@@ -1,5 +1,6 @@
 AURA_ADD_TEST(backend/basic.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/device_info.cpp ${AURA_BACKEND_LIBRARIES})
+AURA_ADD_TEST(backend/factorize.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/device_ptr.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/feed.cpp ${AURA_BACKEND_LIBRARIES})
 
