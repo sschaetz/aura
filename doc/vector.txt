@@ -1,6 +1,18 @@
 Vector
 ======
 
+How to access the raw pointer of a device vector?
+
+v.begin().get()
+v.begin_raw()
+v.raw_begin()
+v.get_raw()
+v.data() 
+v.begin_ptr() 
+
+device_ptr() has get() but vector is a range
+maybe begin_ptr() is good?
+
 So here is the plan:
 
 Data is stored in a device_buffer<T>. This type is not intended to be

@@ -16,6 +16,7 @@ namespace opencl {
 
 typedef std::size_t fft_size;
 typedef svec<fft_size, 3> fft_embed;
+using ::aura::bounds;
 
 /**
  * fft class
@@ -210,10 +211,10 @@ private:
 
   // give free functions access to context 
   template <typename T1, typename T2>
-  friend void fft_forward(device_ptr<T1> & dst, device_ptr<T2> & src, 
+  friend void fft_forward(device_ptr<T1> dst, device_ptr<T2> src, 
     fft & plan, const feed & f);
   template <typename T1, typename T2>
-  friend void fft_inverse(device_ptr<T1> & dst, device_ptr<T2> & src, 
+  friend void fft_inverse(device_ptr<T1> dst, device_ptr<T2> src, 
     fft & plan, const feed & f);
 
 };
@@ -238,7 +239,7 @@ inline void fft_terminate() {
  * @param f feed the fourier transform should be calculated in
  */
 template <typename T1, typename T2>
-void fft_forward(device_ptr<T1> & dst, device_ptr<T2> & src, 
+void fft_forward(device_ptr<T1> dst, device_ptr<T2> src, 
   fft & plan, const feed & f) {
   typename device_ptr<T1>::backend_type dm = dst.get();
   typename device_ptr<T1>::backend_type sm = src.get();
@@ -263,7 +264,7 @@ void fft_forward(device_ptr<T1> & dst, device_ptr<T2> & src,
  * @param f feed the fourier transform should be calculated in
  */
 template <typename T1, typename T2>
-void fft_inverse(device_ptr<T1> & dst, device_ptr<T2> & src, 
+void fft_inverse(device_ptr<T1> dst, device_ptr<T2> src, 
   fft & plan, const feed & f) {
   typename device_ptr<T1>::backend_type dm = dst.get();
   typename device_ptr<T1>::backend_type sm = src.get();

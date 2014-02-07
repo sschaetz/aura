@@ -73,6 +73,18 @@ public:
 		return ptr_+size_;
 	}
 
+	/// return beginning of buffer as raw pointer
+	T * begin_ptr() const
+	{
+		return ptr_.get();
+	}
+	
+	/// return end of buffer as raw pointer 
+	T * end_ptr() const
+	{
+		return ptr_.get() + size_;
+	}
+
 	/// return size of buffer
 	std::size_t size() const 
 	{

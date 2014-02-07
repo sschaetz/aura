@@ -73,9 +73,31 @@ public:
 		return data_.end();
 	}
 
+	/// return beginning of array as raw pointer
+	T * begin_ptr() const
+	{
+		return data_.begin_ptr();
+	}
+	
+	/// return end of array as raw pointer 
+	T * end_ptr() const
+	{
+		return data_.end_ptr();
+	}
+	
 	/// return number of elements in array
 	std::size_t size() const {
 		return data_.size();
+	}
+
+	/// return bounds
+	const bounds & get_bounds() const {
+		return bounds_;
+	}
+
+	/// return copy of bounds
+	bounds get_bounds() {
+		return bounds_;
 	}
 
 private:
