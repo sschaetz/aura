@@ -1,0 +1,10 @@
+Events
+======
+
+CUDA apparently can synchronize streams between each other through events.
+cuStreamWaitEvent can eneque a wait in one stream that waits for an event
+in another stream. This is really really good in terms of having streams
+as general concurrency concepts. OpenCL seems to be lacking this feature
+and I really don't know why. Or maybe I have not found it yet or don't
+understand some of the OpenCL documentation. Too bad.
+
