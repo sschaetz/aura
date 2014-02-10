@@ -1,6 +1,23 @@
 Kernel
 ======
 
+module should have an interface like:
+
+module m(const char * source)
+moduel m(std::string source)
+module m(const path & path_to_source)
+
+module m = create_module(const char * source)
+module m = create_module(std::string source)
+module m = create_module(const path & path_to_source)
+
+kernel could have
+
+kernel k(m, const char * name)
+
+kernel k = create_kernel(m, const char * name)
+
+
 
 OpenCL and Mobile
 -----------------
