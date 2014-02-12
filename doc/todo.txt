@@ -1,9 +1,6 @@
 Todo
 ====
 
-OpenCL doesnt like the bounds type in the FFT since it uses 
-std::size_t to parameterize the FFT
-
 Add a type that represents references to GPU memory that might be
 modified in future (through already invoked kernel or library call)
 

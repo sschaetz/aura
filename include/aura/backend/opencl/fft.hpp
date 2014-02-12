@@ -40,13 +40,13 @@ public:
 
   enum direction {
     fwd = CLFFT_FORWARD,
-    inv = CLFFT_BACKWARD 
+    inv = CLFFT_BACKWARD
   };
 
   /**
    * create empty fft object without device and stream
    */
-  inline explicit fft() : context_(nullptr) { 
+  inline explicit fft() : context_(nullptr) {
   }
 
   /**
@@ -56,48 +56,54 @@ public:
    */
   inline explicit fft(device & d, feed & f,
     const bounds& dim, const fft::type & type,
-    std::size_t batch = 1, 
+    std::size_t batch = 1,
     const fft_embed & iembed = fft_embed(),
     std::size_t istride = 1, std::size_t idist = 0,
     const fft_embed & oembed = fft_embed(),
-    std::size_t ostride = 1, std::size_t odist = 0) : 
+    std::size_t ostride = 1, std::size_t odist = 0) :
     context_(d.get_context()), buffer_(), type_(type) {
 
     // FIXME handle strides and embed etc.
     // we need to create a default plan
 
-    // FIXME
-    /*
+	assert(dim.size() <=3);
+	// clFFT needs an array of std::size_t, bounds is an array of ints
+	// typecast and copy
+	svec<fft_size, 3> dim_tmp;
+	for(int i=0; i<3; i++) {
+		dim_tmp[i] = (fft_size)dim[i];
+	}
     AURA_CLFFT_SAFE_CALL(clfftCreateDefaultPlan(&inplace_handle_,
-      context_->get_backend_context(), (clfftDim)(dim.size()), &dim[0]));
-    */
+      context_->get_backend_context(), (clfftDim)(dim_tmp.size()),
+      &dim_tmp[0]));
+
 
     AURA_CLFFT_SAFE_CALL(clfftSetPlanBatchSize(inplace_handle_, batch));
 
     clfft_type temptype = map_type(type);
 
-    AURA_CLFFT_SAFE_CALL(clfftSetPlanPrecision(inplace_handle_, 
+    AURA_CLFFT_SAFE_CALL(clfftSetPlanPrecision(inplace_handle_,
       std::get<0>(temptype)));
-    AURA_CLFFT_SAFE_CALL(clfftSetLayout(inplace_handle_, 
+    AURA_CLFFT_SAFE_CALL(clfftSetLayout(inplace_handle_,
       std::get<1>(temptype), std::get<2>(temptype)));
-   
+
     // different result location, rest is the same
-    AURA_CLFFT_SAFE_CALL(clfftCopyPlan(&outofplace_handle_, 
+    AURA_CLFFT_SAFE_CALL(clfftCopyPlan(&outofplace_handle_,
       context_->get_backend_context(), inplace_handle_));
-    
-    AURA_CLFFT_SAFE_CALL(clfftSetResultLocation(inplace_handle_, 
-      CLFFT_INPLACE)); 
-    AURA_CLFFT_SAFE_CALL(clfftSetResultLocation(outofplace_handle_, 
+
+    AURA_CLFFT_SAFE_CALL(clfftSetResultLocation(inplace_handle_,
+      CLFFT_INPLACE));
+    AURA_CLFFT_SAFE_CALL(clfftSetResultLocation(outofplace_handle_,
       CLFFT_OUTOFPLACE));
 
     // bake plan
-    AURA_CLFFT_SAFE_CALL(clfftBakePlan(inplace_handle_, 1, 
+    AURA_CLFFT_SAFE_CALL(clfftBakePlan(inplace_handle_, 1,
       const_cast<cl_command_queue*>(&f.get_backend_stream()),
       nullptr, nullptr));
-    AURA_CLFFT_SAFE_CALL(clfftBakePlan(outofplace_handle_, 1, 
+    AURA_CLFFT_SAFE_CALL(clfftBakePlan(outofplace_handle_, 1,
       const_cast<cl_command_queue*>(&f.get_backend_stream()),
       nullptr, nullptr));
-    wait_for(f);    
+    wait_for(f);
     std::size_t buffer_size1, buffer_size2;
     AURA_CLFFT_SAFE_CALL(clfftGetTmpBufSize(inplace_handle_, &buffer_size1));
     AURA_CLFFT_SAFE_CALL(clfftGetTmpBufSize(outofplace_handle_, &buffer_size2));
