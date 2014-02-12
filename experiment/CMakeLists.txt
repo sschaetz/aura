@@ -3,6 +3,8 @@ IF(${AURA_BACKEND} STREQUAL OPENCL)
   AURA_ADD_TARGET(exp.context_opencl context_opencl.cpp 
     ${AURA_BACKEND_LIBRARIES} ${Boost_SYSTEM_LIBRARY} 
     ${Boost_THREAD_LIBRARY} pthread rt)
+  AURA_ADD_TARGET(exp.oclpinning oclpinning.cpp 
+    ${AURA_BACKEND_LIBRARIES})
 ENDIF()
 
 IF(NOT ${AURA_FFT_LIBRARIES} STREQUAL "")

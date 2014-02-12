@@ -5,6 +5,7 @@
 #include <boost/move/move.hpp>
 #include <aura/backend/opencl/call.hpp>
 #include <aura/backend/opencl/device_ptr.hpp>
+#include <aura/backend/opencl/memory.hpp>
 #include <aura/detail/svec.hpp>
 #include <aura/backend/opencl/device.hpp>
 #include <aura/bounds.hpp>
@@ -64,8 +65,12 @@ public:
 
     // FIXME handle strides and embed etc.
     // we need to create a default plan
-    AURA_CLFFT_SAFE_CALL(clfftCreateDefaultPlan(&inplace_handle_, 
-      context_->get_backend_context(), static_cast<clfftDim>(dim.size()), &dim[0]));
+
+    // FIXME
+    /*
+    AURA_CLFFT_SAFE_CALL(clfftCreateDefaultPlan(&inplace_handle_,
+      context_->get_backend_context(), (clfftDim)(dim.size()), &dim[0]));
+    */
 
     AURA_CLFFT_SAFE_CALL(clfftSetPlanBatchSize(inplace_handle_, batch));
 
