@@ -1,0 +1,5 @@
+./astyle --version
+Artistic Style Version 2.04
+
+./astyle --mode=c  --indent=tab=8 --style=linux --max-code-length=80 --break-after-logical
+
