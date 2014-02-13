@@ -1,0 +1,14 @@
+Pinned Memory
+=============
+
+This seems to be very confusing in OpenCL.
+My interpretation so far:
+
+create pinned host memory with either:
+CL_MEM_USE_HOST_PTR or CL_MEM_ALLOC_HOST_PTR
+this gives OpenCL buffer that somehow must be usable
+as regular block of memory, have to test how and if this is true
+
+copying stuff from a buffer allocated with these parameters
+should make it possible to use pinned memory
+
