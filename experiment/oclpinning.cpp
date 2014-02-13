@@ -16,6 +16,50 @@ const char * kernel_source =
 "	A[id] += 1.0;"
 "}";
 
+void * opencl_malloc_pinned(std::size_t bytes, device & d)
+{
+	cl_int errorcode;
+	cl_mem m = clCreateBuffer(d.get_backend_context(),
+			CL_MEM_ALLOC_HOST_PTR, bytes, NULL,
+			&errorcode);
+	AURA_OPENCL_CHECK_ERROR(errorcode);
+	feed f(d);
+	void * v = clEnqueueMapBuffer(f.get_backend_stream(),
+			m, CL_TRUE, CL_MAP_READ|CL_MAP_WRITE,
+			0, bytes, 0, NULL, NULL, &errorcode);
+	AURA_OPENCL_CHECK_ERROR(errorcode);
+	printf("m: %lu\n", m);
+	printf("v: %lu\n", v);
+	return (void*)m;
+}
+
+
+// if this is used, is a memory copy from the pointer fast or from
+// the memory object m?
+// is anything allocated (on the device or on the host?)
+// how can this resource be freed up again?
+// do we have to have the m object to free this thing?
+// if the buffer is freed, is p freed?
+void * opencl_pin(void * p, std::size_t bytes, device & d)
+{
+	cl_int errorcode;
+	cl_mem m = clCreateBuffer(d.get_backend_context(),
+			CL_MEM_USE_HOST_PTR, bytes, p,
+			&errorcode);
+	AURA_OPENCL_CHECK_ERROR(errorcode);
+	feed f(d);
+	void * v = clEnqueueMapBuffer(f.get_backend_stream(),
+			m, CL_TRUE, CL_MAP_READ|CL_MAP_WRITE,
+			0, bytes, 0, NULL, NULL, &errorcode);
+	AURA_OPENCL_CHECK_ERROR(errorcode);
+	return (void*)v;
+}
+
+void * opencl_free_pinned(void * ptr) {
+	// here we need m?
+	// that does not make any sense
+}
+
 int main(void)
 {
 	initialize();
@@ -24,12 +68,17 @@ int main(void)
 	AURA_CHECK_ERROR(0 < num)
 	device d(0);
 	feed f(d);
+	// theory: if we transfer large amounts of data from this
+	// pointer, it should be faster
+	void * x = opencl_malloc_pinned(1024, d);
 
 	std::size_t xdim = 16;
 	std::size_t ydim = 16;
 
 	std::vector<float> a1(xdim*ydim, 41.);
 	std::vector<float> a2(xdim*ydim);
+
+	void * y = opencl_pin(&a1[0], a1.size()*sizeof(float), d);
 
 	module mod = create_module_from_string(kernel_source, d,
 			AURA_BACKEND_COMPILE_FLAGS);
