@@ -8,3 +8,14 @@ as general concurrency concepts. OpenCL seems to be lacking this feature
 and I really don't know why. Or maybe I have not found it yet or don't
 understand some of the OpenCL documentation. Too bad.
 
+Should an event be called
+
+event
+marker
+label
+incident
+signal
+sensor
+
+probably event is the best, signal is also good
+
