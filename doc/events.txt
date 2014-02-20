@@ -8,6 +8,11 @@ as general concurrency concepts. OpenCL seems to be lacking this feature
 and I really don't know why. Or maybe I have not found it yet or don't
 understand some of the OpenCL documentation. Too bad.
 
+Seems like you need a multi-context of some sort to make this work in OpenCL.
+Probably makes sense. Otherwise you could ask OpenCL to synchronize events
+from different platforms which won't work since different implementors
+have different ways of representing and working with events.
+
 Should an event be called
 
 event
@@ -16,6 +21,24 @@ label
 incident
 signal
 sensor
+phase
+terminator
+point
+token
+sign
+mark
+record
+flag
+sticker
 
 probably event is the best, signal is also good
+label is also nice
+
+insert(feed, label);
+wait_for(label);
+
+insert(feed, event);
+append(feed, event);
+wait_for(event);
+append(other_feed, wait_for(event));
 

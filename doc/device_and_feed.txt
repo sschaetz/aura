@@ -1,6 +1,13 @@
 Device and Feed
 ===============
 
+Should a device be capable of encompassing multiple devices? What would be
+the name of such a device? How to create a feed for multiple devices?
+Does not make so much sense. We only need this for OpenCL multi-device
+contexts. These are important for pinned memory and cross-device
+synchronization through events.
+ 
+
 Having proper device and feed semantics is imporant. There are subtile problems
 if the context is not set and external libraries are used because the 
 implicitly expect a context (like CUFFT).
