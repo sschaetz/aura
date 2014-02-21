@@ -13,6 +13,18 @@ Probably makes sense. Otherwise you could ask OpenCL to synchronize events
 from different platforms which won't work since different implementors
 have different ways of representing and working with events.
 
+From the CUDA Driver API docs:
+If cuEventRecord() has previously been called on hEvent, then this call will 
+overwrite any existing state in hEvent. Any subsequent calls which examine 
+the status of hEvent will only examine the completion of this most recent call
+to cuEventRecord().
+
+OpenCL works differently. One can get an event by enqueuing a marker. The
+event can than be waited on. To get rid of the event without synchronizing it
+I think it can be a good idea to register a callback that releases the event.
+I wonder if this is allowed.
+
+
 Should an event be called
 
 event
@@ -30,6 +42,26 @@ mark
 record
 flag
 sticker
+notice
+sign
+indicator
+future
+bookmark
+mark
+
+let's try  mark:
+
+feed f1;
+feed f2;
+mark m;
+insert(f1, m); 
+// or: mark m(f);
+insert(f2, wait_for(m));
+
+not so bad.
+
+old:
+
 
 probably event is the best, signal is also good
 label is also nice
@@ -41,4 +73,19 @@ insert(feed, event);
 append(feed, event);
 wait_for(event);
 append(other_feed, wait_for(event));
+
+notice n;
+feed f;
+insert(f, n);
+wait_for(n);
+f.wait_for(n);
+
+notice n = f.emit();
+
+// synchronize 2 feeds
+enqueue(feed1, event);
+enqueue(feed2, wait_for(event));
+
+// block caller
+wait_for(event);
 

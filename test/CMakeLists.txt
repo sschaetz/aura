@@ -11,6 +11,7 @@ ENDIF()
 
 AURA_ADD_TEST(backend/kernel.cpp backend/kernel.cc 
   ${AURA_BACKEND_LIBRARIES})
+AURA_ADD_TEST(backend/mark.cpp ${AURA_BACKEND_LIBRARIES})
 
 AURA_ADD_TEST(detail/svec.cpp)
 AURA_ADD_TEST(misc/profile.cpp pthread)

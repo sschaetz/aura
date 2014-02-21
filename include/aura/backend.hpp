@@ -43,6 +43,7 @@
 		#include <aura/backend/opencl/init.hpp>
 		#include <aura/backend/opencl/invoke.hpp>
 		#include <aura/backend/opencl/kernel.hpp>
+		#include <aura/backend/opencl/mark.hpp>
 		#include <aura/backend/opencl/memory.hpp>
 		#include <aura/backend/opencl/module.hpp>
 	#endif // defined __OPENCL_VERSION__
