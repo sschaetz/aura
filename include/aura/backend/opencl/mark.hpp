@@ -61,7 +61,7 @@ public:
 	 */
 	mark(BOOST_RV_REF(mark) m) : event_(m.event_)
 	{
-		m.event = nullptr;
+		m.event_ = nullptr;
 	}
 
 	/**
@@ -73,7 +73,7 @@ public:
 	{
 		finalize();
 		event_ = m.event_;
-		m.event = nullptr;
+		m.event_ = nullptr;
 		return *this;
 	}
 
@@ -95,7 +95,7 @@ private:
 			cl_int result;
 			AURA_OPENCL_SAFE_CALL(
 				clGetEventInfo(
-					*event, 
+					*event_, 
 					CL_EVENT_COMMAND_EXECUTION_STATUS,
 					sizeof(result),
 					&result,
@@ -104,15 +104,15 @@ private:
 			);
 			if(CL_COMPLETE == result) {
 				clReleaseEvent(*event_);
-				delete event;
+				delete event_;
 			} else {
 				// enqueue callback
 				AURA_OPENCL_SAFE_CALL(
 					clSetEventCallback(
-						*event,
+						*event_,
 						CL_COMPLETE,
 						&delete_event_callback__,
-						event
+						event_
 					)
 				);
 			}
@@ -123,12 +123,14 @@ private:
 	cl_event * event_;
 
 friend void insert(feed & f, mark & m);
-
+friend void wait_for(mark & m);
 };
 
 /// insert marker into feed
-void insert(feed & f, mark & m) {
+void insert(feed & f, mark & m) 
+{
 	m.finalize();
+	m.event_ = new cl_event;
 	AURA_OPENCL_SAFE_CALL(
 		clEnqueueMarkerWithWaitList(
 			f.get_backend_stream(), 
@@ -138,8 +140,9 @@ void insert(feed & f, mark & m) {
 }
 
 
-void wait_for(mark & m) {
-
+void wait_for(mark & m) 
+{
+	AURA_OPENCL_SAFE_CALL(clWaitForEvents(1, m.event_));
 }
 
 } // opencl

@@ -11,12 +11,15 @@ using namespace aura::backend;
 // _____________________________________________________________________________
 
 BOOST_AUTO_TEST_CASE(basic) {
-  initialize();
-  int num = device_get_count();
-  if(0 < num) {
-    device d(0);  
-    feed f(d);
-  }
+	initialize();
+	int num = device_get_count();
+	if(0 < num) {
+		device d(0);  
+		feed f(d);
+		mark m;
+		insert(f, m);
+		wait_for(m);
+	}
 }
 
 
