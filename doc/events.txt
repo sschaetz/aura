@@ -48,6 +48,9 @@ indicator
 future
 bookmark
 mark
+trigger
+pulse
+impulse
 
 let's try  mark:
 
@@ -59,6 +62,18 @@ insert(f1, m);
 insert(f2, wait_for(m));
 
 not so bad.
+
+lets try trigger:
+
+feed f1;
+feed f2;
+trigger t;
+insert(f1, t); 
+// or: trigger t(f);
+insert(f2, wait_for(m));
+f2.continue_when(t);
+
+
 
 old:
 

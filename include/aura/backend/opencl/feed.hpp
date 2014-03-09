@@ -10,6 +10,10 @@ namespace aura {
 namespace backend_detail {
 namespace opencl {
 
+#ifndef CL_VERSION_1_2
+class mark;
+#endif
+
 /**
  * feed class
  */
@@ -96,7 +100,17 @@ public:
   inline const cl_command_queue & get_backend_stream() const {
     return stream_;
   }
-  
+
+#ifndef CL_VERSION_1_2
+protected:
+  inline void insert_event(cl_event* event) {
+	  // insert a dummy memory copy
+	AURA_OPENCL_SAFE_CALL(clEnqueueCopyBuffer(stream_,
+		context_->get_dummy_mem(), context_->get_dummy_mem(),
+		0, 1, 1, 0, 0, event));
+  }
+#endif // CL_VERSION_1_2 
+
 private:
   /// finalize object (called from dtor and move assign)
   void finalize() {
@@ -110,6 +124,12 @@ private:
   detail::context * context_;
   /// stream handle
   cl_command_queue stream_;
+
+
+#ifndef CL_VERSION_1_2
+friend class mark;
+friend void insert(feed& f, mark& m);
+#endif // CL_VERSION_1_2
 };
 
 /**

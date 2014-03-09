@@ -46,12 +46,18 @@ public:
 	 */
 	inline explicit mark(feed & f) : event_(new cl_event)
 	{
+		// clEnqueueMarkerWithWaitList only exists from OpenCL 1.2
+		// we assume here that CL_VERSION_1_2 is defined for 2.0 too
+#ifdef CL_VERSION_1_2
 		AURA_OPENCL_SAFE_CALL(
 			clEnqueueMarkerWithWaitList(
 				f.get_backend_stream(), 
 				0, NULL, event_
 			)
 		);
+#else
+		f.insert_event(event_);
+#endif // CL_VERSION_1_2
 	}
 
 	/**
@@ -124,6 +130,7 @@ private:
 
 friend void insert(feed & f, mark & m);
 friend void wait_for(mark & m);
+
 };
 
 /// insert marker into feed
@@ -131,12 +138,17 @@ void insert(feed & f, mark & m)
 {
 	m.finalize();
 	m.event_ = new cl_event;
+
+#ifdef CL_VERSION_1_2
 	AURA_OPENCL_SAFE_CALL(
 		clEnqueueMarkerWithWaitList(
 			f.get_backend_stream(), 
 			0, NULL, m.event_
 		)
 	);
+#else
+		f.insert_event(m.event_);
+#endif // CL_VERSION_1_2
 }
 
 

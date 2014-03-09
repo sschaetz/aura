@@ -55,13 +55,23 @@ public:
     int errorcode = 0;
     context_ = clCreateContext(NULL, 1, &device_, NULL, NULL, &errorcode);
     AURA_OPENCL_CHECK_ERROR(errorcode);
+
+#ifndef CL_VERSION_1_2
+	dummy_mem_ = clCreateBuffer(context_, 
+		CL_MEM_READ_WRITE, 2, 0, &errorcode);
+	AURA_OPENCL_CHECK_ERROR(errorcode);
+#endif // CL_VERSION_1_2 
   }
 
   /**
    * destroy context 
    */
   inline ~context() {
-    AURA_OPENCL_SAFE_CALL(clReleaseContext(context_));
+#ifndef CL_VERSION_1_2
+	AURA_OPENCL_SAFE_CALL(clReleaseMemObject(dummy_mem_));
+#endif // CL_VERSION_1_2 
+
+	AURA_OPENCL_SAFE_CALL(clReleaseContext(context_));
   }
 
 
@@ -92,6 +102,12 @@ public:
     return ordinal_;
   }
 
+#ifndef CL_VERSION_1_2
+	inline cl_mem get_dummy_mem() {
+		return dummy_mem_;
+	}
+#endif // CL_VERSION_1_2 
+
 private:
   /// device ordinal
   int ordinal_;
@@ -99,6 +115,11 @@ private:
   cl_device_id device_;
   /// context handle
   cl_context context_;
+
+#ifndef CL_VERSION_1_2
+  cl_mem dummy_mem_;
+#endif // CL_VERSION_1_2 
+
 };
  
 } // detail
