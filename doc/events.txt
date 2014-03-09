@@ -24,6 +24,14 @@ event can than be waited on. To get rid of the event without synchronizing it
 I think it can be a good idea to register a callback that releases the event.
 I wonder if this is allowed.
 
+OpenCL has callbacks on events (above), that is quite interesting. CUDA does
+not. But for event destruction this is not requried anyways since CUDA docs
+say regarding cuEventDestroy:
+In the case that hEvent has been recorded but has not yet been completed when
+cuEventDestroy() is called, the function will return immediately and the 
+resources associated with hEvent will be released automatically once the device
+has completed hEvent. 
+
 
 Should an event be called
 
@@ -72,7 +80,7 @@ insert(f1, t);
 // or: trigger t(f);
 insert(f2, wait_for(m));
 f2.continue_when(t);
-
+double ti = get_time_between(trigger1, trigger2);
 
 
 old:

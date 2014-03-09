@@ -20,6 +20,7 @@
 		#include <aura/backend/cuda/init.hpp>
 		#include <aura/backend/cuda/invoke.hpp>
 		#include <aura/backend/cuda/kernel.hpp>
+		#include <aura/backend/cuda/mark.hpp>
 		#include <aura/backend/cuda/memory.hpp>
 		#include <aura/backend/cuda/module.hpp>
 		#include <aura/backend/cuda/p2p.hpp>
