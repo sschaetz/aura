@@ -3,11 +3,11 @@
 
 #include <aura/detail/svec.hpp>
 
-namespace aura 
-{
+namespace aura {
 
 typedef svec<int> bounds;
 
 } // namespace aura
 
 #endif // AURA_BOUNDS_HPP
+

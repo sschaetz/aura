@@ -59,6 +59,9 @@ mark
 trigger
 pulse
 impulse
+layer
+snowlayer
+kanban
 
 let's try  mark:
 
@@ -68,6 +71,7 @@ mark m;
 insert(f1, m); 
 // or: mark m(f);
 insert(f2, wait_for(m));
+f2.continue_when(m);
 
 not so bad.
 

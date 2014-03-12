@@ -14,7 +14,7 @@ using namespace aura::backend;
 
 #if AURA_BACKEND_OPENCL
 
-const char * kernel_file = "test/kernel.cl"; 
+const char * kernel_file = "test/kernel.cc"; 
 
 #elif AURA_BACKEND_CUDA
 
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(invoke_nomesh) {
   if(0 < num) {
     device d(0);  
     feed f(d);
-    bounds b(23, 65, 29);
+    bounds b(64, 64, 32);
     std::vector<float> a1(product(b), 41.);
     std::vector<float> a2(product(b));
 

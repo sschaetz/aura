@@ -3,12 +3,14 @@
 
 #include <cstddef>
 #include <cuda.h>
+#include <aura/bounds.hpp>
 #include <aura/backend/cuda/kernel.hpp>
 #include <aura/backend/cuda/call.hpp>
 #include <aura/backend/cuda/feed.hpp>
 #include <aura/backend/cuda/mesh.hpp>
 #include <aura/backend/cuda/bundle.hpp>
 #include <aura/backend/cuda/args.hpp>
+#include <aura/backend/shared/calc_mesh_bundle.hpp>
 
 namespace aura {
 namespace backend_detail {
@@ -50,38 +52,7 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
 	free(a.first);
 }
 
-/**
- * @brief calculate combination of bundle and mesh, based on v
- *
- * recursively calculates the integer factorization and fills 
- * up an array of mesh and bundle (iterator i), rules are 
- * defined by a maximum size for mesh and bundle (iterator b)
- */
-void calc_mesh_bundle(std::size_t v, std::size_t f, 
-		std::array<std::size_t, 4>::iterator i,
-		std::array<std::size_t, 4>::const_iterator b)
-{
-	if(f > v) {
-		return;
-	}
-	if (0 == v % f) {
-		if(*i*f > *b) {
-			++i;
-			++b;
-			// if next dimension can hold value
-			// the size is invalid
-			assert(*i*f < *b);
-		}
-		// put new factor in	
-		*i *= f;
-		calc_mesh_bundle(v/f, f, i, b);
-	} else {
-		f++;
-		calc_mesh_bundle(v, f, i, b);	
-	}
-}
-
-void invoke_impl(kernel & k, const bounds& b, const args_t & a, feed & f) 
+void invoke_impl(kernel & k, const ::aura::bounds& b, const args_t & a, feed & f) 
 {
 	std::array<std::size_t, 4> mb = {{1, 1, 1, 1}};
 	const std::array<std::size_t, 4> max_mb = {{
@@ -91,8 +62,10 @@ void invoke_impl(kernel & k, const bounds& b, const args_t & a, feed & f)
 		AURA_CUDA_MAX_MESH2 
 	}};
 	
-	calc_mesh_bundle(product(b), 2, 
-			mb.begin(), max_mb.begin());
+	std::array<bool, 4> mask = {{false, false, false, false}};
+	
+	aura::detail::calc_mesh_bundle(product(b), 2, 
+			mb.begin(), max_mb.begin(), mask);
 	f.set();
 	AURA_CUDA_SAFE_CALL(cuLaunchKernel(k, mb[1], mb[2], mb[3], 
 		mb[0], 1, 1, 0, f.get_backend_stream(), 
@@ -122,9 +95,9 @@ void invoke(kernel& k, const bounds& b, const args_t& a, feed& f)
 	detail::invoke_impl(k, b, a, f);
 }
 
-} // namespace aura
+} // namespace cuda 
 } // namespace backend_detail
-} // namespace cuda
+} // namespace aura 
 
 #endif // AURA_BACKEND_CUDA_INVOKE_HPP
 

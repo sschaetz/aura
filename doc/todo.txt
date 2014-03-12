@@ -2,11 +2,11 @@ Todo
 ====
 
 Add a type that represents references to GPU memory that might be
-modified in future (through already invoked kernel or library call)
+modified in the future (through already invoked kernel or library call)
 
 OpenCL needs the path to AURA when building kernels. Generalize that.
 
-Kernels arguments probably have to copied into the args struct to
+Kernel arguments probably have to be copied into the args struct to
 capture temporaries such as ptr+offset - we can not take the
 address of such temporaries and expect it to be valid after the function
 exited.
@@ -16,7 +16,7 @@ the CPU, so we're not really testing the device. Maybe we should
 be able to define on which device ordinal to run tests.
 
 Missing parameters for functions:
-Plenty backend parameters are not exposed at the moment
+Plenty of backend parameters are not exposed at the moment
 
 All types that can be empty should have the bool operator to evaluate to
 false if they are empty.
@@ -25,8 +25,8 @@ Make boost optional dependency.
 
 Done:
 
-done through integer factorization to calculate good kernel size
-provide an invoke function that does not take mesh and bundle byt simply
+through integer factorization to calculate good kernel size
+provide an invoke function that does not take mesh and bundle but simply
 a bounds type that specifies how many threads should be launched. Aura
 should automatically calculate the number of fibres required. To handle
 too many fibres (bounds not divisible by any number that make sense for
