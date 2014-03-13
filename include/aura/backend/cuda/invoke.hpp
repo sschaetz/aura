@@ -65,7 +65,7 @@ void invoke_impl(kernel & k, const ::aura::bounds& b, const args_t & a, feed & f
 	std::array<bool, 4> mask = {{false, false, false, false}};
 	
 	aura::detail::calc_mesh_bundle(product(b), 2, 
-			mb.begin(), max_mb.begin(), mask);
+			mb.begin(), max_mb.begin(), mask.begin());
 	f.set();
 	AURA_CUDA_SAFE_CALL(cuLaunchKernel(k, mb[1], mb[2], mb[3], 
 		mb[0], 1, 1, 0, f.get_backend_stream(), 

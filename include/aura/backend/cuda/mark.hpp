@@ -13,6 +13,19 @@ namespace backend_detail
 namespace cuda 
 {
 
+class mark;
+class feed;
+
+namespace detail
+{
+
+void set_feed(feed& f); 
+void unset_feed(feed& f); 
+const CUstream& get_backend_stream(feed& f);
+CUevent get_event(mark& m);
+
+} // namespace detail
+
 
 /**
  * mark class
@@ -36,13 +49,13 @@ public:
 	 *
 	 * @param f feed to create mark in 
 	 */
-	inline explicit mark(feed & f) : event_(new CUevent)
+	inline explicit mark(feed& f) : event_(new CUevent)
 	{
-		f.set();
+		detail::set_feed(f);
 		AURA_CUDA_SAFE_CALL(cuEventCreate(event_, CU_EVENT_DEFAULT));
 		AURA_CUDA_SAFE_CALL(cuEventRecord(*event_, 
-					f.get_backend_stream()));
-		f.unset();
+					detail::get_backend_stream(f)));
+		detail::unset_feed(f);
 	}
 
 	/**
@@ -76,6 +89,13 @@ public:
 		finalize();
 	}
 
+	/**
+	 * get raw event
+	 */
+	CUevent get_event() 
+	{
+		return *event_;
+	}
 	
 private:
 	/// finalize object (called from dtor and move assign)
@@ -100,10 +120,11 @@ void insert(feed & f, mark & m)
 {
 	m.finalize();
 	m.event_ = new CUevent;
-	f.set();
+	detail::set_feed(f);
 	AURA_CUDA_SAFE_CALL(cuEventCreate(m.event_, CU_EVENT_DEFAULT));
-	AURA_CUDA_SAFE_CALL(cuEventRecord(*m.event_, f.get_backend_stream()));
-	f.unset();
+	AURA_CUDA_SAFE_CALL(cuEventRecord(*m.event_, 
+				detail::get_backend_stream(f)));
+	detail::unset_feed(f);
 }
 
 
@@ -116,6 +137,8 @@ void wait_for(mark & m)
 } // cuda 
 } // backend_detail
 } // aura
+
+#include <aura/backend/cuda/detail/feed_marker_helper.hpp>
 
 #endif // AURA_BACKEND_CUDA_MARK_HPP
 

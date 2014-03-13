@@ -14,13 +14,13 @@
 		#include <aura/backend/cuda/call.hpp>
 		#include <aura/backend/cuda/device.hpp>
 		#include <aura/backend/cuda/device_ptr.hpp>
+		#include <aura/backend/cuda/mark.hpp>
 		#include <aura/backend/cuda/feed.hpp>
 		#include <aura/backend/cuda/fft.hpp>
 		#include <aura/backend/cuda/mesh.hpp>
 		#include <aura/backend/cuda/init.hpp>
 		#include <aura/backend/cuda/invoke.hpp>
 		#include <aura/backend/cuda/kernel.hpp>
-		#include <aura/backend/cuda/mark.hpp>
 		#include <aura/backend/cuda/memory.hpp>
 		#include <aura/backend/cuda/module.hpp>
 		#include <aura/backend/cuda/p2p.hpp>

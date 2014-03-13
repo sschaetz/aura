@@ -14,6 +14,22 @@ namespace opencl
 {
 
 
+// trick to avoid circular dependency fallacy issue
+// file detail/feed_marker_helper.hpp contains the code
+class mark;
+class feed;
+
+namespace detail
+{
+
+void set_feed(feed& f); 
+void unset_feed(feed& f); 
+const cl_command_queue& get_backend_stream(feed& f);
+cl_event get_event(mark& m);
+
+} // namespace detail
+
+
 /// callback used to free event asynchronously
 void CL_CALLBACK delete_event_callback__(cl_event event, 
 		cl_int event_command_exec_status, void* event_ptr) 
@@ -51,7 +67,7 @@ public:
 #ifdef CL_VERSION_1_2
 		AURA_OPENCL_SAFE_CALL(
 			clEnqueueMarkerWithWaitList(
-				f.get_backend_stream(), 
+				detail::get_backend_stream(f), 
 				0, NULL, event_
 			)
 		);
@@ -91,7 +107,13 @@ public:
 		finalize();
 	}
 
-	
+	/**
+	 * get raw event
+	 */
+	cl_event get_event() {
+		return *event_;
+	}
+
 private:
 	/// finalize object (called from dtor and move assign)
 	void finalize()
@@ -142,7 +164,7 @@ void insert(feed & f, mark & m)
 #ifdef CL_VERSION_1_2
 	AURA_OPENCL_SAFE_CALL(
 		clEnqueueMarkerWithWaitList(
-			f.get_backend_stream(), 
+			detail::get_backend_stream(f), 
 			0, NULL, m.event_
 		)
 	);
@@ -160,6 +182,8 @@ void wait_for(mark & m)
 } // opencl
 } // backend_detail
 } // aura
+
+#include <aura/backend/opencl/detail/feed_marker_helper.hpp>
 
 #endif // AURA_BACKEND_OPENCL_MARK_HPP
 
