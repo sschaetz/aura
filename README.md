@@ -21,7 +21,7 @@ device_ptr<int> ptr = device_malloc<int>(16, d);
 device_free(ptr);
 ~~~
 
-The second memory management layer provides containers. A `device_array<T>` extends the `device_ptr<T>` type with the `bounds` type. `bounds` defines a multidimensional discrete space. A `device_array<T>` represents a continuous block of device memory of size ![bounds](https://raw.github.com/sschaet/aura/develop/doc/bounds_formula.png).
+The second memory management layer provides containers. A `device_array<T>` extends the `device_ptr<T>` type with the `bounds` type. `bounds` defines a multidimensional discrete space. A `device_array<T>` represents a continuous block of device memory of size ![bounds](https://raw.github.com/sschaetz/aura/develop/doc/bounds_formula.png).
 
 ~~~{.cpp}
 device d(0);
