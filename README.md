@@ -1,6 +1,6 @@
 # Aura
 
-Copyright (C) 2011-2013 Biomedizinische NMR Forschungs GmbH
+Copyright (C) 2011-2014 Biomedizinische NMR Forschungs GmbH
 
 
 Aura is a modern, header-only C++ library for accelerator development. Aura 
@@ -21,7 +21,7 @@ device_ptr<int> ptr = device_malloc<int>(16, d);
 device_free(ptr);
 ~~~
 
-The second memory management layer provides containers. A `device_array<T>` extends the `device_ptr<T>` type with the `bounds` type. `bounds` defines a multidimensional discrete space. A `device_array<T>` represents a continuous block of device memory of size $\prod_{j=0}^{J-1}$`bounds[j]}.
+The second memory management layer provides containers. A `device_array<T>` extends the `device_ptr<T>` type with the `bounds` type. `bounds` defines a multidimensional discrete space. A `device_array<T>` represents a continuous block of device memory of size ![bounds](https://raw.github.com/sschaet/aura/develop/doc/bounds_formula.png).
 
 ~~~{.cpp}
 device d(0);
@@ -48,6 +48,18 @@ copy(dst.begin(), dst.end(), src.begin(), f);
 copy(dst, src, f);
 ~~~
 
+Both CUDA and OpenCL define the number of accelerator threads for each kernel invocation. These threads can be partitioned into groups that communicate among themselves to some degree. How the total number of running threads is calculated is different in CUDA and OpenCL. The following table shows that CUDA calculates the size of the kernel space as level 1 partitioning times level 2 partitioning. In OpenCL, the kernel space and the level 3 partitioning are equivalent. The table further shows the nomenclature proposed in the Aura library. 
+
+                 |  OpenCL      |  CUDA         |  Aura 
+-----------------|--------------|---------------|------------
+ smallest entity |  work item   |  thread       |  fiber    
+ level 1         |  local work  |  block        |  bundle   
+ level 2         |  global work |  grid         |  mesh     
+ kernel space    |  global work |  grid * block |  mesh      
+-----------------|--------------|---------------|------------
+
+
+
 The `invoke` function parameterizes and enqueues kernels in a feed. Its first argument is a `kernel` object created from a `module`. The second argument specifies the number of `fibers` that should be launched using a `mesh`. The third argument partitions the `mesh` in `bundles` of `fibers`. The fourth argument is a tuple
 containing arguments that should be passed to the kernel. The last argument specifies the `feed` the kernel should be enqueued in.
 
@@ -67,8 +79,7 @@ If the space of `fibers` can be partitioned arbitrarily, that is, if the kernel 
 ~~~{.cpp}
 invoke(k, bounds(dimx, dimy), args(v.begin_raw()), f);
 /* or: */
-invoke(k, v.get_bounds(), 
-    args(v.begin_raw()), f);
+invoke(k, v.get_bounds(), args(v.begin_raw()), f);
 ~~~
 
 A `mark` allows orchestrating and synchronizing multiple `feeds`. A `mark` is inserted into a `feed`. It can either be waited for from the calling thread or another `feed` can be instructed to wait for a mark through its `continue_when` member.
@@ -84,7 +95,6 @@ mark m2(f2);
 wait_for(m1);
 f1.continue_when(m2);
 ~~~
-now event wait_for(e) f.wait_for(e) wait_for(f, e) (e must be enqueued in f, otherwise this does not work in OpenCL).
 
 
 ----------------------------
