@@ -56,7 +56,6 @@ Both CUDA and OpenCL define the number of accelerator threads for each kernel in
  level 1         |  local work  |  block        |  bundle   
  level 2         |  global work |  grid         |  mesh     
  kernel space    |  global work |  grid * block |  mesh      
------------------|--------------|---------------|------------
 
 
 
