@@ -72,6 +72,8 @@ insert(f1, m);
 // or: mark m(f);
 insert(f2, wait_for(m));
 f2.continue_when(m);
+// or
+f2.wait_for(m);
 
 not so bad.
 
