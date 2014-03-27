@@ -15,11 +15,17 @@
 namespace aura 
 {
 
+template <typename T, std::size_t max_size_ = AURA_SVEC_MAX_SIZE>
+class svec;
+
+template <typename T, std::size_t max_size_>
+T product(const svec<T, max_size_> & v); 
+
 /**
 * svec small vector class, probably can be replaced by std::array with
 * initializer lits, but for now this works 
 */
-template <typename T, std::size_t max_size_ = AURA_SVEC_MAX_SIZE>
+template <typename T, std::size_t max_size_>
 class svec 
 {
 
@@ -130,8 +136,17 @@ public:
 	/**
 	 * @brief get data
 	 */
-	const std::array<T, max_size_> & array() const {
+	const std::array<T, max_size_> & array() const 
+	{
 		return data_;
+	}
+
+	/**
+	 * cast to size operator
+	 */
+	operator T() 
+	{
+		return product(*this);			
 	}
 
 private:

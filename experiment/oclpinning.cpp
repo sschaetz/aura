@@ -2,6 +2,7 @@
 #include <aura/backend.hpp>
 #include <aura/config.hpp>
 #include <aura/device_array.hpp>
+#include <aura/misc/benchmark.hpp>
 
 using namespace aura;
 using namespace aura::backend;
@@ -16,23 +17,37 @@ const char * kernel_source =
 "	A[id] += 1.0;"
 "}";
 
-void * opencl_malloc_pinned(std::size_t bytes, device & d)
+template <typename T>
+T * opencl_malloc_pinned(std::size_t num, device & d, cl_mem* mem)
 {
+	std::size_t bytes = num*sizeof(T);
 	cl_int errorcode;
-	cl_mem m = clCreateBuffer(d.get_backend_context(),
+	*mem = clCreateBuffer(d.get_backend_context(),
 			CL_MEM_ALLOC_HOST_PTR, bytes, NULL,
 			&errorcode);
 	AURA_OPENCL_CHECK_ERROR(errorcode);
 	feed f(d);
 	void * v = clEnqueueMapBuffer(f.get_backend_stream(),
-			m, CL_TRUE, CL_MAP_READ|CL_MAP_WRITE,
+			*mem, CL_TRUE, CL_MAP_READ|CL_MAP_WRITE,
 			0, bytes, 0, NULL, NULL, &errorcode);
 	AURA_OPENCL_CHECK_ERROR(errorcode);
-	printf("m: %lu\n", m);
+	printf("m: %lu\n", *mem);
 	printf("v: %lu\n", v);
-	return (void*)m;
+
+	AURA_OPENCL_SAFE_CALL(clEnqueueUnmapMemObject(
+				f.get_backend_stream(), 
+				*mem, (void*)v, 0, NULL, NULL));
+	return (T*)v;
 }
 
+void opencl_copy_pinned(cl_mem dst, cl_mem src, 
+		std::size_t num, feed& f)
+{
+	AURA_OPENCL_SAFE_CALL(
+			clEnqueueCopyBuffer(f.get_backend_stream(),
+				src, dst, 0, 0, num, 0, NULL, NULL));
+}
+ 
 
 // if this is used, is a memory copy from the pointer fast or from
 // the memory object m?
@@ -55,53 +70,38 @@ void * opencl_pin(void * p, std::size_t bytes, device & d)
 	return (void*)v;
 }
 
-void * opencl_free_pinned(void * ptr) {
-	// here we need m?
-	// that does not make any sense
-}
-
 int main(void)
 {
 	initialize();
 	int num = device_get_count();
-
-	AURA_CHECK_ERROR(0 < num)
+	
+	AURA_CHECK_ERROR(0 > num)
 	device d(0);
 	feed f(d);
+
 	// theory: if we transfer large amounts of data from this
 	// pointer, it should be faster
-	void * x = opencl_malloc_pinned(1024, d);
 
-	std::size_t xdim = 16;
-	std::size_t ydim = 16;
+	// 32M floats 
+	std::size_t size = 1024*1024*32;
+	cl_mem hostmembuffer;
+	float* hostmempinned = opencl_malloc_pinned<float>(size, d, &hostmembuffer);
+	float* hostmem = (float*)malloc(sizeof(float)*size);
+	device_ptr<float> devmem = device_malloc<float>(size, d);
 
-	std::vector<float> a1(xdim*ydim, 41.);
-	std::vector<float> a2(xdim*ydim);
+	// benchmark result variables
+	double min, max, mean, stdev;
+	std::size_t runs;	
 
-	void * y = opencl_pin(&a1[0], a1.size()*sizeof(float), d);
-
-	module mod = create_module_from_string(kernel_source, d,
-			AURA_BACKEND_COMPILE_FLAGS);
-	print_module_build_log(mod, d);
-	kernel k = create_kernel(mod, "simple_add");
-
-	device_ptr<float> mem = device_malloc<float>(xdim*ydim, d);
-
-	copy(mem, &a1[0], xdim*ydim, f);
-
-	invoke(k, mesh(ydim, xdim), bundle(xdim), args(mem.get()), f);
-
-	copy(&a2[0], mem, xdim*ydim, f);
-
+	AURA_BENCHMARK_ASYNC(copy(devmem, hostmem, size, f), wait_for(f), 
+			2*1e6, min, max, mean, stdev, runs);
+	print_benchmark_results("normal", min, max, mean, stdev, runs, 2*1e6);
+	AURA_BENCHMARK_ASYNC(opencl_copy_pinned(devmem.get(), hostmembuffer, 
+		sizeof(float)*size, f), 
+			wait_for(f), 2*1e6, min, max, mean, stdev, runs);
+	print_benchmark_results("pinned", min, max, mean, stdev, runs, 2*1e6);
+	
 	wait_for(f);
-
-	for(std::size_t i=0; i<a1.size(); i++) {
-		a1[i] += 1.0;
-	}
-	if(std::equal(a1.begin(), a1.end(), a2.begin())) {
-		printf("result seems good!\n");
-	}
-	device_free(mem);
 
 }
 

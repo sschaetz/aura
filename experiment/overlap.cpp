@@ -33,6 +33,12 @@ typedef std::complex<float> cfloat;
 // run each subtest for a specific number of seconds
 const int duration_per_test = 2*1e6;
 
+// we have multiple wait_for free functions, std::for_each
+// can not decide which one should be used
+void wait_for_feed(feed& f) {
+	wait_for(f);
+}
+
 void bench_fft_only(std::vector<device_ptr<cfloat> > & fftmem1, 
     std::vector<device_ptr<cfloat> > & fftmem2, 
     std::vector<device_ptr<cfloat> > & p2pmem1, 
@@ -45,7 +51,7 @@ void bench_fft_only(std::vector<device_ptr<cfloat> > & fftmem1,
   for(std::size_t n = 0; n<feeds1.size(); n++) {
     fft_forward(fftmem1[n], fftmem2[n], ffth[n], feeds1[n]);
   }
-  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for_feed);
 }
 
 void bench_overlap_same_feed(std::vector<device_ptr<cfloat> > & fftmem1, 
@@ -66,7 +72,7 @@ void bench_overlap_same_feed(std::vector<device_ptr<cfloat> > & fftmem1,
       ), feeds1[n]);
     fft_forward(fftmem1[n], fftmem2[n], ffth[n], feeds1[n]);
   }
-  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for_feed);
 }
 
 void bench_overlap_diff_feed(std::vector<device_ptr<cfloat> > & fftmem1, 
@@ -87,8 +93,8 @@ void bench_overlap_diff_feed(std::vector<device_ptr<cfloat> > & fftmem1,
       ), feeds1[n]);
     fft_forward(fftmem1[n], fftmem2[n], ffth[n], feeds2[n]);
   }
-  std::for_each(feeds2.begin(), feeds2.end(), &wait_for);
-  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  std::for_each(feeds2.begin(), feeds2.end(), &wait_for_feed);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for_feed);
 }
 
 void bench_overlap_diff_feed_2(std::vector<device_ptr<cfloat> > & fftmem1, 
@@ -116,22 +122,22 @@ void bench_overlap_diff_feed_2(std::vector<device_ptr<cfloat> > & fftmem1,
     args(p2pmem1[2], p2pmem2[2], p2pmem2[2+1]), feeds1[2]);
   invoke(kernels[3], mesh(dim/2), bundle(dim/2), 
     args(p2pmem1[3], p2pmem2[3], p2pmem2[3-1]), feeds1[3]);
-  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for_feed);
   // 01 + 23 
   invoke(kernels[0], mesh(dim/2), bundle(dim/2), 
     args(p2pmem2[0], p2pmem1[0], p2pmem1[2]), feeds1[0]);
   // 23 + 01 
   invoke(kernels[3], mesh(dim/2), bundle(dim/2), 
     args(p2pmem2[3], p2pmem1[3], p2pmem1[1]), feeds1[3]);
-  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for_feed);
   invoke(kernels[1], mesh(dim/2), bundle(dim/2), 
     args(p2pmem2[1], p2pmem2[1], p2pmem2[0]), feeds1[1]);
   invoke(kernels[2], mesh(dim/2), bundle(dim/2), 
     args(p2pmem2[2], p2pmem2[2], p2pmem2[3]), feeds1[2]);
   
-  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for_feed);
   
-  std::for_each(feeds2.begin(), feeds2.end(), &wait_for);
+  std::for_each(feeds2.begin(), feeds2.end(), &wait_for_feed);
 }
 
 void bench_overlap_diff_feed_copy_api(std::vector<device_ptr<cfloat> > & fftmem1, 
@@ -156,17 +162,17 @@ void bench_overlap_diff_feed_copy_api(std::vector<device_ptr<cfloat> > & fftmem1
   copy(p2pmem1[2], p2pmem1[3], s, feeds1[2]);
   copy(p2pmem1[3], p2pmem1[2], s, feeds1[3]);
   // run addition kernel
-  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for_feed);
   copy(p2pmem2[0], p2pmem1[3], s, feeds1[0]);
   copy(p2pmem2[2], p2pmem1[1], s, feeds1[1]);
   // run addition kernel
-  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for_feed);
   copy(p2pmem2[1], p2pmem1[0], s, feeds1[0]);
   copy(p2pmem2[3], p2pmem1[2], s, feeds1[3]);
   // run addition kernel
   
-  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
-  std::for_each(feeds2.begin(), feeds2.end(), &wait_for);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for_feed);
+  std::for_each(feeds2.begin(), feeds2.end(), &wait_for_feed);
 }
 
 void bench_overlap(std::vector<device> & devices, 
@@ -222,7 +228,7 @@ void bench_overlap(std::vector<device> & devices,
   bench_overlap_same_feed(fftmem1, fftmem2, p2pmem1, p2pmem2, 
     ffth, kernels_4, feeds1, feeds2, dim);
   // synchronize
-  std::for_each(feeds1.begin(), feeds1.end(), &wait_for);
+  std::for_each(feeds1.begin(), feeds1.end(), &wait_for_feed);
   
   AURA_BENCHMARK(bench_fft_only(fftmem1, fftmem2, p2pmem1, p2pmem1, 
       ffth, kernels_4, feeds1, feeds2, dim),

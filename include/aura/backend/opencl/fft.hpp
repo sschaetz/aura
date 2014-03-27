@@ -76,12 +76,12 @@ public:
 		// clFFT needs an array of std::size_t, 
 		// bounds is an array of ints: typecast and copy
 		svec<fft_size, 3> dim_tmp;
-		for(int i=0; i<3; i++) {
+		for(std::size_t i=0; i<dim.size(); i++) {
 			dim_tmp[i] = (fft_size)dim[i];
 		}
 		AURA_CLFFT_SAFE_CALL(clfftCreateDefaultPlan(&inplace_handle_,
 		                     context_->get_backend_context(),
-				     (clfftDim)(dim_tmp.size()),
+				     (clfftDim)(dim.size()),
 		                     &dim_tmp[0]));
 
 

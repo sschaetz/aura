@@ -18,7 +18,7 @@ typedef std::complex<float> cfloat;
 // FIXME missing type (double, float) and r2c c2r
 
 // configuration
-std::vector<aura::svec<aura::backend::fft_size, 3> > size;
+std::vector<bounds> size;
 std::vector<aura::svec<std::size_t, 1> > batch;
 std::size_t runtime;
 
@@ -27,6 +27,12 @@ aura::svec<std::size_t> devordinals;
 const char * ops_tbl[] = { "fwdip", "invip", "fwdop", "invop" };
 std::bitset< sizeof(ops_tbl)/sizeof(ops_tbl[0]) > ops;
 
+// we have multiple wait_for free functions, std::for_each
+// can not decide which one should be used
+void wait_for_feed(feed& f) {
+	wait_for(f);
+}
+
 // benchmark functions -----
 
 void run_fwdip(std::vector<device_ptr<cfloat> > & mem1, 
@@ -34,7 +40,7 @@ void run_fwdip(std::vector<device_ptr<cfloat> > & mem1,
   for(std::size_t n = 0; n<feeds.size(); n++) {
     fft_forward(mem1[n], mem1[n], ffth[n], feeds[n]);
   }
-  std::for_each(feeds.begin(), feeds.end(), &wait_for);
+  std::for_each(feeds.begin(), feeds.end(), &wait_for_feed);
 }
 
 void run_invip(std::vector<device_ptr<cfloat> > & mem1, 
@@ -42,7 +48,7 @@ void run_invip(std::vector<device_ptr<cfloat> > & mem1,
   for(std::size_t n = 0; n<feeds.size(); n++) {
     fft_inverse(mem1[n], mem1[n], ffth[n], feeds[n]);
   }
-  std::for_each(feeds.begin(), feeds.end(), &wait_for);
+  std::for_each(feeds.begin(), feeds.end(), &wait_for_feed);
 }
 
 void run_fwdop(std::vector<device_ptr<cfloat> > & mem1, 
@@ -52,7 +58,7 @@ void run_fwdop(std::vector<device_ptr<cfloat> > & mem1,
   for(std::size_t n = 0; n<feeds.size(); n++) {
     fft_forward(mem1[n], mem2[n], ffth[n], feeds[n]);
   }
-  std::for_each(feeds.begin(), feeds.end(), &wait_for);
+  std::for_each(feeds.begin(), feeds.end(), &wait_for_feed);
 }
 
 void run_invop(std::vector<device_ptr<cfloat> > & mem1, 
@@ -62,14 +68,14 @@ void run_invop(std::vector<device_ptr<cfloat> > & mem1,
   for(std::size_t n = 0; n<feeds.size(); n++) {
     fft_inverse(mem1[n], mem2[n], ffth[n], feeds[n]);
   }
-  std::for_each(feeds.begin(), feeds.end(), &wait_for);
+  std::for_each(feeds.begin(), feeds.end(), &wait_for_feed);
 }
 
 // -----
 
 void print_results(const char * name, double min, double max, 
     double mean, double stdev, std::size_t runs,
-    const aura::svec<aura::backend::fft_size, 3> & s,
+    const bounds & s,
     const aura::svec<std::size_t, 1> & batch) {
   printf("%s %lux ", name, batch[0]);
   for(std::size_t i=0; i<s.size(); i++) {
@@ -164,7 +170,7 @@ int main(int argc, char *argv[]) {
     switch (opt) {
       case 's': {
         printf("size: %s ", optarg);
-        size = aura::generate_sequence<aura::backend::fft_size, 3>(optarg);
+	size = aura::generate_sequence<int, AURA_SVEC_MAX_SIZE>(optarg);
         printf("(%lu) ", size.size());
         break;
       }

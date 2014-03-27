@@ -184,6 +184,58 @@ inline void copy(device_ptr<T> dst, const device_ptr<T> src,
   f.unset();
 }
 
+
+/**
+ * Allocate memory on host for optimized host to device transfer
+ *
+ * @param size numter of bytes that should be allocated
+ * @return pointer to allocated host memory
+ */
+void * host_malloc(const std::size_t& size)
+{
+	void * ptr;
+	AURA_CUDA_SAFE_CALL(cuMemHostAlloc(&ptr,
+		size, CU_MEMHOSTALLOC_PORTABLE));
+	return ptr;
+}
+
+/**
+ * Free memory on host allocated for optimized host to device transfer
+ *
+ * @param ptr the pointer that should be freed
+ */
+void host_free(void* ptr)
+{
+	AURA_CUDA_SAFE_CALL(cuMemFreeHost(ptr));
+}
+
+/**
+ * Allocate memory on host for optimized host to device transfer
+ *
+ * @param num numter of T's that should be allocated
+ * @return pointer to allocated host memory
+ */
+template <typename T>
+T * host_malloc(const std::size_t& num)
+{
+	T * ptr;
+	AURA_CUDA_SAFE_CALL(cuMemHostAlloc(reinterpret_cast<void**>(&ptr),
+		num * sizeof(T), CU_MEMHOSTALLOC_PORTABLE));
+	return ptr;
+}
+
+/**
+ * Free memory on host allocated for optimized host to device transfer
+ *
+ * @param ptr the pointer that should be freed
+ */
+template <typename T>
+inline void host_free(T* ptr)
+{
+	AURA_CUDA_SAFE_CALL(cuMemFreeHost(ptr));
+}
+
+
 } // cuda 
 } // backend_detail
 } // aura
