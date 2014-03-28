@@ -1,15 +1,25 @@
 Todo
 ====
 
+Should device be called accelerator?
+
+Make a kernel a free function (get rid of invoke() maybe?)
+
+Allow definition of kernels in-place (similar to VEX_STRINGIZE_SOURCE).
+
+Make the library header-only, so we don't need CMake to use it.
+This can be done by reorganizing some parts of config.hpp.template.
+
+We calculate the kernel mesh and bundle size if a bounds type
+is passed to invoke. Take into account whatever cudaFuncGetAttributes
+tells us about a specific kernel (like the number of registers) to get
+max occupancy and good performance.
+
 Add a type that represents references to GPU memory that might be
 modified in the future (through already invoked kernel or library call)
+this is a future!
 
 OpenCL needs the path to AURA when building kernels. Generalize that.
-
-Kernel arguments probably have to be copied into the args struct to
-capture temporaries such as ptr+offset - we can not take the
-address of such temporaries and expect it to be valid after the function
-exited.
 
 Tests run on device 0 most of the time, for OpenCL this is often
 the CPU, so we're not really testing the device. Maybe we should
@@ -24,6 +34,11 @@ false if they are empty.
 Make boost optional dependency.
 
 Done:
+
+Kernel arguments probably have to be copied into the args struct to
+capture temporaries such as ptr+offset - we can not take the
+address of such temporaries and expect it to be valid after the function
+exited.
 
 through integer factorization to calculate good kernel size
 provide an invoke function that does not take mesh and bundle but simply
