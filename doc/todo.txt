@@ -1,6 +1,17 @@
 Todo
 ====
 
+
+I wonder if a truely inline kernel would be possible (using a macro,
+defining the kernel and calling it right away).
+
+A scoped switch (of device, feed etc) could be better than a scoped_set.
+A switch expresses: ok we're doing this now, and after we're going back
+doing the other thing.
+
+Add conversion operators for all backend type wrappers to convert them
+to the actual backend types. (ingenious idea from Boost.Computer)
+
 Should device be called accelerator?
 
 Make a kernel a free function (get rid of invoke() maybe?)
