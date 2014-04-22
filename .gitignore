@@ -3,6 +3,7 @@
 *.lo
 *.o
 a.out
+*.mexa64
 
 # Compiled Dynamic libraries
 *.so

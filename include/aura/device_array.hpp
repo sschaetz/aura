@@ -53,11 +53,11 @@ public:
 	 *
 	 * @param d device to move here
 	 */
-	device_array & operator=(BOOST_RV_REF(device_array) da)
+	device_array& operator=(BOOST_RV_REF(device_array) da)
 	{
 		bounds_ = da.bounds_;
-		data_ = da.data_;
-		da.bounds.clear();
+		data_ = boost::move(da.data_);
+		da.bounds_.clear();
 		return *this;
 	}
 

@@ -16,24 +16,16 @@ namespace cuda {
 typedef CUmodule module;
 
 /**
- * @brief build a kernel module from a source file 
+ * @brief build a kernel module from a string
  *
- * @param filename name of .cl or .ptx of .fatbin or .cubin 
+ * @param string containing kernel source code (ptx)
  * @param device device the module is built for
  * @param build_options options for the compiler (optional)
  *
  * @return module reference to compiled module
  */
-module create_module_from_file(const char * filename, device & d, 
+module create_module_from_string(const char* str, device & d, 
   const char * build_options=NULL) {
-  std::ifstream in(filename, std::ios::in);
-  AURA_CHECK_ERROR(in);
-  in.seekg(0, std::ios::end);
-  std::string data;
-  data.resize(in.tellg());
-  in.seekg(0, std::ios::beg);
-  in.read(&data[0], data.size());
-  in.close();
   
   // build for device by setting context and JIT argument
   d.set();
@@ -47,13 +39,36 @@ module create_module_from_file(const char * filename, device & d,
   values[0] = NULL;
   
   module m;
-  AURA_CUDA_SAFE_CALL(cuModuleLoadDataEx(&m, data.c_str(), 
+  AURA_CUDA_SAFE_CALL(cuModuleLoadDataEx(&m, str, 
     num_options, options, values));
   d.unset();
 
   return m;
 }
 
+/**
+ * @brief build a kernel module from a source file 
+ *
+ * @param filename name of .cl or .ptx of .fatbin or .cubin 
+ * @param device device the module is built for
+ * @param build_options options for the compiler (optional)
+ *
+ * @return module reference to compiled module
+ */
+module create_module_from_file(const char* filename, device & d, 
+		const char * build_options=NULL) {
+	
+	std::ifstream in(filename, std::ios::in);
+	AURA_CHECK_ERROR(in);
+	in.seekg(0, std::ios::end);
+	std::string data;
+	data.resize(in.tellg());
+	in.seekg(0, std::ios::beg);
+	in.read(&data[0], data.size());
+	in.close();
+
+	return create_module_from_string(data.c_str(), d, build_options); 
+}
 } // cuda
 } // backend_detail
 } // aura
