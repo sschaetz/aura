@@ -3,6 +3,7 @@
 
 #include <array>
 #include <utility>
+#include <cstring>
 
 #include <aura/detail/svec.hpp>
 
