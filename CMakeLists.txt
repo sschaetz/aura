@@ -22,11 +22,11 @@ ELSE ()
     ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
   ENDIF ()
 ENDIF()
+SET(BOOST_ROOT ${BOOST_ROOT} "/usr/local/boost")
 FIND_PACKAGE(Boost COMPONENTS system thread unit_test_framework)
 
 # find CUDA libraries #####
 FIND_PACKAGE(CUDA)
-
 
 # find OpenCL libraries #####
 FIND_PACKAGE(OpenCL)
