@@ -71,6 +71,9 @@ SET(CMAKE_CXX_FLAGS "-Wall -std=c++0x -g")
 SET(AURA_BACKEND_COMPILE_FLAGS 
   "-I${PROJECT_SOURCE_DIR}/include/ -I${CMAKE_BINARY_DIR}")
 
+# used for unittests to find the kernels
+SET(AURA_UNIT_TEST_LOCATION "${CMAKE_BINARY_DIR}/test/")
+
 # configuration file
 CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/include/aura/config.hpp.template"
   "${CMAKE_BINARY_DIR}/aura/config.hpp")

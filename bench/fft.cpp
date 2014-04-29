@@ -11,6 +11,7 @@
 #include <aura/misc/benchmark.hpp>
 #include <aura/backend.hpp>
 
+using namespace aura;
 using namespace aura::backend;
 
 typedef std::complex<float> cfloat;

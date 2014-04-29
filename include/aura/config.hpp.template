@@ -30,6 +30,8 @@
 /// used for runtime kernel compilation
 #define AURA_BACKEND_COMPILE_FLAGS "@AURA_BACKEND_COMPILE_FLAGS@"
 
+#define AURA_UNIT_TEST_LOCATION "@AURA_UNIT_TEST_LOCATION@"
+
 /// default threads if user does not want to specify mesh and bundle
 #define AURA_CUDA_NUM_DEFAULT_THREADS 512
 

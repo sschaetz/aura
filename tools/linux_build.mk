@@ -31,3 +31,9 @@ clean:
 
 all: cuda opencl
 
+test: all
+	cd /tmp/aura-cuda-build
+	$(MAKE) test	
+	cd /tmp/aura-opencl-build
+	$(MAKE) test
+

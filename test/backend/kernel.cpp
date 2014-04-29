@@ -12,15 +12,7 @@
 using namespace aura;
 using namespace aura::backend;
 
-#if AURA_BACKEND_OPENCL
-
-const char * kernel_file = "test/kernel.cc"; 
-
-#elif AURA_BACKEND_CUDA
-
-const char * kernel_file = "test/kernel.cc"; 
-
-#endif
+const char * kernel_file = AURA_UNIT_TEST_LOCATION"kernel.cc";
 
 // _____________________________________________________________________________
 
