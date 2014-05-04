@@ -209,8 +209,9 @@ void run_test_copy(feed& f, kernel& kern,
 {
 	double min, max, mean, stdev;
 	std::size_t runs;
+	std::vector<float> result_device(vsize, 0);
+	copy(mem1, &result_device[0], vsize, f);
 	run_kernel(f, kern, mesh, bundle, mem1, mem2);
-	std::vector<float> result_device(vsize);
 	std::vector<float> result_host(vsize, 17);
 	copy(&result_device[0], mem1, vsize, f);
 	wait_for(f);
@@ -238,8 +239,9 @@ void run_test_scale(feed& f, kernel& kern,
 {
 	double min, max, mean, stdev;
 	std::size_t runs;
+	std::vector<float> result_device(vsize, 0);
+	copy(mem1, &result_device[0], vsize, f);
 	run_kernel(f, kern, mesh, bundle, mem1, mem2, s);
-	std::vector<float> result_device(vsize);
 	std::vector<float> result_host(vsize, 17*s);
 	copy(&result_device[0], mem1, vsize, f);
 	wait_for(f);
@@ -267,8 +269,9 @@ void run_test_add(feed& f, kernel& kern,
 {
 	double min, max, mean, stdev;
 	std::size_t runs;
+	std::vector<float> result_device(vsize, 0);
+	copy(mem1, &result_device[0], vsize, f);
 	run_kernel(f, kern, mesh, bundle, mem1, mem2, mem3);
-	std::vector<float> result_device(vsize);
 	std::vector<float> result_host(vsize, 17.+17.);
 	copy(&result_device[0], mem1, vsize, f);
 	wait_for(f);
@@ -295,8 +298,9 @@ void run_test_triad(feed& f, kernel& kern,
 {
 	double min, max, mean, stdev;
 	std::size_t runs;
+	std::vector<float> result_device(vsize, 0);
+	copy(mem1, &result_device[0], vsize, f);
 	run_kernel(f, kern, mesh, bundle, mem1, mem2, mem3, s);
-	std::vector<float> result_device(vsize);
 	std::vector<float> result_host(vsize, 17.+s*17.);
 	copy(&result_device[0], mem1, vsize, f);
 	wait_for(f);
