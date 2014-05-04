@@ -23,7 +23,7 @@ ELSE ()
   ENDIF ()
 ENDIF()
 SET(BOOST_ROOT ${BOOST_ROOT} "/usr/local/boost")
-SET(BOOST_ROOT "/afs/rzg/.cs/boost/1.49.0/amd64_sles11/gcc/4.3.4")
+SET(BOOST_ROOT ${BOOST_ROOT} "/afs/rzg/.cs/boost/1.49.0/amd64_sles11/gcc/4.3.4")
 FIND_PACKAGE(Boost COMPONENTS system thread unit_test_framework)
 
 # find CUDA libraries #####
