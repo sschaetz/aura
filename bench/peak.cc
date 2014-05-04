@@ -1,22 +1,22 @@
 #include <aura/backend.hpp>
 
 #define PEAK_FLOP_INIT(T) \
-  T r0 = 0.0001 * id;     \
-  T r1 = 0.0001 * id;     \
-  T r2 = 0.0002 * id;     \
-  T r3 = 0.0003 * id;     \
-  T r4 = 0.0004 * id;     \
-  T r5 = 0.0005 * id;     \
-  T r6 = 0.0006 * id;     \
-  T r7 = 0.0007 * id;     \
-  T r8 = 0.0008 * id;     \
-  T r9 = 0.0009 * id;     \
-  T r10 = 0.0010 * id;    \
-  T r11 = 0.0011 * id;    \
-  T r12 = 0.0012 * id;    \
-  T r13 = 0.0013 * id;    \
-  T r14 = 0.0014 * id;    \
-  T r15 = 0.0015 * id;    \
+  T r0 = 0.0000001 * id;     \
+  T r1 = 0.0000001 * id;     \
+  T r2 = 0.0000002 * id;     \
+  T r3 = 0.0000003 * id;     \
+  T r4 = 0.0000004 * id;     \
+  T r5 = 0.0000005 * id;     \
+  T r6 = 0.0000006 * id;     \
+  T r7 = 0.0000007 * id;     \
+  T r8 = 0.0000008 * id;     \
+  T r9 = 0.0000009 * id;     \
+  T r10 = 0.0000010 * id;    \
+  T r11 = 0.0000011 * id;    \
+  T r12 = 0.0000012 * id;    \
+  T r13 = 0.0000013 * id;    \
+  T r14 = 0.0000014 * id;    \
+  T r15 = 0.0000015 * id;    \
   /**/
 
 #define PEAK_FLOP_MADD \
@@ -93,6 +93,7 @@ AURA_KERNEL void peak_flop_double(AURA_GLOBAL float * A) {
 AURA_KERNEL void peak_copy(AURA_GLOBAL float * dst, AURA_GLOBAL float * src) {
   int id = get_mesh_id();
   int s = get_mesh_size();
+#pragma unroll
   for(int i=0; i<64; i++) {
     dst[id] = src[id];
     id += s;
@@ -114,7 +115,7 @@ AURA_KERNEL void peak_add(AURA_GLOBAL float * dst, AURA_GLOBAL float * src1,
   int id = get_mesh_id();
   int s = get_mesh_size();
   for(int i=0; i<64; i++) {
-    dst[id] = src1[id] * src2[id];
+    dst[id] = src1[id] + src2[id];
     id += s;
   }
 }

@@ -215,7 +215,7 @@ void svec_snprintf(char * c, std::size_t s,
 
 /// output content of svec to ostream
 template <typename T, std::size_t max_size_>
-std::ostream& operator << (std::ostream & o, svec<T, max_size_> & a) 
+std::ostream& operator << (std::ostream & o, const svec<T, max_size_> & a) 
 {
 	std::size_t i;
 	for(i=0; i<a.size()-1; i++) {
