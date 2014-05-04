@@ -51,7 +51,7 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
   // call kernel
   AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(
     f.get_backend_stream(), k, m.size(), NULL, 
-    &tm[0], &tb[0], 0, NULL, NULL)); 
+    &tm[0], NULL, 0, NULL, NULL)); 
 } 
 
 } // namespace detail

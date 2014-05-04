@@ -254,6 +254,7 @@ int main(int argc, char *argv[]) {
   
   // output info about selected device  
   {
+   printf("dev_ordinal: %d\n", dev_ordinal);
     device d(dev_ordinal);
     device_info di = device_get_info(d);
     printf("selected device: ");

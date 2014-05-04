@@ -123,7 +123,7 @@ inline void run_tests(
     kernel kadd = create_kernel(m, "peak_add"); 
     kernel ktriad = create_kernel(m, "peak_triad"); 
     for(std::size_t m=0; m<meshes.size(); m++) {
-      std::size_t vsize = product(meshes[m])*64;
+      std::size_t vsize = product(meshes[m])*128;
       memory mem1 = device_malloc(vsize*sizeof(float), d);
       memory mem2 = device_malloc(vsize*sizeof(float), d);
       memory mem3 = device_malloc(vsize*sizeof(float), d);
@@ -137,7 +137,7 @@ inline void run_tests(
 	  wait_for(f);
           if(!std::equal(dst.begin(), dst.end(), src.begin())) {
 	    printf("%s failed!\n", ops_tbl[2]);
-            return;
+            //return;
           }
 	  AURA_BENCHMARK(run_kernel(f, kcopy, meshes[m], bundles[b], 
             mem1, mem2), runtime, min, max, mean, stdev, runs);

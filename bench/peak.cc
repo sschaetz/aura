@@ -1,5 +1,4 @@
 #include <aura/backend.hpp>
-#include <stdint.h>
 #define PEAK_FLOP_INIT(T) \
   T r0 = 0.0001 * id;     \
   T r1 = 0.0001 * id;     \
@@ -90,61 +89,45 @@ AURA_KERNEL void peak_flop_double(AURA_GLOBAL float * A) {
   A[id] = r0;
 }
 
-AURA_KERNEL void peak_copy(AURA_GLOBAL float * dst, AURA_GLOBAL float * src) {
-  const int bsize = 32;
-  const int mult = 64;
+#define BSIZE 16
+
+AURA_KERNEL void peak_copy(AURA_GLOBAL float * dst, AURA_GLOBAL float* src) {
+  const int bsize = BSIZE;
+  const int mult = 128;
   int id = (get_mesh_id() / bsize)*bsize*mult + get_mesh_id() % bsize; 
-  for(int32_t i=0; i<mult; i++) {
-    dst[id + i * bsize] = src[id + i * bsize];
-    
-  /*
-  dst[id+0*64] = src[id+0*64];
-  dst[id+1*64] = src[id+1*64];
-  dst[id+2*64] = src[id+2*64];
-  dst[id+3*64] = src[id+3*64];
-  dst[id+4*64] = src[id+4*64];
-  dst[id+5*64] = src[id+5*64];
-  dst[id+6*64] = src[id+6*64];
-  dst[id+7*64] = src[id+7*64];
-  dst[id+8*64] = src[id+8*64];
-  dst[id+9*64] = src[id+9*64];
-  dst[id+10*64] = src[id+10*64];
-  dst[id+11*64] = src[id+11*64];
-  dst[id+12*64] = src[id+12*64];
-  dst[id+13*64] = src[id+13*64];
-  dst[id+14*64] = src[id+14*64];
-  dst[id+15*64] = src[id+15*64];
-  */
+#pragma unroll
+  for(int i=0; i<mult; i++) {
+    ds[id + i * bsize] = src[id + i * bsize];
   }
 }
 
 AURA_KERNEL void peak_scale(AURA_GLOBAL float * dst, AURA_GLOBAL float * src,
   float scalar) {
-  int id = get_mesh_id();
-  int s = get_mesh_size();
-  for(int i=0; i<64; i++) {
-    dst[id] = scalar * src[id];
-    id += s;
+  const int bsize = BSIZE;
+  const int mult = 64;
+  int id = (get_mesh_id() / bsize)*bsize*mult + get_mesh_id() % bsize; 
+  for(int i=0; i<mult; i++) {
+    dst[id + i * bsize] = scalar * src[id + i * bsize];
   }
 }
 
 AURA_KERNEL void peak_add(AURA_GLOBAL float * dst, AURA_GLOBAL float * src1,
   AURA_GLOBAL float * src2) {
-  int id = get_mesh_id();
-  int s = get_mesh_size();
-  for(int i=0; i<64; i++) {
-    dst[id] = src1[id] * src2[id];
-    id += s;
+  const int bsize = BSIZE;
+  const int mult = 64;
+  int id = (get_mesh_id() / bsize)*bsize*mult + get_mesh_id() % bsize; 
+  for(int i=0; i<mult; i++) {
+    dst[id + i * bsize] = src1[id + i * bsize] * src2[id + i * bsize];
   }
 }
 
 AURA_KERNEL void peak_triad(AURA_GLOBAL float * dst, AURA_GLOBAL float * src1,
   AURA_GLOBAL float * src2, float scalar) {
-  int id = get_mesh_id();
-  int s = get_mesh_size();
-  for(int i=0; i<64; i++) {
-    dst[id] = src1[id] + scalar * src2[id];
-    id += s;
+  const int bsize = BSIZE;
+  const int mult = 64;
+  int id = (get_mesh_id() / bsize)*bsize*mult + get_mesh_id() % bsize; 
+  for(int i=0; i<mult; i++) {
+    dst[id + i * bsize] = src1[id + i * bsize] + scalar * src2[id + i * bsize];
   }
 }
 
