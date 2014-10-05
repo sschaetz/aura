@@ -30,7 +30,7 @@ struct entry {
   entry(const char * name, std::thread::id thread_id, 
     double timestamp, bool start) : 
     name(name), thread_id(syscall(SYS_gettid)/*std::hash<std::thread::id>()(thread_id)*/), 
-    timestamp(timestamp), start(start) 
+    timestamp(timestamp/1e6), start(start) 
   {}
 
   const char * name;
@@ -94,8 +94,10 @@ struct memory_sink {
  */
 template <typename sink>
 void start(sink & s, const char * name) {
+#ifndef AURA_NO_PROFILE
   s.record(entry(name, std::this_thread::get_id(), 
-    aura::now(), true));  
+    aura::now(), true));
+#endif
 }
 
 /**
@@ -103,8 +105,10 @@ void start(sink & s, const char * name) {
  */
 template <typename sink>
 void stop(sink & s, const char * name) {
+#ifndef AURA_NO_PROFILE
   s.record(entry(name, std::this_thread::get_id(), 
     aura::now(), false));
+#endif
 }
 
 /**

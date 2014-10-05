@@ -17,9 +17,9 @@
     </head>
     <body>
         <script type="text/javascript">
+	  var startval = -1; 
           function startRead(files) {  
             // obtain input element through DOM 
-            
             var file = files[0];
             if(file){
               getAsText(file);
@@ -45,6 +45,16 @@
               document.importNode(parsed.documentElement, true);
             //document.body.appendChild(importedNode);
             document.getElementById("profile").appendChild(importedNode);
+	    d3.selectAll(".m").on("click", function(d, i){
+	      if (startval == -1) {
+	        startval = parseInt(d3.select(this).attr("ap_sta"))
+	      } else {
+	        startval = parseInt(d3.select(this).attr("ap_sta")) +
+		  parseInt(d3.select(this).attr("ap_dur")) - startval;
+		d3.select("#ap_dur").text(startval.toString());
+		startval = -1;
+	      }
+	    });
             d3.selectAll(".m").on("mouseover", function(d, i){
               d3.select("#ap_name").text("t" + 
                 d3.select(this).attr("ap_tid") + " " + 
@@ -68,6 +78,7 @@
         </script>
         <input type="file" multiple onchange="startRead(this.files)">
         <div id="ap_name">#</div>
+        <div id="ap_dur">#</div>
         <div style="border: 1px solid black;" id="profile"></div>
 
     </body>

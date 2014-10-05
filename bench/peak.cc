@@ -90,8 +90,9 @@ AURA_KERNEL void peak_flop_double(AURA_GLOBAL float * A) {
   A[id] = r0;
 }
 
+#if 0
 AURA_KERNEL void peak_copy(AURA_GLOBAL float * dst, AURA_GLOBAL float* src) {
-  const int bsize = 64;
+  const int bsize = 32;
   const int mult = 64;
   int id = (get_mesh_id() / bsize)*bsize*mult + get_mesh_id() % bsize;
   for(int i=0; i<mult; i++) {
@@ -99,7 +100,6 @@ AURA_KERNEL void peak_copy(AURA_GLOBAL float * dst, AURA_GLOBAL float* src) {
   }
 }
 
-#if 0
 
 AURA_KERNEL void peak_copy(AURA_GLOBAL float * dst, AURA_GLOBAL float * src) {
   int id = get_mesh_id();
@@ -111,7 +111,6 @@ AURA_KERNEL void peak_copy(AURA_GLOBAL float * dst, AURA_GLOBAL float * src) {
   }
 }
 
-#endif
 
 AURA_KERNEL void peak_scale(AURA_GLOBAL float * dst, AURA_GLOBAL float * src,
   float scalar) {

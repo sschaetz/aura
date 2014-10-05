@@ -8,6 +8,9 @@
   CUresult err = call; \
   if (err != CUDA_SUCCESS) { \
     printf("CUDA error %d at %s:%d\n", err, __FILE__, __LINE__ ); \
+    const char* errstr; \
+    cuGetErrorName(err, &errstr); \
+    printf("Description: %s\n", errstr); \
   } \
 } \
 /**/
@@ -26,6 +29,9 @@
 #define AURA_CUDA_CHECK_ERROR(err) { \
   if (err != CUDA_SUCCESS) { \
     printf("CUDA error %d at %s:%d\n", err, __FILE__, __LINE__ ); \
+    const char* errstr; \
+    cuGetErrorName(err, &errstr); \
+    printf("Description: %s\n", errstr); \
   } \
 } \
 /**/

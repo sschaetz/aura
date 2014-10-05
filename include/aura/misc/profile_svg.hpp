@@ -174,19 +174,12 @@ std::lock_guard<std::mutex> guard(sink.mtx_);
       smit->first, smit->second.second, smit->second.first);
   }
 
-
   // postprocess max_depth field to calculate base offset for entry
   std::vector<size_t> max_depths_bk = max_depths;
-  for(std::size_t i=2; i<max_depths.size(); i++) {
-    max_depths[i] = max_depths[i-1] + max_depths[i-2];
+  max_depths[0] = 0; 
+  for(std::size_t i=1; i<max_depths.size(); i++) {
+    max_depths[i] = max_depths[i-1] + max_depths_bk[i-1];
   }
-  if(1 < max_depths.size()) {
-    max_depths[1] = max_depths[0];
-  }
-  if(0 < max_depths.size()) {
-    max_depths[0] = 0;
-  }
-
 
   // output to file
   double scale = (double)constants::graph_width / (max-min);
@@ -223,7 +216,7 @@ std::lock_guard<std::mutex> guard(sink.mtx_);
     
     fprintf(f, "<rect class=\"m\" x=\"%f\" y=\"%ld\" width=\"%f\" " 
       "height=\"%d\" fill=\"%s\" stroke-width=\"0\" " 
-      "ap_name=\"%s\" ap_tid=\"%ld\" ap_dur=\"%0.9f\"/>\n",
+      "ap_name=\"%s\" ap_tid=\"%ld\" ap_dur=\"%0.9f\" ap_sta=\"%0.9f\"/>\n",
       /* x:       */ (funcs[i].timestamp - min)*scale, 
       /* y:       */ level*constants::box_height + 
                        (level+1)*constants::padding + 
@@ -234,7 +227,9 @@ std::lock_guard<std::mutex> guard(sink.mtx_);
                        color % constants::svg_num_func_colors], 
       /*ap_name:  */ funcs[i].name,
       /*ap_tid:   */ tid,
-      /*ap_dur:   */ funcs[i].duration*1000);
+      /*ap_dur:   */ funcs[i].duration*1000,
+      /*ap_sta:   */ funcs[i].timestamp*1000
+      );
   }
   
   fprintf(f, "%s\n", constants::svg_footer);
