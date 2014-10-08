@@ -34,7 +34,7 @@ Commands such as memory transfers and kernel invocations are issued to an accele
 ~~~{.cpp}
 std::vector<float> src(product(bounds(40, 20)));
 device d(0);
-device_array<int> dst(bounds(40, 20), d);
+device_array<float> dst(bounds(40, 20), d);
 feed f(d);
 copy(dst, src, f);
 f.wait(); /* blocking until copy finished */
