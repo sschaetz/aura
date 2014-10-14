@@ -196,3 +196,15 @@ and in the case of OpenCL it requires an offset.
 
 I think this type is needed. It will allow type-safety from the
 get-go since this type follows a device_malloc<T> of course.
+
+Memory Tags
+===========
+
+How should memory tags be specified? They are important to allocate
+constant memory or maybe even texture memory.
+
+
+device_ptr<float> x = device_malloc<float, constant>();
+// default is read write
+device_ptr<float> x = device_malloc<float>();
+

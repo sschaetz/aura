@@ -142,3 +142,5 @@ AURA_KERNEL void peak_triad(AURA_GLOBAL float * dst, AURA_GLOBAL float * src1,
   }
 }
 
+#endif
+

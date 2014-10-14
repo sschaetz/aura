@@ -34,8 +34,8 @@ public:
   * @param m memory that identifies device memory
   * @param d device the memory is allocated on 
   */
-  device_ptr(backend_type & m, const device & d) : 
-    memory_(m), offset_(0), device_(const_cast<device *>(&d)) {}
+  device_ptr(backend_type & m, device & d) : 
+    memory_(m), offset_(0), device_(&d) {}
 
  /**
   * @brief create device pointer that points to memory
@@ -44,10 +44,8 @@ public:
   * @param o offset of memory object 
   * @param d device the memory is allocated on 
   */
-  // FIXME constness is strange here
-  device_ptr(const const_backend_type & m, const std::size_t & o, const device & d) :
-    memory_(m), offset_(o),
-    device_(const_cast<device *>(&d)) {}
+  device_ptr(const_backend_type & m, const std::size_t & o, device & d) :
+    memory_(m), offset_(o), device_(&d) {}
   
   void invalidate() {
     memory_ = 0;
