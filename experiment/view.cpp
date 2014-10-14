@@ -10,6 +10,12 @@ T* addressof(std::vector<T, Allocator>& vec)
 }
 
 template <typename T>
+T* addressof(T* ptr)
+{
+	return ptr;
+}
+
+template <typename T>
 struct view;
 
 template <typename T, typename C>
@@ -17,18 +23,35 @@ view<T> map(C& c);
 
 template <typename T>
 struct view {
-
+	// fixme: should be movable but not copyable
 	view() : ptr_(nullptr) {}
+
+	view(view&& v) : 
+		ptr_(v.ptr_),
+		moved_from_obj_(std::move(v.moved_from_obj_))
+	{
+		v.ptr_ = nullptr;
+	}
+
+	view<T>& operator= (const view<T>& other)
+	{
+		ptr_ = other.ptr_;
+		moved_from_obj_ = std::move(other.moved_from_obj_);
+		other.ptr_ = nullptr;
+	}
+
+	template <typename C> 
+	view(C& c)
+	{
+		ptr_ = addressof(c);
+		moved_from_obj_ = std::move(c);
+	}
+
 	~view() 
 	{
 		if (nullptr != ptr_) {
 			// FIXME unmap the thing from the device
 		}
-	}
-	template <typename C>
-	view(C&c)
-	{
-		*this = map<T>(c);
 	}
 
 	T* ptr_;
@@ -56,18 +79,28 @@ void unmap(view<T>& v, C& c)
 
 int main(void) 
 {
+	{
 	std::vector<float> h1(10, 1.);
 	std::cout << &h1[0] << std::endl;
 	aura::view<float> v1 = aura::map<float>(h1);
 	std::cout << v1.ptr_ << " " << &h1[0] << std::endl;
 	unmap(v1, h1);
 	std::cout << v1.ptr_ << " " << &h1[0] << std::endl;
+	}
 	
+	{
 	std::vector<float> h2(10, 1.);
 	std::cout << &h2[0] << std::endl;
-	aura::view<float> v2(h2);
-	std::cout << v2.ptr_ << " " << &h2[0] << std::endl;
-
-
+	{
+		aura::view<float> v2(h2);
+		std::cout << v2.ptr_ << " " << &h2[0] << std::endl;
+	}
+	std::cout << &h2[0] << std::endl;
+	}
+	{
+	float h[100];
+	aura::view<float> v1 = aura::map<float>(h);
+	std::cout << v1.ptr_ << " " << h << std::endl;
+	}
 }
 

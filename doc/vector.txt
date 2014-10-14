@@ -197,6 +197,7 @@ and in the case of OpenCL it requires an offset.
 I think this type is needed. It will allow type-safety from the
 get-go since this type follows a device_malloc<T> of course.
 
+
 Memory Tags
 ===========
 
@@ -207,4 +208,11 @@ constant memory or maybe even texture memory.
 device_ptr<float> x = device_malloc<float, constant>();
 // default is read write
 device_ptr<float> x = device_malloc<float>();
+
+This only works with OpenCL. CUDA creates constant memory pointers from
+the module. Quite annoying, I think this can not be mapped through a
+common API.
+
+In CUDA, we should go through the module, in OpenCL we probably can just
+allocate a constant block of memory. This should probably be tested.
 
