@@ -31,8 +31,8 @@ T * opencl_malloc_pinned(std::size_t num, device & d, cl_mem* mem)
 			*mem, CL_TRUE, CL_MAP_READ|CL_MAP_WRITE,
 			0, bytes, 0, NULL, NULL, &errorcode);
 	AURA_OPENCL_CHECK_ERROR(errorcode);
-	printf("m: %lu\n", *mem);
-	printf("v: %lu\n", v);
+	printf("m: %p\n", *mem);
+	printf("v: %p\n", v);
 
 	AURA_OPENCL_SAFE_CALL(clEnqueueUnmapMemObject(
 				f.get_backend_stream(), 
@@ -85,7 +85,8 @@ int main(void)
 	// 32M floats 
 	std::size_t size = 1024*1024*32;
 	cl_mem hostmembuffer;
-	float* hostmempinned = opencl_malloc_pinned<float>(size, d, &hostmembuffer);
+	(void)opencl_malloc_pinned<float>(size, 
+			d, &hostmembuffer);
 	float* hostmem = (float*)malloc(sizeof(float)*size);
 	device_ptr<float> devmem = device_malloc<float>(size, d);
 

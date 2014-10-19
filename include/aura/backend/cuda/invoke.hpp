@@ -53,7 +53,8 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
 	free(a.first);
 }
 
-void invoke_impl(kernel & k, const ::aura::bounds& b, const args_t & a, feed & f) 
+void invoke_impl(kernel & k, const ::aura::bounds& b, 
+		const args_t & a, feed & f) 
 {
 	std::array<std::size_t, 4> mb = {{1, 1, 1, 1}};
 	const std::array<std::size_t, 4> max_mb = {{

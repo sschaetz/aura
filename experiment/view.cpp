@@ -80,27 +80,28 @@ void unmap(view<T>& v, C& c)
 int main(void) 
 {
 	{
-	std::vector<float> h1(10, 1.);
-	std::cout << &h1[0] << std::endl;
-	aura::view<float> v1 = aura::map<float>(h1);
-	std::cout << v1.ptr_ << " " << &h1[0] << std::endl;
-	unmap(v1, h1);
-	std::cout << v1.ptr_ << " " << &h1[0] << std::endl;
+		std::vector<float> h1(10, 1.);
+		std::cout << &h1[0] << std::endl;
+		aura::view<float> v1 = aura::map<float>(h1);
+		std::cout << v1.ptr_ << " " << &h1[0] << std::endl;
+		unmap(v1, h1);
+		std::cout << v1.ptr_ << " " << &h1[0] << std::endl;
 	}
 	
 	{
-	std::vector<float> h2(10, 1.);
-	std::cout << &h2[0] << std::endl;
-	{
-		aura::view<float> v2(h2);
-		std::cout << v2.ptr_ << " " << &h2[0] << std::endl;
+		std::vector<float> h2(10, 1.);
+		std::cout << &h2[0] << std::endl;
+		{
+			aura::view<float> v2(h2);
+			std::cout << v2.ptr_ << " " << &h2[0] << std::endl;
+		}
+		std::cout << &h2[0] << std::endl;
 	}
-	std::cout << &h2[0] << std::endl;
-	}
+
 	{
-	float h[100];
-	aura::view<float> v1 = aura::map<float>(h);
-	std::cout << v1.ptr_ << " " << h << std::endl;
+		float h[100];
+		aura::view<float> v1 = aura::map<float>(h);
+		std::cout << v1.ptr_ << " " << h << std::endl;
 	}
 }
 

@@ -5,13 +5,15 @@ AURA_ADD_TEST(backend/device_ptr.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/feed.cpp ${AURA_BACKEND_LIBRARIES})
 
 IF(NOT ${AURA_FFT_LIBRARIES} STREQUAL "")
-  AURA_ADD_TEST(backend/fft.cpp pthread
-    ${AURA_BACKEND_LIBRARIES} ${AURA_FFT_LIBRARIES})
+	AURA_ADD_TEST(backend/fft.cpp pthread 
+		${AURA_BACKEND_LIBRARIES} ${AURA_FFT_LIBRARIES})
 ENDIF()
 
 AURA_ADD_TEST(backend/host_memory.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/kernel.cpp backend/kernel.cc 
-  ${AURA_BACKEND_LIBRARIES})
+	${AURA_BACKEND_LIBRARIES})
+AURA_ADD_TEST(backend/map.cpp backend/map.cc 
+	${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/mark.cpp ${AURA_BACKEND_LIBRARIES})
 
 AURA_ADD_TEST(detail/svec.cpp)

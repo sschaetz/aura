@@ -9,7 +9,8 @@ namespace aura {
 
 /// continuous block of memory holding multiple instances of a type T
 template <typename T>
-class device_buffer {
+class device_buffer 
+{
 
 public:
 	typedef device_ptr<T> iterator;

@@ -28,6 +28,12 @@ public:
   */
   device_ptr() : memory_(0), offset_(0), device_(nullptr) {}
 
+
+ /**
+  * @brief create pointer that points nowhere
+  */
+  device_ptr(std::nullptr_t) : memory_(0), offset_(0), device_(nullptr) {}
+
  /**
   * @brief create device pointer that points to memory
   *
@@ -76,6 +82,7 @@ public:
   /// assign nullptr operator
   device_ptr<T>& operator =(std::nullptr_t) {
 	invalidate();
+	return *this;
   }
  
   /// addition operator

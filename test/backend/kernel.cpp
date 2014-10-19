@@ -1,8 +1,5 @@
 #define BOOST_TEST_MODULE backend.kernel
 
-// these kernels should be called with the CUDA style thread layout
-#define AURA_KERNEL_THREAD_LAYOUT_CUDA
-
 #include <cstring>
 #include <boost/test/unit_test.hpp>
 #include <aura/backend.hpp>

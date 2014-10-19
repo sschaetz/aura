@@ -66,6 +66,45 @@ void device_free(device_ptr<T> & ptr) {
   ptr.invalidate();
 }
 
+/**
+ * map host memory to a device and return a device ptr that can be
+ * accessed from a kernel
+ *
+ * @param ptr pointer to host memory
+ * @param size number of T's that should be mapped
+ * @param d device the memory should be mapped to
+ *
+ * @return device pointer corresponding to the mapped region
+ */
+template <typename T>
+device_ptr<T> device_map(T* ptr, std::size_t size, device& d) 
+{
+	d.set();  
+	AURA_CUDA_SAFE_CALL(cuMemHostRegister(ptr, sizeof(T)*size, 
+		CU_MEMHOSTREGISTER_PORTABLE|CU_MEMHOSTREGISTER_DEVICEMAP));
+	memory m;
+	AURA_CUDA_SAFE_CALL(cuMemHostGetDevicePointer(&m, ptr, 0));
+	d.unset();
+	return device_ptr<T>(m, d);
+}
+
+/**
+ * unmap memory that was previously mapped to to a device 
+ *
+ * @param ptr pointer to host memory that should be unmapped
+ * @param dptr device pointer corresponding to mapped region 
+ * @param size size of memory region that should be unmapped (unused)
+ * @param f feed that should be used for the data transfer (unused)
+ */
+template <typename T>
+void device_unmap(T* ptr, device_ptr<T>& dptr, std::size_t, feed&)
+{
+	dptr.get_device().set();  
+	AURA_CUDA_SAFE_CALL(cuMemHostUnregister(ptr));
+	dptr.get_device().unset();  
+	dptr.invalidate();
+	return;
+}
 
 /**
  * copy host to device memory
