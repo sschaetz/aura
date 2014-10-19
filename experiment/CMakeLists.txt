@@ -25,4 +25,5 @@ AURA_ADD_TARGET(exp.namespace_alias namespace_alias.cpp)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")   
 AURA_ADD_TARGET(exp.vec_vs_vla vec_vs_vla.cpp)
 AURA_ADD_TARGET(exp.view view.cpp)
+AURA_ADD_TARGET(exp.viewv2 viewv2.cpp)
 

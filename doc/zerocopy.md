@@ -119,3 +119,28 @@ The value type we can get through
 iterator_traits<T>::value_type
 even for the pointer case
 
+so device_view<Container_T> instead of device_view<T>.
+And is read-only or write-only encoded in the type?
+
+This way we could write inerfaces that encode if we need a read or write 
+view. But a readwrite view should be able to be used in the case of a
+read or write-only view is required. So:
+
+device_view<C, ro>(vec, d);
+or
+device_view<C>(vec, d, ro);
+
+Actually that is stupid. C should be erased since the type of the container
+does not matter. The type we want all things passed to the view to erase or
+decay to is a contiguous block of memory (a range?) with a value_type, 
+a start, an end, a size.
+
+An iterator based interface would work but is not nice. A range-based 
+interface would be much nicer.
+
+
+## Benchmarks
+
+Under what circumstances is DMA from the kernel faster than 
+explicit pinned or normal memory transfer?
+

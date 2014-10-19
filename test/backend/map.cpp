@@ -59,8 +59,10 @@ BOOST_AUTO_TEST_CASE(lowlevel)
 	std::vector<float> cmp(1024, 42.);
 
 	feed f(d);
-	device_ptr<float> src_mapped = device_map(&src[0], src.size(), d);
-	device_ptr<float> dst_mapped = device_map(&dst[0], dst.size(), d);
+	device_ptr<float> src_mapped = device_map(&src[0], src.size(), 
+			memory_tag::ro, d);
+	device_ptr<float> dst_mapped = device_map(&dst[0], dst.size(), 
+			memory_tag::wo, d);
 	
 	invoke(k, mesh(1024), bundle(1024/16), 
 			args(dst_mapped.get(), src_mapped.get()), f);

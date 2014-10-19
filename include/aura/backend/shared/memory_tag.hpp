@@ -5,6 +5,9 @@ namespace aura {
 
 enum class memory_tag
 {
+	ro,
+	wo,
+	rw
 };
 
 } // namespace aura

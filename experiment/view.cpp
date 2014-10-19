@@ -1,6 +1,12 @@
 #include <iostream>
 #include <boost/any.hpp>
 
+// Experiment: see if moveable and any work well together
+// see if we can move the gut out of an instance when mapping
+// it and putting it back in when unmapping
+//
+// Result: seems to work. any_cast must be passed and rvalue.
+
 namespace aura {
 
 template <typename T, typename Allocator>
@@ -70,7 +76,7 @@ view<T> map(C& c)
 template <typename T, typename C>
 void unmap(view<T>& v, C& c)
 {
-	c = std::move(boost::any_cast<C>(v.moved_from_obj_));
+	c = boost::any_cast<C>(std::move(v.moved_from_obj_));
 	v.ptr_ = nullptr;
 	// FIXME unmap the thing from the device
 }

@@ -6,8 +6,8 @@
 #include <aura/backend/opencl/feed.hpp>
 #include <aura/backend/opencl/device.hpp>
 #include <aura/backend/opencl/device_ptr.hpp>
+#include <aura/backend/shared/memory_tag.hpp>
 #include <aura/misc/deprecate.hpp>
-
 
 namespace aura {
 namespace backend_detail {
@@ -73,12 +73,19 @@ void device_free(device_ptr<T> & ptr) {
  * @return device pointer corresponding to the mapped region
  */
 template <typename T>
-device_ptr<T> device_map(T* ptr, std::size_t size, device& d)
+device_ptr<T> device_map(T* ptr, std::size_t size, 
+		memory_tag tag, device& d)
 {
 	int errorcode = 0;
+	cl_mem_flags flag = CL_MEM_READ_WRITE;
+	if (tag == memory_tag::ro) {
+		flag = CL_MEM_READ_ONLY;
+	} else if (tag == memory_tag::ro) {
+		flag = CL_MEM_WRITE_ONLY;
+	}
 	typename device_ptr<T>::backend_type m =
 		clCreateBuffer(d.get_backend_context(),
-		CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+		flag | CL_MEM_USE_HOST_PTR,
 		size*sizeof(T), ptr, &errorcode);
 	AURA_OPENCL_CHECK_ERROR(errorcode);
 	return device_ptr<T>(m, d);

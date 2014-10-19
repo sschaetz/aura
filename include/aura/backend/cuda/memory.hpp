@@ -77,7 +77,8 @@ void device_free(device_ptr<T> & ptr) {
  * @return device pointer corresponding to the mapped region
  */
 template <typename T>
-device_ptr<T> device_map(T* ptr, std::size_t size, device& d) 
+device_ptr<T> device_map(T* ptr, std::size_t size, 
+		memory_tag, device& d)
 {
 	d.set();  
 	AURA_CUDA_SAFE_CALL(cuMemHostRegister(ptr, sizeof(T)*size, 
