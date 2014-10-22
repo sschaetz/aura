@@ -139,12 +139,12 @@ public:
     if(nullptr == device_ || nullptr == b.device_) {
       return (nullptr == device_ && nullptr == b.device_ && 
         offset_ == b.offset_ && memory_ == b.memory_ &&
-	tag_ = b.tag_);
+	tag_ == b.tag_);
     }
     else {
       return (device_->get_ordinal() == b.device_->get_ordinal() && 
         offset_ == b.offset_ && memory_ == b.memory_ && 
-	tag_ = b.tag_);
+	tag_ == b.tag_);
     }
   }
   
