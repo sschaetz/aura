@@ -7,6 +7,7 @@
 #include <aura/backend/cuda/feed.hpp>
 #include <aura/backend/cuda/device.hpp>
 #include <aura/backend/cuda/device_ptr.hpp>
+#include <aura/backend/shared/memory_tag.hpp>
 
 
 namespace aura {
@@ -67,17 +68,17 @@ void device_free(device_ptr<T> & ptr) {
 }
 
 /**
- * map host memory to a device and return a device ptr that can be
- * accessed from a kernel
+ * map host memory to device memory 
  *
  * @param ptr pointer to host memory
  * @param size number of T's that should be mapped
+ * @param tag memory tag of the map 
  * @param d device the memory should be mapped to
  *
  * @return device pointer corresponding to the mapped region
  */
 template <typename T>
-device_ptr<T> device_map(T* ptr, std::size_t size, 
+device_ptr<T> device_map_alloc(T* ptr, std::size_t size, 
 		memory_tag, device& d)
 {
 	d.set();  
@@ -90,20 +91,60 @@ device_ptr<T> device_map(T* ptr, std::size_t size,
 }
 
 /**
+ * remap previsouly created and unmapped map back to device memory
+ *
+ * @param ptr pointer to host memory
+ * @param dptr pointer to device memory
+ * @param size number of T's that should be mapped
+ * @param tag memory tag of the map 
+ * @param d device the memory should be mapped to
+ *
+ * @return device pointer corresponding to the mapped region
+ */
+template <typename T>
+device_ptr<T> device_remap(T* ptr, device_ptr<T> dptr, feed&)
+{
+	dptr.get_device().set();  
+	memory m;
+	AURA_CUDA_SAFE_CALL(cuMemHostGetDevicePointer(&m, ptr, 0));
+	dptr.get_device().unset();  
+	return device_ptr<T>(m, dptr.get_device());
+}
+
+/**
  * unmap memory that was previously mapped to to a device 
  *
  * @param ptr pointer to host memory that should be unmapped
  * @param dptr device pointer corresponding to mapped region 
  * @param size size of memory region that should be unmapped (unused)
+ * @param tag memory tag of the map 
  * @param f feed that should be used for the data transfer (unused)
  */
 template <typename T>
-void device_unmap(T* ptr, device_ptr<T>& dptr, std::size_t, feed&)
+void device_unmap(T* ptr, device_ptr<T>& dptr,
+		std::size_t, feed& f)
 {
-	dptr.get_device().set();  
+	wait_for(f);	
+	return;
+}
+
+
+/**
+ * unmap memory that was previously mapped to to a device 
+ *
+ * @param ptr pointer to host memory that should be unmapped
+ * @param dptr device pointer corresponding to mapped region 
+ * @param size size of memory region that should be unmapped (unused)
+ * @param tag memory tag of the map 
+ * @param f feed that should be used for the data transfer (unused)
+ */
+template <typename T>
+void device_map_free(T* ptr, device_ptr<T>& dptr)
+{
+	dptr.get_device().set();
 	AURA_CUDA_SAFE_CALL(cuMemHostUnregister(ptr));
 	dptr.get_device().unset();  
-	dptr.invalidate();
+	dptr = nullptr;
 	return;
 }
 

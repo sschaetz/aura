@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cuda.h>
 #include <aura/backend/cuda/device.hpp>
+#include <aura/backend/shared/memory_tag.hpp>
 
 
 namespace aura {
@@ -26,13 +27,15 @@ public:
  /**
   * @brief create pointer that points nowhere
   */
-  device_ptr() : memory_(0), offset_(0), device_(nullptr) {}
+  device_ptr() : memory_(0), offset_(0), device_(nullptr), 
+	tag_(memory_tag::rw) {}
 
 
  /**
   * @brief create pointer that points nowhere
   */
-  device_ptr(std::nullptr_t) : memory_(0), offset_(0), device_(nullptr) {}
+  device_ptr(std::nullptr_t) : memory_(0), offset_(0), device_(nullptr), 
+	tag_(memory_tag::rw) {}
 
  /**
   * @brief create device pointer that points to memory
@@ -40,8 +43,8 @@ public:
   * @param m memory that identifies device memory
   * @param d device the memory is allocated on 
   */
-  device_ptr(backend_type & m, device & d) : 
-    memory_(m), offset_(0), device_(&d) {}
+  device_ptr(backend_type & m, device & d, memory_tag tag = memory_tag::rw) : 
+	  memory_(m), offset_(0), device_(&d), tag_(tag) {}
 
  /**
   * @brief create device pointer that points to memory
@@ -50,13 +53,15 @@ public:
   * @param o offset of memory object 
   * @param d device the memory is allocated on 
   */
-  device_ptr(const_backend_type & m, const std::size_t & o, device & d) :
-    memory_(m), offset_(o), device_(&d) {}
+  device_ptr(const_backend_type & m, const std::size_t & o, device & d, 
+		  memory_tag tag = memory_tag::rw) : 
+	  memory_(m), offset_(o), device_(&d), tag_(tag) {}
   
   void invalidate() {
     memory_ = 0;
     device_ = nullptr;
     offset_ = 0;
+    tag_ = memory_tag::rw;
   }
   
   /// returns a pointer to the device memory 
@@ -71,11 +76,15 @@ public:
   /// returns a pointer to the device memory 
   device & get_device() { return *device_; }
 
+  /// returns the memory tag
+  memory_tag get_memory_tag() const { return tag_; }
+
   /// assign operator
   device_ptr<T>& operator =(device_ptr<T> const & b) {
     memory_ = b.memory_;
     offset_ = b.offset_;
     device_ = b.device_;
+    tag_ = b.tag_;
     return *this;
   }
 
@@ -87,7 +96,7 @@ public:
  
   /// addition operator
   device_ptr<T> operator +(const std::size_t & b) const {
-    return device_ptr<T>(memory_, offset_+b, *device_);
+    return device_ptr<T>(memory_, offset_+b, *device_, tag_);
   }
 
   /// addition assignment operator
@@ -109,7 +118,7 @@ public:
  
   /// subtraction operator
   device_ptr<T> operator -(const std::size_t & b) const {
-    return device_ptr<T>(memory_, offset_-b, *device_);
+    return device_ptr<T>(memory_, offset_-b, *device_, tag_);
   }
 
   /// subtraction assignment operator
@@ -126,18 +135,20 @@ public:
 
   /// postfix subtraction operator
   device_ptr<T> operator --(int) {
-    return device_ptr<T>(memory_, offset_-1, *device_);
+    return device_ptr<T>(memory_, offset_-1, *device_, tag_);
   }
 
   /// equal to operator
   bool operator ==(const device_ptr<T> & b) const  {
     if(nullptr == device_ || nullptr == b.device_) {
       return (nullptr == device_ && nullptr == b.device_ && 
-        offset_ == b.offset_ && memory_ == b.memory_);
+        offset_ == b.offset_ && memory_ == b.memory_&&
+	tag_ = b.tag_);
     }
     else {
       return (device_->get_ordinal() == b.device_->get_ordinal() && 
-        offset_ == b.offset_ && memory_ == b.memory_);
+        offset_ == b.offset_ && memory_ == b.memory_ &&
+	tag_ = b.tag_);
     }
   }
   
@@ -167,6 +178,8 @@ private:
   /// reference to device the feed was created for
   device * device_;
 
+  /// read+write readonly writeonly?
+  memory_tag tag_;
 };
 
 /// equal to operator (reverse order)

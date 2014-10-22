@@ -63,17 +63,17 @@ void device_free(device_ptr<T> & ptr) {
 }
 
 /**
- * map host memory to a device and return a device ptr that can be
- * accessed from a kernel
+ * map host memory to device memory 
  *
  * @param ptr pointer to host memory
  * @param size number of T's that should be mapped
+ * @param tag memory tag of the map 
  * @param d device the memory should be mapped to
  *
  * @return device pointer corresponding to the mapped region
  */
 template <typename T>
-device_ptr<T> device_map(T* ptr, std::size_t size, 
+device_ptr<T> device_map_alloc(T* ptr, std::size_t size, 
 		memory_tag tag, device& d)
 {
 	int errorcode = 0;
@@ -92,11 +92,31 @@ device_ptr<T> device_map(T* ptr, std::size_t size,
 }
 
 /**
+ * remap previsouly created and unmapped map back to device memory
+ *
+ * @param ptr pointer to host memory
+ * @param dptr pointer to device memory
+ * @param size number of T's that should be mapped
+ * @param tag memory tag of the map 
+ * @param d device the memory should be mapped to
+ *
+ * @return device pointer corresponding to the mapped region
+ */
+template <typename T>
+device_ptr<T> device_remap(T* ptr, device_ptr<T> dptr, feed& f)
+{
+	AURA_OPENCL_SAFE_CALL(clEnqueueUnmapMemObject(f.get_backend_stream(), 
+				dptr.get(), ptr, 0, NULL, NULL));
+	return dptr;	
+}
+
+/**
  * unmap memory that was previously mapped to to a device 
  *
  * @param ptr pointer to host memory that should be unmapped
  * @param dptr device pointer corresponding to mapped region 
  * @param size size of memory region that should be unmapped
+ * @param tag memory tag of the map 
  * @param f feed that should be used for the data transfer
  */
 template <typename T>
@@ -104,18 +124,29 @@ void device_unmap(T* ptr, device_ptr<T>& dptr,
 		std::size_t size, feed& f) 
 {
 	int errorcode = 0;
-	void* r = clEnqueueMapBuffer(f.get_backend_stream(), dptr.get(),
-		CL_FALSE, CL_MAP_READ|CL_MAP_WRITE, dptr.get_offset(),
-		size*sizeof(T),
-		0, NULL, NULL, &errorcode);
-	// if this does not hold, we are in deep trouble
-	assert(r == (void*)ptr);
-	AURA_OPENCL_CHECK_ERROR(errorcode);
-	device_free(dptr);
+	// if the memory was mapped to the device for reading,
+	// nothing needs to be done
+	if (dptr.get_memory_tag() != memory_tag::ro) {
+		void* r = clEnqueueMapBuffer(f.get_backend_stream(), 
+				dptr.get(), CL_FALSE, 
+				CL_MAP_READ|CL_MAP_WRITE, 
+				dptr.get_offset(),
+				size*sizeof(T),
+				0, NULL, NULL, &errorcode);
+		// if this does not hold, we are in deep trouble
+		assert(r == (void*)ptr);
+		AURA_OPENCL_CHECK_ERROR(errorcode);
+	}
 	return;
 }
 
-
+template <typename T>
+void device_map_free(T* ptr, device_ptr<T>& dptr)
+{
+	device_free(dptr);
+	dptr = nullptr;
+	return;
+}
 /**
  * copy host to device memory
  *
