@@ -1,0 +1,36 @@
+import quickbook ;
+import boostbook ;
+import doxygen ;
+import modules ;
+
+xml aura 
+  :
+    aura.qbk
+  :
+  ;
+
+doxygen autodoc
+  :
+    ../include/aura/device_array.hpp
+  :
+    <doxygen:param>QUIET=YES
+    <doxygen:param>WARNINGS=YES
+    <doxygen:param>WARN_IF_DOC_ERROR=YES
+    <doxygen:param>EXTRACT_ALL=NO
+    <doxygen:param>EXTRACT_PRIVATE=NO
+    <doxygen:param>HIDE_UNDOC_MEMBERS=YES
+    <doxygen:param>HIDE_UNDOC_CLASSES=YES
+    <doxygen:param>EXPAND_ONLY_PREDEF=YES
+    <doxygen:param>SORT_MEMBER_DOCS=NO
+    <doxygen:param>TAB_SIZE=8
+    <xsl:param>"boost.doxygen.reftitle=Header Reference"
+  ;
+
+boostbook standalone
+    :
+      aura 
+    :
+      <xsl:param>html.stylesheet=boostbook.css
+      <dependency>autodoc
+    ;
+

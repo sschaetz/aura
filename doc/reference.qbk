@@ -1,0 +1,14 @@
+[section:reference Reference]
+
+[section API Overview]
+
+Header: `<aura/device_array.hpp>`
+
+* [classref aura::device_array device_array]
+
+[endsect] [/ overview]
+
+[xinclude autodoc.xml]
+
+[endsect] [/ reference ]
+

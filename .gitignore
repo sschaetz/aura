@@ -30,3 +30,11 @@ include/aura/config.hpp
 # astyle files
 *.orig
 
+# documentation
+doc/*.xml
+doc/bin
+doc/html
+
+# boost.build
+bin/
+
