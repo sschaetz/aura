@@ -19,7 +19,7 @@ typedef cl_kernel kernel;
  * @param m module that contains the kernel
  * @param kernel_name name of the kernel
  */
-kernel create_kernel(module m, const char * kernel_name) {
+inline kernel create_kernel(module m, const char * kernel_name) {
   int errorcode = 0;
   kernel k = clCreateKernel(m, kernel_name, &errorcode);
   AURA_OPENCL_CHECK_ERROR(errorcode);
@@ -32,7 +32,7 @@ kernel create_kernel(module m, const char * kernel_name) {
  * @param m the module that is built
  * @param d the device the module is built for
  */
-void print_module_build_log(module & m, device & d) {
+inline void print_module_build_log(module & m, device & d) {
   // from http://stackoverflow.com/a/9467325/244786
   // Determine the size of the log
   std::size_t log_size;

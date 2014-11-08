@@ -20,7 +20,7 @@ typedef cl_mem memory;
 /**
  * translates an Aura memory tag to an OpenCL memory tag
  */
-cl_mem_flags translate_memory_tag(memory_tag tag) 
+inline cl_mem_flags translate_memory_tag(memory_tag tag) 
 {
 	cl_mem_flags flag = CL_MEM_READ_WRITE;
 	if (tag == memory_tag::ro) {
@@ -31,7 +31,7 @@ cl_mem_flags translate_memory_tag(memory_tag tag)
 	return flag;
 }
 
-cl_mem_flags translate_memory_tag_inverted(memory_tag tag) 
+inline cl_mem_flags translate_memory_tag_inverted(memory_tag tag) 
 {
 	cl_mem_flags flag = CL_MEM_READ_WRITE;
 	if (tag == memory_tag::ro) {
@@ -100,7 +100,7 @@ device_ptr<T> device_map_alloc(T* ptr, std::size_t size,
 		memory_tag tag, device& d)
 {
 	int errorcode = 0;
-	cl_mem_flags flag = translate_memory_tag(tag) 
+	cl_mem_flags flag = translate_memory_tag(tag);
 	typename device_ptr<T>::backend_type m =
 		clCreateBuffer(d.get_backend_context(),
 		flag | CL_MEM_USE_HOST_PTR,
@@ -274,7 +274,7 @@ inline void copy(device_ptr<T> dst, const device_ptr<T> src,
  * @param size numter of bytes that should be allocated
  * @return pointer to allocated host memory
  */
-void * host_malloc(const std::size_t& size)
+inline void * host_malloc(const std::size_t& size)
 {
 	return malloc(size);
 }
@@ -284,7 +284,7 @@ void * host_malloc(const std::size_t& size)
  *
  * @param ptr the pointer that should be freed
  */
-void host_free(void* ptr)
+inline void host_free(void* ptr)
 {
 	free(ptr);
 }

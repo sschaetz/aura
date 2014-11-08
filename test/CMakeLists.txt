@@ -34,3 +34,6 @@ IF(${AURA_BACKEND} STREQUAL CUDA)
 	AURA_ADD_TEST(backend/p2p.cpp ${AURA_BACKEND_LIBRARIES})
 ENDIF()
 
+AURA_ADD_TEST(inlinefunctions.cpp inlinefunctions2.cpp 
+	${AURA_BACKEND_LIBRARIES})
+

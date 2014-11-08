@@ -31,7 +31,7 @@ cl_event get_event(mark& m);
 
 
 /// callback used to free event asynchronously
-void CL_CALLBACK delete_event_callback__(cl_event event, 
+inline void CL_CALLBACK delete_event_callback__(cl_event event, 
 		cl_int event_command_exec_status, void* event_ptr) 
 {
 	AURA_OPENCL_SAFE_CALL(clReleaseEvent(event));
@@ -156,7 +156,7 @@ friend void wait_for(mark & m);
 };
 
 /// insert marker into feed
-void insert(feed & f, mark & m) 
+inline void insert(feed & f, mark & m) 
 {
 	m.finalize();
 	m.event_ = new cl_event;
@@ -174,7 +174,7 @@ void insert(feed & f, mark & m)
 }
 
 
-void wait_for(mark & m) 
+inline void wait_for(mark & m) 
 {
 	AURA_OPENCL_SAFE_CALL(clWaitForEvents(1, m.event_));
 }

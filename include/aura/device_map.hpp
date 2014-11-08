@@ -7,36 +7,11 @@
 #include <boost/any.hpp>
 #include <aura/backend.hpp>
 #include <aura/error.hpp>
+#include <aura/detail/addressof.hpp>
+#include <aura/detail/size.hpp>
 
 namespace aura {
 
-/// get the starting address of a contiguous block of memory
-template <typename T, typename Allocator>
-T* addressof(std::vector<T, Allocator>& vec)
-{
-	return &vec[0];
-}
-
-/// get the starting address of a contiguous block of memory
-template <typename T>
-T* addressof(T* hptr)
-{
-	return hptr;
-}
-
-/// get the size of a contiguous block of memory
-template <typename T, typename Allocator>
-std::size_t size(std::vector<T, Allocator>& vec)
-{
-	return vec.size();
-}
-
-/// get the size of a contiguous block of memory
-template <typename T>
-std::size_t size(T* hptr)
-{
-	AURA_ERROR("a pointer does not define a range");
-}
 
 /// forward declaration
 template <typename T>

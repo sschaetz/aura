@@ -9,7 +9,7 @@ FUNCTION(AURA_ADD_TARGET TARGET_NAME FIRST_SOURCE_FILENAME)
   SET(EXECUTABLE_DEPENDENCIES "")
   FOREACH(ARG ${ARGN})
     # check if source file, kernel file or library
-    IF(${ARG} MATCHES "^[a-z/_]*.cpp$")
+    IF(${ARG} MATCHES "^[a-z/_0-9]*.cpp$")
       SET(EXECUTABLE_SOURCE_FILES ${EXECUTABLE_SOURCE_FILES} ${ARG})
     ELSEIF(${ARG} MATCHES "^[a-z/_]*.cu$" OR ${ARG} MATCHES "^[a-z/_]*.cc$")
       IF(AURA_BACKEND_CUDA) 

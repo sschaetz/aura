@@ -20,7 +20,7 @@ namespace opencl {
 
 namespace detail {
 
-void invoke_impl(kernel & k, const mesh & m, const bundle & b, 
+inline void invoke_impl(kernel & k, const mesh & m, const bundle & b, 
 	const args_t & a, feed & f) 
 {
 	// set parameters
@@ -59,7 +59,7 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
 	free(a.first);
 } 
 
-void invoke_impl(kernel & k, const bounds& b, const args_t & a, feed & f)
+inline void invoke_impl(kernel & k, const bounds& b, const args_t & a, feed & f)
 {
 	// set parameters
 	for (std::size_t i=0; i<a.second.size(); i++) {
@@ -100,20 +100,20 @@ void invoke_impl(kernel & k, const bounds& b, const args_t & a, feed & f)
 
 
 /// invoke kernel without args
-void invoke(kernel & k, const mesh & m, const bundle & b, feed & f) 
+inline void invoke(kernel & k, const mesh & m, const bundle & b, feed & f) 
 {
 	detail::invoke_impl(k, m, b, args_t(), f);
 }
 
 /// invoke kernel with args
-void invoke(kernel & k, const mesh & m, const bundle & b, 
+inline void invoke(kernel & k, const mesh & m, const bundle & b, 
 		const args_t & a, feed & f) 
 {
 	detail::invoke_impl(k, m, b, a, f);
 }
 
 /// invoke kernel with bounds and args
-void invoke(kernel& k, const bounds& b, const args_t& a, feed& f) 
+inline void invoke(kernel& k, const bounds& b, const args_t& a, feed& f) 
 {
 	detail::invoke_impl(k, b, a, f);
 }

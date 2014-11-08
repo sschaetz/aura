@@ -75,8 +75,8 @@ MESSAGE(STATUS "Using ${AURA_BACKEND} backend")
 SET(CMAKE_CXX_FLAGS "-Wall -std=c++0x -g")
 
 # used for OpenCL kernels that need to have the include dirs at runtime
-ADD_DEFINITIONS(-DAURA_BACKEND_COMPILE_FLAGS= 
-  "-I${PROJECT_SOURCE_DIR}/include/ -I${CMAKE_BINARY_DIR}")
+ADD_DEFINITIONS(-DAURA_BACKEND_COMPILE_FLAGS=""
+	"-I${PROJECT_SOURCE_DIR}/include/ -I${CMAKE_BINARY_DIR}")
 
 # used for unittests to find the kernels
 ADD_DEFINITIONS(-DAURA_UNIT_TEST_LOCATION="${CMAKE_BINARY_DIR}/test/")

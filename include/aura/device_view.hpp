@@ -7,36 +7,11 @@
 #include <boost/any.hpp>
 #include <aura/backend.hpp>
 #include <aura/error.hpp>
+#include <aura/detail/addressof.hpp>
+#include <aura/detail/size.hpp>
 
 namespace aura {
 
-/// get the starting address of a contiguous block of memory
-template <typename T, typename Allocator>
-T* addressof(std::vector<T, Allocator>& vec)
-{
-	return &vec[0];
-}
-
-/// get the starting address of a contiguous block of memory
-template <typename T>
-T* addressof(T* hptr)
-{
-	return hptr;
-}
-
-/// get the size of a contiguous block of memory
-template <typename T, typename Allocator>
-std::size_t size(std::vector<T, Allocator>& vec)
-{
-	return vec.size();
-}
-
-/// get the size of a contiguous block of memory
-template <typename T>
-std::size_t size(T* hptr)
-{
-	AURA_ERROR("a pointer does not define a range");
-}
 
 /// forward declaration
 template <typename T>
@@ -47,7 +22,7 @@ template <typename T, typename C>
 device_view<T> map(C& c, device& d)
 {
 	device_view<T> r;
-	r.ptr_ = device_map(addressof(c), size(c), d);
+	r.ptr_ = device_map<T>(addressof(c), size(c), d);
 	r.hptr_ = addressof(c);
 	r.size_ = size(c);
 	r.moved_from_obj_ = std::move(c);
@@ -85,7 +60,7 @@ public:
 	/// construct a device_view on a C
 	template <typename C> 
 	device_view(C& c, device& d) : 
-		ptr_(device_map(addressof(c), size(c), d)),
+		ptr_(device_map<T>(addressof(c), size(c), d)),
 		hptr_(addressof(c)),
 		size_(size(c)),
 		moved_from_obj_(std::move(c))
@@ -94,7 +69,8 @@ public:
 	/// construct a device_view on a range of Cs
 	template <typename C> 
 	device_view(C& start, C& end, device& d) : 
-		ptr_(device_map(addressof(start), std::distance(start,end), d)),
+		ptr_(device_map<T>(addressof(start), 
+					std::distance(start,end), d)),
 		hptr_(addressof(start)),
 		size_(std::distance(start,end)),
 		moved_from_obj_(std::move(std::tuple<C,C>(start,end)))

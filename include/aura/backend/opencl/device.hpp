@@ -187,7 +187,7 @@ DEPRECATED(void print_device_info());
 #include <aura/backend/shared/device_info.hpp>
 
 /// return the device info 
-device_info device_get_info(device & d) {
+inline device_info device_get_info(device & d) {
   device_info di;
 
   // name and vendor
