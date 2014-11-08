@@ -36,7 +36,7 @@ std::vector<float> src(product(bounds(40, 20)));
 device d(0);
 device_array<float> dst(bounds(40, 20), d);
 feed f(d);
-copy(dst, src, f);
+copy(src, dst, f);
 f.wait(); /* blocking until copy finished */
 wait_for(f); /* alternative to f.wait(); */
 ~~~
@@ -44,8 +44,8 @@ wait_for(f); /* alternative to f.wait(); */
 The `copy` function is the only function required to transfer data between host and accelerator and between accelerators. Since the compiler can discriminate between accelerator and host memory, the correct `copy` function is dispatched at compile time. Both an iterator/pointer based and a range based interface are supported.
 
 ~~~{.cpp}
-copy(dst.begin(), dst.end(), src.begin(), f);
-copy(dst, src, f);
+copy(src.begin(), src.end(), dst.begin(), f);
+copy(src, dst, f);
 ~~~
 
 Both CUDA and OpenCL define the number of accelerator threads for each kernel invocation. These threads can be partitioned into groups that communicate among themselves to some degree. How the total number of running threads is calculated is different in CUDA and OpenCL. The following table shows that CUDA calculates the size of the kernel space as level 1 partitioning times level 2 partitioning. In OpenCL, the kernel space and the level 3 partitioning are equivalent. The table further shows the nomenclature proposed in the Aura library. 
