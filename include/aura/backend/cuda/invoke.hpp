@@ -18,7 +18,7 @@ namespace cuda {
 
 namespace detail {
 
-void invoke_impl(kernel & k, const mesh & m, const bundle & b, 
+inline void invoke_impl(kernel & k, const mesh & m, const bundle & b, 
 		const args_t & a, feed & f) 
 {
 	// handling for non 3-dimensional mesh and bundle sizes
@@ -53,7 +53,7 @@ void invoke_impl(kernel & k, const mesh & m, const bundle & b,
 	free(a.first);
 }
 
-void invoke_impl(kernel & k, const ::aura::bounds& b, 
+inline void invoke_impl(kernel & k, const ::aura::bounds& b, 
 		const args_t & a, feed & f) 
 {
 	std::array<std::size_t, 4> mb = {{1, 1, 1, 1}};
@@ -79,20 +79,20 @@ void invoke_impl(kernel & k, const ::aura::bounds& b,
 } // namespace detail
 
 /// invoke kernel without args
-void invoke(kernel& k, const mesh& m, const bundle& b, feed& f) 
+inline void invoke(kernel& k, const mesh& m, const bundle& b, feed& f) 
 {
 	detail::invoke_impl(k, m, b, args_t(), f);
 }
 
 /// invoke kernel with args
-void invoke(kernel& k, const mesh& m, const bundle& b, 
+inline void invoke(kernel& k, const mesh& m, const bundle& b, 
 		const args_t& a, feed& f) 
 {
 	detail::invoke_impl(k, m, b, a, f);
 }
 
 /// invoke kernel with bounds and args
-void invoke(kernel& k, const bounds& b, const args_t& a, feed& f) 
+inline void invoke(kernel& k, const bounds& b, const args_t& a, feed& f) 
 {
 	detail::invoke_impl(k, b, a, f);
 }

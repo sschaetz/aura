@@ -92,11 +92,20 @@ public:
 	/**
 	 * @brief add element to vector and increment size
 	 */
-	void push_back(const T & e) 
+	void push_back(const T& e) 
 	{
 		assert(size_+1 <= max_size_);
 		data_[size_] = e;
 		size_++;
+	}
+
+	/**
+	 * @brief return last element from vector and decrement size
+	 */
+	T pop_back() 
+	{
+		size_--;
+		return data_[size_];
 	}
 
 	/**
@@ -147,6 +156,24 @@ public:
 	operator T() 
 	{
 		return product(*this);			
+	}
+
+	/**
+	 * equal to
+	 */
+	bool operator==(const svec<T, AURA_SVEC_MAX_SIZE>& b)
+	{
+		return size_ == b.size_ && 
+			std::equal(data_.begin(), data_.begin()+size_, 
+					b.data_.begin());
+	}
+	
+	/**
+	 * not equal to
+	 */
+	bool operator!=(const svec<T, AURA_SVEC_MAX_SIZE>& b)
+	{
+		return !(*this == b);
 	}
 
 private:

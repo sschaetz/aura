@@ -272,7 +272,7 @@ inline void copy(device_ptr<T> dst, const device_ptr<T> src,
  * @param size numter of bytes that should be allocated
  * @return pointer to allocated host memory
  */
-void * host_malloc(const std::size_t& size)
+inline void * host_malloc(const std::size_t& size)
 {
 	void * ptr;
 	AURA_CUDA_SAFE_CALL(cuMemHostAlloc(&ptr,
@@ -285,7 +285,7 @@ void * host_malloc(const std::size_t& size)
  *
  * @param ptr the pointer that should be freed
  */
-void host_free(void* ptr)
+inline void host_free(void* ptr)
 {
 	AURA_CUDA_SAFE_CALL(cuMemFreeHost(ptr));
 }

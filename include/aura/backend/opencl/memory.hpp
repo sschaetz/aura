@@ -17,7 +17,30 @@ namespace opencl {
 /// memory handle
 typedef cl_mem memory;
 
+/**
+ * translates an Aura memory tag to an OpenCL memory tag
+ */
+cl_mem_flags translate_memory_tag(memory_tag tag) 
+{
+	cl_mem_flags flag = CL_MEM_READ_WRITE;
+	if (tag == memory_tag::ro) {
+		flag = CL_MEM_READ_ONLY;
+	} else if (tag == memory_tag::ro) {
+		flag = CL_MEM_WRITE_ONLY;
+	}
+	return flag;
+}
 
+cl_mem_flags translate_memory_tag_inverted(memory_tag tag) 
+{
+	cl_mem_flags flag = CL_MEM_READ_WRITE;
+	if (tag == memory_tag::ro) {
+		flag = CL_MEM_WRITE_ONLY;
+	} else if (tag == memory_tag::ro) {
+		flag = CL_MEM_READ_ONLY;
+	}
+	return flag;
+}
 /**
  * allocate device memory
  *
@@ -77,12 +100,7 @@ device_ptr<T> device_map_alloc(T* ptr, std::size_t size,
 		memory_tag tag, device& d)
 {
 	int errorcode = 0;
-	cl_mem_flags flag = CL_MEM_READ_WRITE;
-	if (tag == memory_tag::ro) {
-		flag = CL_MEM_READ_ONLY;
-	} else if (tag == memory_tag::ro) {
-		flag = CL_MEM_WRITE_ONLY;
-	}
+	cl_mem_flags flag = translate_memory_tag(tag) 
 	typename device_ptr<T>::backend_type m =
 		clCreateBuffer(d.get_backend_context(),
 		flag | CL_MEM_USE_HOST_PTR,

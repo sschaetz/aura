@@ -116,7 +116,7 @@ friend void wait_for(mark & m);
 };
 
 /// insert marker into feed
-void insert(feed & f, mark & m) 
+inline void insert(feed & f, mark & m) 
 {
 	m.finalize();
 	m.event_ = new CUevent;
@@ -128,7 +128,7 @@ void insert(feed & f, mark & m)
 }
 
 
-void wait_for(mark & m) 
+inline void wait_for(mark & m) 
 {
 	AURA_CUDA_SAFE_CALL(cuEventSynchronize(*m.event_));
 

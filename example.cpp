@@ -13,10 +13,10 @@ int main(void)
 	std::vector<float> hvec(product(bounds(x, y)), 42.);
 	aura::device_array<float> dvec(bounds(x, y), d);
 	
-	aura::copy(dvec, hvec, f);
+	aura::copy(hvec, dvec, f);
 	aura::invoke(k, mesh(y, x), bundle(x), 
 			args(dvec.begin_ptr, .1), f);
-	aura::copy(hvec, dvec, f);
+	aura::copy(dvec, hvec, f);
 	aura::wait_for(f);
 	// hvec contains 4.2 in each element
 }

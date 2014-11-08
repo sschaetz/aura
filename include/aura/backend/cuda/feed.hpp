@@ -171,7 +171,7 @@ private:
  *
  * @param f the feed to wait for
  */
-void wait_for(feed & f)
+inline void wait_for(feed & f)
 {
 	f.synchronize();
 }

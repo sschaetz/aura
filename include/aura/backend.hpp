@@ -4,8 +4,7 @@
 
 #include <aura/config.hpp>
 
-#if AURA_BACKEND_CUDA
-
+#if defined AURA_BACKEND_CUDA
 	#if defined __CUDACC__
 		#include <aura/backend/cuda/kernel_helper.hpp>
 	#else
@@ -26,7 +25,7 @@
 		#include <aura/backend/cuda/p2p.hpp>
 	#endif // defined __CUDACC__
 
-#elif AURA_BACKEND_OPENCL
+#elif defined AURA_BACKEND_OPENCL
 
 	#if defined __OPENCL_VERSION__
 		#include <aura/backend/opencl/kernel_helper.hpp>
@@ -56,7 +55,11 @@
 
 namespace aura {
 
-namespace backend = backend_detail::AURA_BACKEND_LC;
+#ifdef AURA_BACKEND_CUDA
+namespace backend = backend_detail::cuda;
+#elif AURA_BACKEND_OPENCL
+namespace backend = backend_detail::opencl;
+#endif
 
 using backend::initialize;
 

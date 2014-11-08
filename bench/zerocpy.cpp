@@ -56,10 +56,10 @@ void bench_compute_copy(std::vector<float>& hsrc,
 		kernel& k,
 		feed& f)
 {
-	aura::copy(src, hsrc, f);
+	aura::copy(hsrc, src, f);
 	invoke(k, bounds(src.size()), args(dst.begin_ptr(), 
 				src.begin().get()), f);
-	aura::copy(hdst, dst, f);
+	aura::copy(dst, hdst, f);
 	wait_for(f);
 }
 
@@ -121,9 +121,9 @@ inline void run_tests(std::vector<svec<std::size_t, 1>> sizes,
 		device_array<float> src(s[0], d);
 		device_array<float> dst(s[0], d);
 		
-		copy(src, hsrc, f);
+		copy(hsrc, src, f);
 		bench_compute_only(src, dst, k, f);
-		copy(hdst, dst, f);
+		copy(dst, hdst, f);
 		wait_for(f);
 		if (!std::equal(hsrc.begin(), hsrc.end(), hdst.begin())) {
 			std::cout << "compute_only FAILED" << std::endl;

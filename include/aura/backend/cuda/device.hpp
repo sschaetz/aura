@@ -177,7 +177,7 @@ inline std::size_t device_get_total_memory(device &d) {
 #include <aura/backend/shared/device_info.hpp>
 
 /// return the device info 
-device_info device_get_info(device & d) {
+inline device_info device_get_info(device & d) {
   device_info di;
   // name and vendor
   AURA_CUDA_SAFE_CALL(cuDeviceGetName(di.name, sizeof(di.name)-1,

@@ -24,8 +24,13 @@ AURA_ADD_TEST(misc/profile.cpp pthread)
 ADD_LIBRARY(cprofile ${PROJECT_SOURCE_DIR}/source/misc/cprofile.cpp)
 AURA_ADD_TEST(misc/cprofile.c cprofile pthread)
 AURA_ADD_TEST(misc/sequence.cpp)
+AURA_ADD_TEST(misc/coo.cpp)
 
 AURA_ADD_TEST(device_array.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(device_buffer.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(usingdirective.cpp ${AURA_BACKEND_LIBRARIES})
+
+IF(${AURA_BACKEND} STREQUAL CUDA)
+	AURA_ADD_TEST(backend/p2p.cpp ${AURA_BACKEND_LIBRARIES})
+ENDIF()
 

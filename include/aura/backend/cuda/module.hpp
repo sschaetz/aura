@@ -24,7 +24,7 @@ typedef CUmodule module;
  *
  * @return module reference to compiled module
  */
-module create_module_from_string(const char* str, device & d, 
+inline module create_module_from_string(const char* str, device & d, 
   const char * build_options=NULL) {
   
   // build for device by setting context and JIT argument
@@ -55,7 +55,7 @@ module create_module_from_string(const char* str, device & d,
  *
  * @return module reference to compiled module
  */
-module create_module_from_file(const char* filename, device & d, 
+inline module create_module_from_file(const char* filename, device & d, 
 		const char * build_options=NULL) {
 	
 	std::ifstream in(filename, std::ios::in);

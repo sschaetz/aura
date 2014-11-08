@@ -19,7 +19,7 @@ namespace detail {
  * FIXME this function ant its use is not implemented in a 
  * general way regarding the mask, but it is ok for now
  */
-void calc_mesh_bundle(std::size_t v, std::size_t f, 
+inline void calc_mesh_bundle(std::size_t v, std::size_t f, 
 		std::array<std::size_t, 4>::iterator i,
 		std::array<std::size_t, 4>::const_iterator b,
 		std::array<bool, 4>::const_iterator m)
