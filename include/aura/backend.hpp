@@ -74,9 +74,9 @@ using backend::wait_for;
 
 using backend::device_ptr;
 
-}
+} // namespace aura
 
-#endif
+#endif // !defined __OPENCL_VERSION__ && !defined __CUDACC__
 
 #endif // AURA_BACKEND_HPP
 

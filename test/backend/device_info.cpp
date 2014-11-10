@@ -10,7 +10,8 @@ using namespace aura::backend;
 // basic
 // _____________________________________________________________________________
 
-BOOST_AUTO_TEST_CASE(basic) {
+BOOST_AUTO_TEST_CASE(basic) 
+{
   initialize();
   print_device_info();
 }
@@ -18,7 +19,8 @@ BOOST_AUTO_TEST_CASE(basic) {
 // extended 
 // _____________________________________________________________________________
 
-BOOST_AUTO_TEST_CASE(extended) {
+BOOST_AUTO_TEST_CASE(extended) 
+{
   initialize();
   device d(0);
   device_info di = device_get_info(d);

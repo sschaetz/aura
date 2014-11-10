@@ -9,6 +9,7 @@ IF(NOT ${AURA_FFT_LIBRARIES} STREQUAL "")
 		${AURA_BACKEND_LIBRARIES} ${AURA_FFT_LIBRARIES})
 ENDIF()
 
+AURA_ADD_TEST(backend/host_allocator.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/host_memory.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/kernel.cpp backend/kernel.cc 
 	${AURA_BACKEND_LIBRARIES})

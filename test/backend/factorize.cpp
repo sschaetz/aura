@@ -10,7 +10,8 @@
 // basic_cuda
 // _____________________________________________________________________________
 
-BOOST_AUTO_TEST_CASE(basic_cuda) {
+BOOST_AUTO_TEST_CASE(basic_cuda) 
+{
 	const std::array<std::size_t, 4> max_mb = {{
 		AURA_CUDA_MAX_BUNDLE, 
 		AURA_CUDA_MAX_MESH0, 
@@ -44,7 +45,8 @@ BOOST_AUTO_TEST_CASE(basic_cuda) {
 // _____________________________________________________________________________
 
 
-BOOST_AUTO_TEST_CASE(basic_opencl) {
+BOOST_AUTO_TEST_CASE(basic_opencl) 
+{
 
 	const std::array<std::size_t, 4> max_mb = {{
 		256, 

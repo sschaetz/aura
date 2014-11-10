@@ -31,13 +31,13 @@ inline cl_mem_flags translate_memory_tag(memory_tag tag)
 	return flag;
 }
 
-inline cl_mem_flags translate_memory_tag_inverted(memory_tag tag) 
+inline cl_map_flags translate_map_tag_inverted(memory_tag tag) 
 {
-	cl_mem_flags flag = CL_MEM_READ_WRITE;
+	cl_mem_flags flag = CL_MAP_READ | CL_MAP_WRITE;
 	if (tag == memory_tag::ro) {
-		flag = CL_MEM_WRITE_ONLY;
+		flag = CL_MAP_WRITE;
 	} else if (tag == memory_tag::ro) {
-		flag = CL_MEM_READ_ONLY;
+		flag = CL_MAP_READ;
 	}
 	return flag;
 }

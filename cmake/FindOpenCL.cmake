@@ -57,6 +57,7 @@ ELSE (APPLE)
 	    "/opt/intel/*/lib64/"
 	    "/usr/lib/x86_64-linux-gnu/"
 	    "/opt/intel/intel-opencl-1.2-4.6.0.92/opencl/lib64"
+	    "/opt/AMDAPPSDK-2.9-1/lib/x86_64" 
 	    )
 
 	GET_FILENAME_COMPONENT(OPENCL_LIB_DIR ${OPENCL_LIBRARIES} PATH)
