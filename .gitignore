@@ -24,9 +24,6 @@ a.out
 # vim files
 *.swp
 
-# project files
-include/aura/config.hpp
-
 # astyle files
 *.orig
 

@@ -23,6 +23,7 @@
 		#include <aura/backend/cuda/memory.hpp>
 		#include <aura/backend/cuda/module.hpp>
 		#include <aura/backend/cuda/p2p.hpp>
+		#include <aura/backend/cuda/detail/host_allocator.hpp>
 	#endif // defined __CUDACC__
 
 #elif defined AURA_BACKEND_OPENCL
@@ -46,6 +47,7 @@
 		#include <aura/backend/opencl/mark.hpp>
 		#include <aura/backend/opencl/memory.hpp>
 		#include <aura/backend/opencl/module.hpp>
+		#include <aura/backend/opencl/detail/host_allocator.hpp>
 	#endif // defined __OPENCL_VERSION__
 
 #endif
@@ -75,6 +77,8 @@ using backend::wait_for;
 using backend::device_ptr;
 
 } // namespace aura
+
+#include <aura/detail/host_allocator_traits.hpp>
 
 #endif // !defined __OPENCL_VERSION__ && !defined __CUDACC__
 
