@@ -176,10 +176,10 @@ private:
   type type_;
 
   template <typename T1, typename T2>
-  friend void fft_forward(device_ptr<T1> dst, device_ptr<T2> src, 
+  friend void fft_forward(device_ptr<T2> src, device_ptr<T1> dst,
     fft & plan, const feed & f); 
   template <typename T1, typename T2>
-  friend void fft_inverse(device_ptr<T1> dst, device_ptr<T2> src, 
+  friend void fft_inverse(device_ptr<T2> src, device_ptr<T1> dst,
     fft & plan, const feed & f); 
 };
 
@@ -199,7 +199,7 @@ inline void fft_terminate() {
  * @param f feed the fourier transform should be calculated in
  */
 template <typename T1, typename T2>
-void fft_forward(device_ptr<T1> dst, device_ptr<T2> src, 
+void fft_forward(device_ptr<T2> src, device_ptr<T1> dst,
   fft & plan, const feed & f) {
   plan.context_->set();
   plan.set_feed(f);
@@ -264,7 +264,7 @@ void fft_forward(device_ptr<T1> dst, device_ptr<T2> src,
  * @param f feed the fourier transform should be calculated in
  */
 template <typename T1, typename T2>
-void fft_inverse(device_ptr<T1> dst, device_ptr<T2> src, 
+void fft_inverse(device_ptr<T2> src, device_ptr<T1> dst,
   fft & plan, const feed & f) {
   plan.context_->set();
   plan.set_feed(f);

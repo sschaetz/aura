@@ -17,17 +17,17 @@ using backend::fft_forward;
 using backend::fft_inverse;
 
 template <typename T1, typename T2>
-void fft_forward(device_array<T1> & dst, device_array<T2> & src,
+void fft_forward(device_array<T2> & src, device_array<T1> & dst,
 		fft& plan, const feed& f)
 {
-	fft_forward<T1, T2>(dst.begin(), src.begin(), plan, f);
+	fft_forward<T1, T2>(src.begin(), dst.begin(), plan, f);
 }
 
 template <typename T1, typename T2>
-void fft_inverse(device_array<T1> & dst, device_array<T2> & src,
+void fft_inverse(device_array<T2> & src, device_array<T1> & dst,
 		fft& plan, const feed& f)
 {
-	fft_inverse<T1, T2>(dst.begin(), src.begin(), plan, f);
+	fft_inverse<T1, T2>(src.begin(), dst.begin(), plan, f);
 }
 
 } // aura

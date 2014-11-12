@@ -273,7 +273,7 @@ void bench_fft(std::vector<device_ptr<cfloat> >& fftmem1,
 		std::vector<fft> & ffth, 
 		std::vector<feed> & feeds1) {
 	for(std::size_t n = 0; n<feeds1.size(); n++) {
-		fft_forward(fftmem1[n], fftmem2[n], ffth[n], feeds1[n]);
+		fft_forward(fftmem2[n], fftmem1[n], ffth[n], feeds1[n]);
 	}
 	std::for_each(feeds1.begin(), feeds1.end(), &wait_for_feed);
 }
@@ -300,7 +300,7 @@ void bench_p2p_fft(std::vector<device_ptr<cfloat> > & p2pmem1,
 
 	}
 	for(std::size_t n = 0; n<feeds1.size(); n++) {
-		fft_forward(fftmem1[n], fftmem2[n], ffth[n], feeds2[n]);
+		fft_forward(fftmem2[n], fftmem1[n], ffth[n], feeds2[n]);
 	}
 	std::for_each(feeds1.begin(), feeds1.end(), &wait_for_feed);
 	std::for_each(feeds2.begin(), feeds2.end(), &wait_for_feed);

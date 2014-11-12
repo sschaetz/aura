@@ -57,7 +57,7 @@ void run_fwdop(std::vector<device_ptr<cfloat> > & mem1,
     std::vector<fft> & ffth, 
     std::vector<feed> & feeds) {
   for(std::size_t n = 0; n<feeds.size(); n++) {
-    fft_forward(mem1[n], mem2[n], ffth[n], feeds[n]);
+    fft_forward(mem2[n], mem1[n], ffth[n], feeds[n]);
   }
   std::for_each(feeds.begin(), feeds.end(), &wait_for_feed);
 }
@@ -67,7 +67,7 @@ void run_invop(std::vector<device_ptr<cfloat> > & mem1,
     std::vector<fft> & ffth, 
     std::vector<feed> & feeds) {
   for(std::size_t n = 0; n<feeds.size(); n++) {
-    fft_inverse(mem1[n], mem2[n], ffth[n], feeds[n]);
+    fft_inverse(mem2[n], mem1[n], ffth[n], feeds[n]);
   }
   std::for_each(feeds.begin(), feeds.end(), &wait_for_feed);
 }

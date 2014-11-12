@@ -19,6 +19,7 @@ void generate_data()
 
 int main(void)
 {
+	initialize();
 	generate_data();
 
 	// -----
