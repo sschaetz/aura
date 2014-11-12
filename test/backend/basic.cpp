@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(basic)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_CHECK_ASSERT(0 < num);
+	BOOST_REQUIRE(num > 0);
 	device d(0);  
 	feed f(d);
 }
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(memorypingpong)
 	initialize();
 
 	int num = device_get_count();
-	BOOST_CHECK_ASSERT(0 < num);
+	BOOST_REQUIRE(0 < num);
 
 	device d(0);  
 	feed f(d);

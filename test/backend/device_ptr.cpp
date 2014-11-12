@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(basic)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_CHECK_ASSERT(0 < num);
+	BOOST_REQUIRE(0 < num);
 	device d(0);  
 	feed f(d);
 	device_ptr<float> ptr1 = device_malloc<float>(15, d);
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(allocation_free)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_CHECK_ASSERT(0 < num);
+	BOOST_REQUIRE(0 < num);
 	device d(0);  
 	feed f(d);
 	device_ptr<float> ptr1= device_malloc<float>(16, d);

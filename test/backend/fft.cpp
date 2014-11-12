@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(basic)
 	initialize();
 	fft_initialize(); 
 	int num = device_get_count();
-	BOOST_CHECK_ASSERT(0 < num);
+	BOOST_REQUIRE(0 < num);
 	assert(samples == sizeof(signal) / sizeof(signal[0]));
 
 	std::vector<cfloat> input(signal, signal+samples);
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(batched_1d)
 	initialize();
 	fft_initialize(); 
 	int num = device_get_count();
-	BOOST_CHECK_ASSERT(0 < num);
+	BOOST_REQUIRE(0 < num);
 	assert(samples == sizeof(signal) / sizeof(signal[0]));
 
 	std::vector<cfloat> input(samples*batchsize, cfloat(0.0));

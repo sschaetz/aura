@@ -11,7 +11,7 @@ using namespace aura::backend;
 BOOST_AUTO_TEST_CASE(basic) {
 	initialize();
 	int num = device_get_count();
-	BOOST_CHECK_ASSERT(0 < num);
+	BOOST_REQUIRE(0 < num);
 	device d(0);
 	float* ptr1 = (float*)host_malloc(5*sizeof(float));
 	host_free((void*)ptr1);

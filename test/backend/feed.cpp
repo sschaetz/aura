@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(pin_unpin)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_CHECK_ASSERT(0 < num);
+	BOOST_REQUIRE(0 < num);
 	device d0(0);  
 	feed f0(d0);
 	device d1(1);  
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(multiple)
 	int testsize = 512; 
 	initialize();
 	int num = device_get_count();
-	BOOST_CHECK_ASSERT(0 < num);
+	BOOST_REQUIRE(0 < num);
 	device d0(0);  
 	feed f0(d0);
 	device d1(1);  
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(multiple_vector)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_CHECK_ASSERT(0 < num);
+	BOOST_REQUIRE(0 < num);
 	std::vector<device> devices;
 	std::vector<feed> feeds;
 	for(int n=0; n<num; n++) {

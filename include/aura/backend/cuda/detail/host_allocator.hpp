@@ -1,6 +1,7 @@
 #ifndef AURA_BACKEND_CUDA_DETAIL_HOST_ALLOCATOR_HPP
 #define AURA_BACKEND_CUDA_DETAIL_HOST_ALLOCATOR_HPP
 
+#include <map>
 #include <aura/backend/cuda/feed.hpp>
 
 namespace aura
@@ -25,7 +26,7 @@ public:
 	/// create allocator
 	typedef T value_type;
 	host_allocator(feed& f, memory_tag mt = memory_tag::rw) : 
-		f_(&f), mt_(mt), map_(other.map_)
+		f_(&f), mt_(mt)
 	{}
 
 	/// copy construct allocator
@@ -37,24 +38,27 @@ public:
 	/// allocate memory
 	T* allocate(std::size_t n)
 	{
-		void* ptr;
-		f->set();  
-		AURA_CUDA_SAFE_CALL(cuMemAllocHost(&ptr, n*sizeof(T)));
-		f->unset();
+		void* p;
+		f_->set();  
+		AURA_CUDA_SAFE_CALL(cuMemAllocHost(&p, n*sizeof(T)));
+		// put raw pointer and memory handle in the map
+		unmap((T*)p);
+		f_->unset();
+		return (T*)p;
 	}
 
 	/// free memory
 	void deallocate(T* p, std::size_t n)
 	{
-		f->set();  
-		AURA_CUDA_SAFE_CALL(cuMemFreeHost(ptr));
-		f->unset();
+		f_->set();  
+		AURA_CUDA_SAFE_CALL(cuMemFreeHost(p));
+		f_->unset();
 	}
 
 	/// map CUDA memory buffer into host memory space
 	T* map(memory m)
 	{
-		return map_[m];
+		return (T*)map_[m];
 	}
 
 
@@ -62,10 +66,10 @@ public:
 	memory unmap(T* p)
 	{
 		memory m;
-		f->set();  
+		f_->set();  
 		AURA_CUDA_SAFE_CALL(cuMemHostGetDevicePointer(&m, (void*)p, 0));
 		map_[m] = p;
-		f->unset();
+		f_->unset();
 		return m;
 	}
 
@@ -75,7 +79,7 @@ private:
 	/// should memory be read/written by device
 	memory_tag mt_;
 	/// maps device pointer to host memory
-	bimap_t map_;
+	map_t map_;
 
 public:
 	template <typename U, typename V>
@@ -104,8 +108,6 @@ bool operator!=(const host_allocator<U>& lhs, const host_allocator<V>& rhs)
 } // backend_detail
 } // aura
 
-
-} // namespace std
 
 #endif // AURA_BACKEND_CUDA_DETAIL_FEED_MARKER_HELPER_HPP
 

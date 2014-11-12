@@ -56,8 +56,9 @@ inline module create_module_from_string(const char* str, device & d,
  * @return module reference to compiled module
  */
 inline module create_module_from_file(const char* filename, device & d, 
-		const char * build_options=NULL) {
-	
+		const char * build_options=NULL) 
+{
+	std::cout << filename << std::endl;	
 	std::ifstream in(filename, std::ios::in);
 	AURA_CHECK_ERROR(in);
 	in.seekg(0, std::ios::end);
