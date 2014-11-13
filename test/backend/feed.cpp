@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(pin_unpin)
 	BOOST_REQUIRE(0 < num);
 	device d0(0);  
 	feed f0(d0);
-	device d1(1);  
+	device d1(std::max(0, num-1));  
 	feed f1(d1);
 
 	d0.pin();
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(multiple)
 	BOOST_REQUIRE(0 < num);
 	device d0(0);  
 	feed f0(d0);
-	device d1(1);  
+	device d1(std::max(0, num-1));  
 	feed f1(d1);
 	device_ptr<float> m0 = device_malloc<float>(testsize, d0);
 	device_ptr<float> m1 = device_malloc<float>(testsize, d1);
