@@ -132,6 +132,47 @@ public:
 	}
 
 	/**
+	 * returns a tuple where first element is the prefix of the svec 
+	 * n elements and second element is the remainder of the svec 
+	 */
+	std::tuple<svec<T, max_size_>, svec<T, max_size_>bounds> 
+		split_at(std::size_t const n) const
+	{
+		std::tuple<svec<T, max_size_>, svec<T, max_size_>> ret;
+		for (std::size_t s=0; s<std::min(n, size_); s++) {
+			std::get<0>(ret)[s] = data_[s];
+		}
+		for (std::size_t s=std::min(n, size_); s<std::max(n, size_); s++) {
+			std::get<1>(ret)[s] = data_[s];
+		}
+		return make_tuple(b1, b2);
+	}
+	
+	/**
+	 * return the prefix of the svec of length n
+	 */
+	inline svec<T, max_size_> take(std::size_t const n) const 
+	{
+		svec<T, max_size_> ret;
+		for (std::size_t s=0; s<std::min(n, size_); s++) {
+			ret[s] = data_[s];
+		}
+		return ret;
+	}
+
+	/**
+	 * returns the suffix of the svec of length n
+	 */
+	inline svec<T, max_size_> drop(std::size_t const n) const 
+	{
+		svec<T, max_size_> ret;
+		for (std::size_t s=std::min(n, size_); s<size_; s++) {
+			ret[s] = data_[s];
+		}
+		return ret;
+	}
+
+	/**
 	 * @brief print contents of vector
 	 */
 	inline void debug__()
@@ -212,6 +253,29 @@ T product(const svec<T, max_size_> & v)
 	assert(0 < v.size());
 	return product_impl(v.array(), v.size(), 
 			boost::has_multiplies_assign<T, T, T>());
+}
+
+/// return new svec containing first n elements
+template <typename T, std::size_t max_size_>
+svec<T, max_size_> take(std::size_t const n, const svec<T, max_size_> & v) const
+{
+	return v.take(n);
+}
+
+/// return new svec containing last n elements
+template <typename T, std::size_t max_size_>
+svec<T, max_size_> drop(std::size_t const n, const svec<T, max_size_> & v) const
+{
+	return v.drop(n);
+}
+
+/// return tuple of svec, the first containing the first n elements,
+/// the second containing the last size - n elements 
+template <typename T, std::size_t max_size_>
+std::tuple<svec<T, max_size_>, svec<T, max_size_>> 
+	split_at(std::size_t const n, const svec<T, max_size_> & v) const
+{
+	return v.split_at(n);
 }
 
 /// calculate the product of all elements of std::array 
