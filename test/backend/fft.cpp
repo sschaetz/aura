@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(basic)
 	copy(m2, &output[0], samples, f);
 
 	fft fh(d, f, bounds(samples), fft::type::c2c);
-	fft_forward(m2, m1, fh, f);
+	fft_forward(m1, m2, fh, f);
 
 	copy(&output[0], m2, samples, f);
 	wait_for(f);
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(batched_1d)
 	copy(m2, &output[0], samples*batchsize, f);
 
 	fft fh(d, f, bounds(samples), fft::type::c2c, batchsize);
-	fft_forward(m2, m1, fh, f);
+	fft_forward(m1, m2, fh, f);
 
 	copy(&output[0], m2, samples*batchsize, f);
 	wait_for(f);

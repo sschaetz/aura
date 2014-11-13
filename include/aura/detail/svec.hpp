@@ -135,7 +135,7 @@ public:
 	 * returns a tuple where first element is the prefix of the svec 
 	 * n elements and second element is the remainder of the svec 
 	 */
-	std::tuple<svec<T, max_size_>, svec<T, max_size_>bounds> 
+	std::tuple<svec<T, max_size_>, svec<T, max_size_>> 
 		split_at(std::size_t const n) const
 	{
 		std::tuple<svec<T, max_size_>, svec<T, max_size_>> ret;
@@ -145,7 +145,7 @@ public:
 		for (std::size_t s=std::min(n, size_); s<std::max(n, size_); s++) {
 			std::get<1>(ret)[s] = data_[s];
 		}
-		return make_tuple(b1, b2);
+		return ret;
 	}
 	
 	/**
@@ -257,14 +257,14 @@ T product(const svec<T, max_size_> & v)
 
 /// return new svec containing first n elements
 template <typename T, std::size_t max_size_>
-svec<T, max_size_> take(std::size_t const n, const svec<T, max_size_> & v) const
+svec<T, max_size_> take(std::size_t const n, const svec<T, max_size_> & v)
 {
 	return v.take(n);
 }
 
 /// return new svec containing last n elements
 template <typename T, std::size_t max_size_>
-svec<T, max_size_> drop(std::size_t const n, const svec<T, max_size_> & v) const
+svec<T, max_size_> drop(std::size_t const n, const svec<T, max_size_> & v)
 {
 	return v.drop(n);
 }
@@ -273,7 +273,7 @@ svec<T, max_size_> drop(std::size_t const n, const svec<T, max_size_> & v) const
 /// the second containing the last size - n elements 
 template <typename T, std::size_t max_size_>
 std::tuple<svec<T, max_size_>, svec<T, max_size_>> 
-	split_at(std::size_t const n, const svec<T, max_size_> & v) const
+	split_at(std::size_t const n, const svec<T, max_size_> & v)
 {
 	return v.split_at(n);
 }
