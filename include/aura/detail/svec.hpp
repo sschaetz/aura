@@ -140,10 +140,10 @@ public:
 	{
 		std::tuple<svec<T, max_size_>, svec<T, max_size_>> ret;
 		for (std::size_t s=0; s<std::min(n, size_); s++) {
-			std::get<0>(ret)[s] = data_[s];
+			std::get<0>(ret).push_back(data_[s]);
 		}
-		for (std::size_t s=std::min(n, size_); s<std::max(n, size_); s++) {
-			std::get<1>(ret)[s] = data_[s];
+		for (std::size_t s=std::min(n, size_); s<size_; s++) {
+			std::get<1>(ret).push_back(data_[s]);
 		}
 		return ret;
 	}
@@ -155,7 +155,7 @@ public:
 	{
 		svec<T, max_size_> ret;
 		for (std::size_t s=0; s<std::min(n, size_); s++) {
-			ret[s] = data_[s];
+			ret.push_back(data_[s]);
 		}
 		return ret;
 	}
@@ -166,8 +166,12 @@ public:
 	inline svec<T, max_size_> drop(std::size_t const n) const 
 	{
 		svec<T, max_size_> ret;
-		for (std::size_t s=std::min(n, size_); s<size_; s++) {
-			ret[s] = data_[s];
+		std::size_t n2 = n;
+		if (n > size_) {
+			n2 = size_;
+		}
+		for (std::size_t s=std::min(size_-n2, size_); s<size_; s++) {
+			ret.push_back(data_[s]);
 		}
 		return ret;
 	}
