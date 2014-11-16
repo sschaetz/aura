@@ -1,14 +1,14 @@
 
-#include <aura/backend.hpp>
-#include <aura/config.hpp>
-#include <aura/device_array.hpp>
-#include <aura/misc/benchmark.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/config.hpp>
+#include <boost/aura/device_array.hpp>
+#include <boost/aura/misc/benchmark.hpp>
 
-using namespace aura;
-using namespace aura::backend;
+using namespace boost::aura;
+using namespace boost::aura::backend;
 
 const char * kernel_source =
-"#include <aura/backend.hpp>\n"
+"#include <boost/aura/backend.hpp>\n"
 
 "AURA_KERNEL void noarg() {} "
 

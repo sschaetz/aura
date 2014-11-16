@@ -1,9 +1,9 @@
 #define BOOST_TEST_MODULE device_buffer 
 
 #include <boost/test/unit_test.hpp>
-#include <aura/device_buffer.hpp>
+#include <boost/aura/device_buffer.hpp>
 
-using namespace aura;
+using namespace boost::aura;
 
 // basic
 // _____________________________________________________________________________

@@ -5,10 +5,10 @@
 #include <complex>
 #include <vector>
 #include <cufft.h>
-#include <aura/backend.hpp>
-#include <aura/misc/benchmark.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/misc/benchmark.hpp>
 
-using namespace aura::backend;
+using namespace boost::boost::aura::backend;
 
 /// benchmark 2d fft performance
 

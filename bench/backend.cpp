@@ -11,17 +11,17 @@
 #include <vector>
 #include <tuple>
 #include <bitset>
-#include <aura/detail/svec.hpp>
-#include <aura/misc/sequence.hpp>
-#include <aura/backend.hpp>
-#include <aura/misc/benchmark.hpp>
+#include <boost/aura/detail/svec.hpp>
+#include <boost/aura/misc/sequence.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/misc/benchmark.hpp>
 
 
 const char * ops_tbl[] = { "sync", "synck", "kern", 
   "params", "ctx", "ctxfeed" };
 
-using namespace aura;
-using namespace aura::backend;
+using namespace boost::aura;
+using namespace boost::aura::backend;
 
 #if AURA_BACKEND_OPENCL
 const char * kernel_file = "bench/backend.cl"; 
@@ -201,19 +201,19 @@ int main(int argc, char *argv[]) {
     switch (opt) {
       case 'm': {
         printf("mesh: %s ", optarg);
-        meshes = aura::generate_sequence<std::size_t, 
+        meshes = boost::aura::generate_sequence<std::size_t, 
                AURA_MAX_MESH_DIMS>(optarg);
         break;
       }
       case 'b': {
         printf("bundle: %s ", optarg);
-        bundles = aura::generate_sequence<std::size_t, 
+        bundles = boost::aura::generate_sequence<std::size_t, 
                 AURA_MAX_BUNDLE_DIMS>(optarg);
         break;
       }
       case 'p': {
         printf("param: %s ", optarg);
-        params = aura::generate_sequence<std::size_t, 1>(optarg);
+        params = boost::aura::generate_sequence<std::size_t, 1>(optarg);
         break;
       }
       case 'd': {

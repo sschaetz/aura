@@ -1,5 +1,5 @@
 
-#include <aura/misc/cprofile.h>
+#include <boost/aura/misc/cprofile.h>
 
 int main(void) {
   cprofile_sink s = cprofile_create_sink(10000);

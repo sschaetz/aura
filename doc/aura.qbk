@@ -1,7 +1,7 @@
 [library Boost.Aura
     [quickbook 1.5]
     [authors [Schaetz, Sebastian]]
-    [copyright 2013-2014 2011-2014 Biomedizinische NMR Forschungs GmbH]
+    [copyright 2011-2014 Biomedizinische NMR Forschungs GmbH]
     [purpose A C++ accelerator programming library]
     [category concurrent]
     [id aura]
@@ -12,6 +12,8 @@
         [@http://www.boost.org/LICENSE_1_0.txt])
     ]
 ]
+
+[warning Boost.Aura is not an official Boost library]
 
 [include reference.qbk]
 

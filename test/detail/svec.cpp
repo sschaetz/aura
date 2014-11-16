@@ -2,9 +2,9 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/execution_monitor.hpp> 
-#include <aura/detail/svec.hpp>
+#include <boost/aura/detail/svec.hpp>
 
-using namespace aura;
+using namespace boost::aura;
 
 typedef svec<int, 3> dim3;
 

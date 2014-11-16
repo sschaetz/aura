@@ -7,7 +7,10 @@
 //
 // Result: seems to work. any_cast must be passed and rvalue.
 
-namespace aura {
+namespace boost 
+{
+namespace aura 
+{
 
 template <typename T, typename Allocator>
 T* addressof(std::vector<T, Allocator>& vec)
@@ -82,13 +85,14 @@ void unmap(view<T>& v, C& c)
 }
 
 } // namespace aura
+} // namespace boost 
 
 int main(void) 
 {
 	{
 		std::vector<float> h1(10, 1.);
 		std::cout << &h1[0] << std::endl;
-		aura::view<float> v1 = aura::map<float>(h1);
+		boost::aura::view<float> v1 = boost::aura::map<float>(h1);
 		std::cout << v1.ptr_ << " " << &h1[0] << std::endl;
 		unmap(v1, h1);
 		std::cout << v1.ptr_ << " " << &h1[0] << std::endl;
@@ -98,7 +102,7 @@ int main(void)
 		std::vector<float> h2(10, 1.);
 		std::cout << &h2[0] << std::endl;
 		{
-			aura::view<float> v2(h2);
+			boost::aura::view<float> v2(h2);
 			std::cout << v2.ptr_ << " " << &h2[0] << std::endl;
 		}
 		std::cout << &h2[0] << std::endl;
@@ -106,7 +110,7 @@ int main(void)
 
 	{
 		float h[100];
-		aura::view<float> v1 = aura::map<float>(h);
+		boost::aura::view<float> v1 = boost::aura::map<float>(h);
 		std::cout << v1.ptr_ << " " << h << std::endl;
 	}
 }

@@ -28,16 +28,16 @@
 #include <vector>
 #include <tuple>
 #include <bitset>
-#include <aura/detail/svec.hpp>
-#include <aura/misc/sequence.hpp>
-#include <aura/backend.hpp>
-#include <aura/misc/benchmark.hpp>
-#include <aura/device_array.hpp>
-#include <aura/device_map.hpp>
-#include <aura/copy.hpp>
+#include <boost/aura/detail/svec.hpp>
+#include <boost/aura/misc/sequence.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/misc/benchmark.hpp>
+#include <boost/aura/device_array.hpp>
+#include <boost/aura/device_map.hpp>
+#include <boost/aura/copy.hpp>
 
-using namespace aura;
-using namespace aura::backend;
+using namespace boost::aura;
+using namespace boost::aura::backend;
 
 void bench_compute_only(device_array<float>& src,
 		device_array<float>& dst,
@@ -56,10 +56,10 @@ void bench_compute_copy(std::vector<float>& hsrc,
 		kernel& k,
 		feed& f)
 {
-	aura::copy(hsrc, src, f);
+	boost::aura::copy(hsrc, src, f);
 	invoke(k, bounds(src.size()), args(dst.begin_ptr(), 
 				src.begin().get()), f);
-	aura::copy(dst, hdst, f);
+	boost::aura::copy(dst, hdst, f);
 	wait_for(f);
 }
 
@@ -227,7 +227,7 @@ int main(int argc, char *argv[]) {
     switch (opt) {
       case 's': {
         printf("size: %s ", optarg);
-        sizes = aura::generate_sequence<std::size_t, 1>(optarg);
+        sizes = boost::aura::generate_sequence<std::size_t, 1>(optarg);
         break;
       }
       case 'd': {

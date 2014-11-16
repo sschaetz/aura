@@ -1,4 +1,4 @@
-#include <aura/backend.hpp>
+#include <boost/aura/backend.hpp>
 
 #define PEAK_FLOP_INIT(T) \
   T r0 = 0.0000001 * id;     \

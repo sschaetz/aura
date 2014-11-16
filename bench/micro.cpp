@@ -1,10 +1,10 @@
 // run various micro-benchmarks (simple kernels) 
 
 #include <vector>
-#include <aura/backend.hpp>
-#include <aura/misc/benchmark.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/misc/benchmark.hpp>
 
-using namespace aura::backend;
+using namespace boost::aura::backend;
 
 #if AURA_BACKEND_OPENCL
 const char * kernel_file = "bench/micro.cl"; 

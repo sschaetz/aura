@@ -1,12 +1,12 @@
 
 #include <complex>
 #include <cufft.h>
-#include <aura/backend.hpp>
-#include <aura/fft.hpp>
-#include <aura/device_array.hpp>
-#include <aura/misc/benchmark.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/fft.hpp>
+#include <boost/aura/device_array.hpp>
+#include <boost/aura/misc/benchmark.hpp>
 
-using namespace aura;
+using namespace boost::aura;
 
 typedef std::complex<float> cfloat;
 

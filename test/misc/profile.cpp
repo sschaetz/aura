@@ -3,10 +3,10 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <boost/test/unit_test.hpp>
-#include <aura/misc/profile.hpp>
-#include <aura/misc/profile_svg.hpp>
+#include <boost/aura/misc/profile.hpp>
+#include <boost/aura/misc/profile_svg.hpp>
 
-using namespace aura;
+using namespace boost::aura;
 
 // basic
 // _____________________________________________________________________________

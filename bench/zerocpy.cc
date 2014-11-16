@@ -1,4 +1,4 @@
-#include <aura/backend.hpp>
+#include <boost/aura/backend.hpp>
 
 AURA_KERNEL void compute(AURA_GLOBAL float* dst, 
 		AURA_GLOBAL float* src) 

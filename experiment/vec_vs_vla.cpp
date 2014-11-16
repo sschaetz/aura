@@ -5,7 +5,7 @@
  */
 
 #include <vector>
-#include <aura/misc/benchmark.hpp>
+#include <boost/aura/misc/benchmark.hpp>
 
 #define MAX_SIZE 11 
 

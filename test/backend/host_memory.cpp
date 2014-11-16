@@ -1,9 +1,9 @@
 #define BOOST_TEST_MODULE backend.host_memory
 
 #include <boost/test/unit_test.hpp>
-#include <aura/backend.hpp>
+#include <boost/aura/backend.hpp>
 
-using namespace aura::backend;
+using namespace boost::aura::backend;
 
 // basic
 // _____________________________________________________________________________

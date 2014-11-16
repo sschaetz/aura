@@ -1,4 +1,4 @@
-#include <aura/backend.hpp>
+#include <boost/aura/backend.hpp>
 
 __kernel void noarg() {}
 

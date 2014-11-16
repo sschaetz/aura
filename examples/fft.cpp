@@ -1,15 +1,15 @@
 #include <algorithm>
 #include <vector>
 #include <complex>
-#include <aura/backend.hpp>
-#include <aura/bounds.hpp>
-#include <aura/misc/coo.hpp>
-#include <aura/device_array.hpp>
-#include <aura/copy.hpp>
-#include <aura/fft.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/bounds.hpp>
+#include <boost/aura/misc/coo.hpp>
+#include <boost/aura/device_array.hpp>
+#include <boost/aura/copy.hpp>
+#include <boost/aura/fft.hpp>
 
 typedef std::complex<float> cfloat;
-using namespace aura;
+using namespace boost::aura;
 
 int main(void)
 {

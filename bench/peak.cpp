@@ -14,15 +14,15 @@
 #include <bitset>
 #include <algorithm>
 #include <vector>
-#include <aura/backend.hpp>
-#include <aura/misc/sequence.hpp>
-#include <aura/misc/benchmark.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/misc/sequence.hpp>
+#include <boost/aura/misc/benchmark.hpp>
 
 const char * ops_tbl[] = { "sflop", "dflop", "devcopy", "devscale", 
   "devadd", "devtriad", "tphtd", "tpdth" };
 
-using namespace aura;
-using namespace aura::backend;
+using namespace boost::aura;
+using namespace boost::aura::backend;
 
 const char * kernel_file = "bench/peak.cc"; 
 
@@ -493,25 +493,25 @@ int main(int argc, char *argv[])
 		switch (opt) {
 			case 'm': {
 				printf("mesh: %s ", optarg);
-				meshes = aura::generate_sequence<std::size_t,
+				meshes = boost::aura::generate_sequence<std::size_t,
 				       AURA_MAX_MESH_DIMS>(optarg);
 				break;
 			}
 			case 'b': {
 				printf("bundle: %s ", optarg);
-				bundles = aura::generate_sequence<std::size_t, 
+				bundles = boost::aura::generate_sequence<std::size_t, 
 					AURA_MAX_BUNDLE_DIMS>(optarg);
 				break;
 			}
 			case 's': {
 				printf("size: %s ", optarg);
-				sizes = aura::generate_sequence<std::size_t, 1>(
+				sizes = boost::aura::generate_sequence<std::size_t, 1>(
 						optarg);
 				break;
 			}
 			case 'd': {
 				printf("device %s ", optarg);
-				dev_ordinals = aura::generate_sequence<
+				dev_ordinals = boost::aura::generate_sequence<
 					std::size_t, 1> (optarg);
 				break;
 			}

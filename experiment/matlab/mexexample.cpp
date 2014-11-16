@@ -2,14 +2,14 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <aura/backend.hpp>
-#include <aura/device_array.hpp>
-#include <aura/copy.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/device_array.hpp>
+#include <boost/aura/copy.hpp>
 #include "mex.h"
 #include "matrix.h"
 
-using namespace aura::backend;
-using namespace aura;
+using namespace boost::boost::aura::backend;
+using namespace boost::aura;
 
 #define USE_SINGLE
 

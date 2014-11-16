@@ -3,9 +3,9 @@
 #include <array>
 #include <stdio.h>
 #include <boost/test/unit_test.hpp>
-#include <aura/backend.hpp>
-#include <aura/bounds.hpp>
-#include <aura/backend/shared/calc_mesh_bundle.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/bounds.hpp>
+#include <boost/aura/backend/shared/calc_mesh_bundle.hpp>
 
 // basic_cuda
 // _____________________________________________________________________________
@@ -23,22 +23,22 @@ BOOST_AUTO_TEST_CASE(basic_cuda)
 	std::array<bool, 4> mask = {{false, false, false, false}};
 
 	
-	aura::bounds b(997, 512, 9);
-	aura::detail::calc_mesh_bundle(aura::product(b), 2, 
+	boost::aura::bounds b(997, 512, 9);
+	boost::aura::detail::calc_mesh_bundle(boost::aura::product(b), 2, 
 			mesh_bundle.begin(), max_mb.begin(), mask.begin());
-	BOOST_CHECK((long int)aura::product(mesh_bundle) == product(b));
+	BOOST_CHECK((long int)boost::aura::product(mesh_bundle) == product(b));
 	
 	mesh_bundle = {{1, 1, 1, 1}};
-	b = aura::bounds(1);
-	aura::detail::calc_mesh_bundle(aura::product(b), 2, 
+	b = boost::aura::bounds(1);
+	boost::aura::detail::calc_mesh_bundle(boost::aura::product(b), 2, 
 			mesh_bundle.begin(), max_mb.begin(), mask.begin());
-	BOOST_CHECK((long int)aura::product(mesh_bundle) == product(b));
+	BOOST_CHECK((long int)boost::aura::product(mesh_bundle) == product(b));
 	
 	mesh_bundle = {{1, 1, 1, 1}};
-	b = aura::bounds(3, 19, 11);
-	aura::detail::calc_mesh_bundle(aura::product(b), 2, 
+	b = boost::aura::bounds(3, 19, 11);
+	boost::aura::detail::calc_mesh_bundle(boost::aura::product(b), 2, 
 			mesh_bundle.begin(), max_mb.begin(), mask.begin());
-	BOOST_CHECK((long int)aura::product(mesh_bundle) == product(b));
+	BOOST_CHECK((long int)boost::aura::product(mesh_bundle) == product(b));
 }
 
 // basic_opencl
@@ -59,24 +59,26 @@ BOOST_AUTO_TEST_CASE(basic_opencl)
 	std::array<bool, 4> mask = {{false, true, false, false}};
 
 	
-	aura::bounds b(997, 512, 9);
-	aura::detail::calc_mesh_bundle(aura::product(b), 2, 
+	boost::aura::bounds b(997, 512, 9);
+	boost::aura::detail::calc_mesh_bundle(boost::aura::product(b), 2, 
 			mesh_bundle.begin(), max_mb.begin(), mask.begin());
-	BOOST_CHECK((long int)(aura::product(mesh_bundle)/mesh_bundle[0]) ==
+	BOOST_CHECK((long int)(
+			boost::aura::product(mesh_bundle)/mesh_bundle[0]) ==
 			product(b));
 
 	mesh_bundle = {{1, 1, 1, 1}};
-	b = aura::bounds(1);
-	aura::detail::calc_mesh_bundle(aura::product(b), 2, 
+	b = boost::aura::bounds(1);
+	boost::aura::detail::calc_mesh_bundle(boost::aura::product(b), 2, 
 			mesh_bundle.begin(), max_mb.begin(), mask.begin());
-	BOOST_CHECK((long int)aura::product(mesh_bundle) == product(b));
+	BOOST_CHECK((long int)boost::aura::product(mesh_bundle) == product(b));
 
 	
 	mesh_bundle = {{1, 1, 1, 1}};
-	b = aura::bounds(3, 19, 11);
-	aura::detail::calc_mesh_bundle(aura::product(b), 2, 
+	b = boost::aura::bounds(3, 19, 11);
+	boost::aura::detail::calc_mesh_bundle(boost::aura::product(b), 2, 
 			mesh_bundle.begin(), max_mb.begin(), mask.begin());
-	BOOST_CHECK((long int)(aura::product(mesh_bundle)/mesh_bundle[0]) == 
+	BOOST_CHECK((long int)(
+			boost::aura::product(mesh_bundle)/mesh_bundle[0]) == 
 			product(b));
 
 }

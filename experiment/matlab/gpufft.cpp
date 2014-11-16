@@ -1,7 +1,7 @@
 #include "nullptr.hpp"
 
-#include <aura/backend.hpp>
-#include <aura/misc/profile.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/misc/profile.hpp>
 #include "mex.h"
 #include "matrix.h"
 
@@ -16,8 +16,8 @@
  * 7) return it to Matlab
  */
 
-using namespace aura::backend;
-using namespace aura;
+using namespace boost::boost::aura::backend;
+using namespace boost::aura;
 
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])

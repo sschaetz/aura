@@ -11,7 +11,8 @@ xml aura
 
 doxygen autodoc
   :
-    ../include/aura/device_array.hpp
+    ../include/boost/aura/device_array.hpp
+    ../include/boost/aura/fft.hpp
   :
     <doxygen:param>QUIET=YES
     <doxygen:param>WARNINGS=YES
@@ -23,6 +24,10 @@ doxygen autodoc
     <doxygen:param>EXPAND_ONLY_PREDEF=YES
     <doxygen:param>SORT_MEMBER_DOCS=NO
     <doxygen:param>TAB_SIZE=8
+    <doxygen:param>FULL_PATH_NAMES=YES
+    <doxygen:param>STRIP_FROM_INC_PATH=../
+    <doxygen:param>STRIP_FROM_PATH=../
+
     <xsl:param>"boost.doxygen.reftitle=Header Reference"
   ;
 

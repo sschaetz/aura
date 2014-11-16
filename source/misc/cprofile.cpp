@@ -1,10 +1,14 @@
 
-#include <aura/misc/profile.hpp>
-#include <aura/misc/profile_svg.hpp>
-#include <aura/misc/cprofile.h>
-namespace aura {
+#include <boost/aura/misc/profile.hpp>
+#include <boost/aura/misc/profile_svg.hpp>
+#include <boost/aura/misc/cprofile.h>
 
-namespace profile {
+namespace boost 
+{
+namespace aura 
+{
+namespace profile 
+{
 
 cprofile_sink cprofile_create_sink(unsigned long int initial_size) {
   return (void*) (new memory_sink(initial_size));
@@ -31,6 +35,6 @@ void cprofile_stop(cprofile_sink sink, const char * name) {
 }
 
 } // namespace profile
-
 } // namespace aura
+} // namespace boost
 

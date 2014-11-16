@@ -3,10 +3,10 @@
 #include <vector>
 #include <stdio.h>
 #include <boost/test/unit_test.hpp>
-#include <aura/backend.hpp>
-#include <aura/host_allocator.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/host_allocator.hpp>
 
-using namespace aura::backend;
+using namespace boost::aura::backend;
 
 // basic 
 // _____________________________________________________________________________
@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(basic)
 	BOOST_REQUIRE(num > 0);
 	device d0(0);
 	feed f0(d0);
-	aura::host_allocator<float> a0(f0);
+	boost::aura::host_allocator<float> a0(f0);
 	
 	float* ptr0 = a0.allocate(100);
 	memory m0 = a0.unmap(ptr0);
@@ -39,8 +39,8 @@ BOOST_AUTO_TEST_CASE(stdvector)
 	BOOST_REQUIRE(num > 0);
 	device d0(0);
 	feed f0(d0);
-	aura::host_allocator<float> a0(f0);
-	std::vector<float, aura::host_allocator<float>> v0(100, a0);
+	boost::aura::host_allocator<float> a0(f0);
+	std::vector<float, boost::aura::host_allocator<float>> v0(100, a0);
 	memory m0 = v0.get_allocator().unmap(&v0[0]);
 	float* ptr0 = v0.get_allocator().map(m0);
 	BOOST_CHECK(ptr0 == &v0[0]);
@@ -57,10 +57,10 @@ BOOST_AUTO_TEST_CASE(nasty)
 	device d0(0);
 	feed f0(d0);
 	
-	aura::host_allocator<float> a0(f0);
-	aura::host_allocator<float> a1(f0);
-	std::vector<float, aura::host_allocator<float>> v0(100, a0);
-	std::vector<float, aura::host_allocator<float>> v1(100, a1);
+	boost::aura::host_allocator<float> a0(f0);
+	boost::aura::host_allocator<float> a1(f0);
+	std::vector<float, boost::aura::host_allocator<float>> v0(100, a0);
+	std::vector<float, boost::aura::host_allocator<float>> v1(100, a1);
 	
 	float* p0 = &v0[0];
 	float* p1 = &v1[0];

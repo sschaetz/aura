@@ -1,9 +1,9 @@
 #define BOOST_TEST_MODULE device_array
 
 #include <boost/test/unit_test.hpp>
-#include <aura/device_array.hpp>
+#include <boost/aura/device_array.hpp>
 
-using namespace aura;
+using namespace boost::aura;
 
 // basic
 // _____________________________________________________________________________

@@ -1,10 +1,10 @@
 #define BOOST_TEST_MODULE inlinefunctions 
 
 #include <boost/test/unit_test.hpp>
-#include <aura/aura.hpp>
-#include <aura/backend.hpp>
+#include <boost/aura/aura.hpp>
+#include <boost/aura/backend.hpp>
 
-using namespace aura;
+using namespace boost::aura;
 
 // basic
 // _____________________________________________________________________________

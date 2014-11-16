@@ -7,12 +7,12 @@
 #include <tuple>
 #include <complex>
 
-#include <aura/misc/sequence.hpp>
-#include <aura/misc/benchmark.hpp>
-#include <aura/backend.hpp>
+#include <boost/aura/misc/sequence.hpp>
+#include <boost/aura/misc/benchmark.hpp>
+#include <boost/aura/backend.hpp>
 
-using namespace aura;
-using namespace aura::backend;
+using namespace boost::aura;
+using namespace boost::boost::aura::backend;
 
 typedef std::complex<float> cfloat;
 
@@ -20,10 +20,10 @@ typedef std::complex<float> cfloat;
 
 // configuration
 std::vector<bounds> size;
-std::vector<aura::svec<std::size_t, 1> > batch;
+std::vector<boost::aura::svec<std::size_t, 1> > batch;
 std::size_t runtime;
 
-aura::svec<std::size_t> devordinals;
+boost::aura::svec<std::size_t> devordinals;
 
 const char * ops_tbl[] = { "fwdip", "invip", "fwdop", "invop" };
 std::bitset< sizeof(ops_tbl)/sizeof(ops_tbl[0]) > ops;
@@ -77,7 +77,7 @@ void run_invop(std::vector<device_ptr<cfloat> > & mem1,
 void print_results(const char * name, double min, double max, 
     double mean, double stdev, std::size_t runs,
     const bounds & s,
-    const aura::svec<std::size_t, 1> & batch) {
+    const boost::aura::svec<std::size_t, 1> & batch) {
   printf("%s %lux ", name, batch[0]);
   for(std::size_t i=0; i<s.size(); i++) {
     printf("%lu ", s[i]);
@@ -87,32 +87,32 @@ void print_results(const char * name, double min, double max,
 }
 
 void run_tests() {
-  aura::backend::initialize();
-  aura::backend::fft_initialize(); 
+  boost::aura::backend::initialize();
+  boost::aura::backend::fft_initialize(); 
   
   // create devices, feeds
-  std::vector<aura::backend::device> devices;
-  std::vector<aura::backend::feed> feeds;
+  std::vector<boost::aura::backend::device> devices;
+  std::vector<boost::aura::backend::feed> feeds;
   // reserve to make sure the device objects are not moved
   devices.reserve(devordinals.size());
   feeds.reserve(devordinals.size());
   for(std::size_t i=0; i<devordinals.size(); i++) {
-    devices.push_back(aura::backend::device(devordinals[i]));
-    feeds.push_back(aura::backend::feed(devices[i]));
+    devices.push_back(boost::aura::backend::device(devordinals[i]));
+    feeds.push_back(boost::aura::backend::feed(devices[i]));
   }
   
   for(std::size_t b=0; b<batch.size(); b++) {
     for(std::size_t s=0; s<size.size(); s++) {
       // allocate device_ptr<cfloat> , make fft plan
-      std::vector<aura::backend::device_ptr<cfloat> > mem1;
-      std::vector<aura::backend::device_ptr<cfloat> > mem2;
-      std::vector<aura::backend::fft> ffth;
+      std::vector<boost::aura::backend::device_ptr<cfloat> > mem1;
+      std::vector<boost::aura::backend::device_ptr<cfloat> > mem2;
+      std::vector<boost::aura::backend::fft> ffth;
       for(std::size_t i=0; i<devices.size(); i++) {
-        std::size_t msize = aura::product(size[s]) * batch[b][0];
-        mem1.push_back(aura::backend::device_malloc<cfloat>(msize, devices[i]));
-        mem2.push_back(aura::backend::device_malloc<cfloat>(msize, devices[i]));
-        ffth.push_back(aura::backend::fft(devices[i], feeds[i], size[s], 
-          aura::backend::fft::type::c2c, batch[b][0]));
+        std::size_t msize = boost::aura::product(size[s]) * batch[b][0];
+        mem1.push_back(boost::aura::backend::device_malloc<cfloat>(msize, devices[i]));
+        mem2.push_back(boost::aura::backend::device_malloc<cfloat>(msize, devices[i]));
+        ffth.push_back(boost::aura::backend::fft(devices[i], feeds[i], size[s], 
+          boost::aura::backend::fft::type::c2c, batch[b][0]));
       }
       
       // benchmark result variables
@@ -150,12 +150,12 @@ void run_tests() {
 
       // free device_ptr<cfloat>  
       for(std::size_t i=0; i<devices.size(); i++) {
-        aura::backend::device_free(mem1[i]);
-        aura::backend::device_free(mem2[i]);
+        boost::aura::backend::device_free(mem1[i]);
+        boost::aura::backend::device_free(mem2[i]);
       }
     }
   }
-  aura::backend::fft_terminate();
+  boost::aura::backend::fft_terminate();
 }
 
 int main(int argc, char *argv[]) {
@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
     switch (opt) {
       case 's': {
         printf("size: %s ", optarg);
-	size = aura::generate_sequence<int, AURA_SVEC_MAX_SIZE>(optarg);
+	size = boost::aura::generate_sequence<int, AURA_SVEC_MAX_SIZE>(optarg);
         printf("(%lu) ", size.size());
         break;
       }
@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
       }
       case 'b': {
         printf("batch: %s ", optarg);
-        batch = aura::generate_sequence<std::size_t, 1>(optarg);
+        batch = boost::aura::generate_sequence<std::size_t, 1>(optarg);
         printf("(%lu) ", batch.size());
         break;
       }

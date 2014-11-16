@@ -2,12 +2,12 @@
 
 #include <complex>
 #include <boost/test/unit_test.hpp>
-#include <aura/backend.hpp>
-#include <aura/config.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/config.hpp>
 
 typedef std::complex<float> cfloat;
 
-using namespace aura::backend;
+using namespace boost::aura::backend;
 
 const int samples = 4;
 const cfloat signal[] = 

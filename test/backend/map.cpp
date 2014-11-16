@@ -2,12 +2,12 @@
 
 #include <cstring>
 #include <boost/test/unit_test.hpp>
-#include <aura/backend.hpp>
-#include <aura/config.hpp>
-#include <aura/device_map.hpp>
+#include <boost/aura/backend.hpp>
+#include <boost/aura/config.hpp>
+#include <boost/aura/device_map.hpp>
 
-using namespace aura;
-using namespace aura::backend;
+using namespace boost::aura;
+using namespace boost::aura::backend;
 
 const char * kernel_file = AURA_UNIT_TEST_LOCATION"map.cc";
 
