@@ -13,7 +13,13 @@
     ]
 ]
 
+Aura is a modern, header-only C++ library for accelerator development. Aura 
+works with both OpenCL and CUDA backends. The Aura API is not stable yet 
+(alpha version).
+
 [warning Boost.Aura is not an official Boost library]
 
+[include get_started.qbk]
+[include overview.qbk]
 [include reference.qbk]
 

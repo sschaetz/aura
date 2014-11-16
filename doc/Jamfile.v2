@@ -13,6 +13,7 @@ doxygen autodoc
   :
     ../include/boost/aura/device_array.hpp
     ../include/boost/aura/fft.hpp
+    ../include/boost/aura/backend/opencl/device.hpp
   :
     <doxygen:param>QUIET=YES
     <doxygen:param>WARNINGS=YES
@@ -27,7 +28,8 @@ doxygen autodoc
     <doxygen:param>FULL_PATH_NAMES=YES
     <doxygen:param>STRIP_FROM_INC_PATH=../
     <doxygen:param>STRIP_FROM_PATH=../
-
+    <doxygen:param>MACRO_EXPANSION=YES
+    <doxygen:param>PREDEFINED="AURA_BACKEND_OPENCL"
     <xsl:param>"boost.doxygen.reftitle=Header Reference"
   ;
 

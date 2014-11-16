@@ -4,14 +4,18 @@
 
 [h3 Core Library]
 
+Header: `<boost/aura/backend/opencl/device.hpp>`
+
+* [classref boost::aura::backend::device device]
+
 Header: `<boost/aura/device_array.hpp>`
 
-* [classref aura::device_array device_array]
+* [classref boost::aura::device_array device_array]
 
 Header: `<boost/aura/fft.hpp>`
 
-* [funcref aura::fft_forward()]
-* [funcref aura::fft_inverse()]
+* [funcref boost::aura::fft_forward()]
+* [funcref boost::aura::fft_inverse()]
 
 [endsect] [/ overview]
 

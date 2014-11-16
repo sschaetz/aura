@@ -1,0 +1,73 @@
+[section:get_started Get Started]
+
+
+[section Obtaining Aura]
+
+The latest version of Aura can be downloaded through this 
+[@https://github.com/sschaetz/aura/archive/develop.zip link] 
+or cloned from GitHub using the command
+
+``
+git clone https://github.com/sschaetz/aura.git
+``
+
+The Aura API is not stable yet and there are no releases yet. Use the Aura 
+library at your own risk.
+
+[endsect]
+
+
+[section Using Aura]
+
+Aura is a header-only library. No compilation or linking of the library is
+necessary. Aura however supports two accelerator backends: OpenCL and CUDA.
+The backend is selected through the preprocessor macro `AURA_BACKEND`. The 
+corresponding accelerator backend library must be linked. For example with GCC:
+
+``
+# OpenCL backend
+g++ -I/path/to/aura/include -DAURA_BACKEND_OPENCL proj.cpp -lOpenCL
+# CUDA backend
+g++ -I/path/to/aura/include -DAURA_BACKEND_CUDA proj.cpp -lcuda -lcudart
+``
+
+As an alternative, the preprocessor selection macro can be specified in code
+but must be defined before any headers are included:
+
+``
+// OpenCL backend
+#define AURA_BACKEND OPENCL
+// CUDA backend
+#define AURA_BACKEND CUDA
+``
+
+If FFT or BLAS functions shall be used, additional include paths must be added
+to the compiler command line as well as the appropriate libraries linked.
+
+[endsect]
+
+
+[section Unit tests, examples and benchmarks]
+
+There are a number of unit tests, examples and benchmarks included in the Aura
+library. They can be built using cmake:
+
+``
+mkdir /path/to/aura-build
+cd /path/to/aura-build
+cmake -DAURA_BACKEND_CUDA /path/to/aura/
+make
+``
+
+and unit tests can be invoked through
+
+``
+ctest
+``
+Benchmarks include a fft benchmark and peak throughput benchmarks.
+
+[endsect]
+
+
+[endsect]
+
