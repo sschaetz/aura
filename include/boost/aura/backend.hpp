@@ -23,7 +23,6 @@
 		#include <boost/aura/backend/cuda/memory.hpp>
 		#include <boost/aura/backend/cuda/module.hpp>
 		#include <boost/aura/backend/cuda/p2p.hpp>
-		#include <boost/aura/backend/cuda/detail/host_allocator.hpp>
 	#endif // defined __CUDACC__
 
 #elif defined AURA_BACKEND_OPENCL
@@ -47,7 +46,6 @@
 		#include <boost/aura/backend/opencl/mark.hpp>
 		#include <boost/aura/backend/opencl/memory.hpp>
 		#include <boost/aura/backend/opencl/module.hpp>
-		#include <boost/aura/backend/opencl/detail/host_allocator.hpp>
 	#endif // defined __OPENCL_VERSION__
 
 #endif
@@ -81,8 +79,6 @@ using backend::device_ptr;
 
 } // namespace aura
 } // namespace boost 
-
-#include <boost/aura/detail/host_allocator_traits.hpp>
 
 #endif // !defined __OPENCL_VERSION__ && !defined __CUDACC__
 

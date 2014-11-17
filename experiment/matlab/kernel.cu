@@ -2,7 +2,7 @@
 
 
 AURA_KERNEL void kern_c2i(AURA_GLOBAL int count, AURA_GLOBAL float* src1, 
-		float* src2, AURA_GLOBAL float* dst)
+		AURA_GLOBAL float* src2, AURA_GLOBAL float* dst)
 {
 	unsigned int i = get_mesh_id(); 
 	if (i < count) {
@@ -11,13 +11,13 @@ AURA_KERNEL void kern_c2i(AURA_GLOBAL int count, AURA_GLOBAL float* src1,
 	}	
 }
 
-AURA_KERNEL void kern_i2c(AURA_GLOBAL int count, AURA_GLOBAL float* src
+AURA_KERNEL void kern_i2c(AURA_GLOBAL int count, AURA_GLOBAL float* src,
 		AURA_GLOBAL float* dst1, AURA_GLOBAL float* dst2)
 {
 	unsigned int i = get_mesh_id(); 
 	if (i < count) {
-		dst1[i] = src[2*i];
-		dst2[i] = src[2*i+1];
+		dst1[i] = src[2*i]*2;
+		dst2[i] = src[2*i+1]*3;
 	}		
 }
 

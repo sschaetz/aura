@@ -5,6 +5,7 @@
 #include <boost/aura/config.hpp>
 
 #if defined AURA_BACKEND_CUDA
+	#include <boost/aura/backend/cuda/detail/host_allocator.hpp>
 #elif defined AURA_BACKEND_OPENCL
 	#include <boost/aura/backend/opencl/detail/host_allocator.hpp>
 #endif

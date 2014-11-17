@@ -11,8 +11,10 @@
 #include "matrix.h"
 
 using namespace boost::aura::backend;
+using namespace boost::aura::matlab;
 using namespace boost::aura;
 
+typedef std::complex<float> cfloat;
 
 // this type holds the state of the mex file
 struct state_t
@@ -24,8 +26,15 @@ struct state_t
     device d;
 	feed f;
 
-	// variable vectors
-	device_array<float> v;
+	// vectors
+	device_array<float> ior;
+    device_array<float> ioi;
+    device_array<cfloat> ioc;
+
+    // module and kernels
+    module m;
+    kernel c2i;
+    kernel i2c;
 };
 
 // if this goes out of scope, state is destroyed, must be global
@@ -40,6 +49,10 @@ void init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	state_t& state = *state_ptr;
 	state.d = device(0);
 	state.f = feed(state.d);
+    
+    state.m =  create_module_from_file("kernel.ptx", state.d);
+	state.c2i = create_kernel(state.m, "kern_c2i");
+	state.i2c = create_kernel(state.m, "kern_i2c");
 }
 
 
@@ -48,18 +61,43 @@ void compute(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     state_t& state = *state_ptr;
     std::cout << get_bounds(prhs[0]) << std::endl;
     
-    // device memory
-    state.v = device_array<float>(get_bounds(prhs[0]), state.d);
+    if(!is_single(prhs[0]) ||  !is_complex(prhs[0])) {
+        mexErrMsgTxt("invalid type, expecting complex single");
+    }
     
+    // device memory
+    state.ior = device_array<float>(get_bounds(prhs[0]), state.d);
+    state.ioi = device_array<float>(get_bounds(prhs[0]), state.d);
+    state.ioc = device_array<cfloat>(get_bounds(prhs[0]), state.d);
+
     // matlab output
     plhs[0] = mxCreateNumericArray(mxGetNumberOfDimensions(prhs[0]), 
-            mxGetDimensions(prhs[0]), mxSINGLE_CLASS, mxREAL);
+            mxGetDimensions(prhs[0]), mxSINGLE_CLASS, mxCOMPLEX);
     
     // upload to device
-    copy(reinterpret_cast<float*>(mxGetData(prhs[0])), state.v, state.f);
+    copy(reinterpret_cast<float*>(mxGetData(prhs[0])), state.ior, state.f);
+    copy(reinterpret_cast<float*>(mxGetImagData(prhs[0])), 
+            state.ioi, state.f);
+
+    // c2i
+    invoke(state.c2i, state.ioc.get_bounds(), 
+		args(state.ioc.size(), 
+            state.ior.begin_ptr(), state.ioi.begin_ptr(), 
+            state.ioc.begin_ptr()), 
+            state.f);
+        
+    // i2c
+    invoke(state.i2c, state.ioc.get_bounds(), 
+		args(state.ioc.size(), 
+            state.ioc.begin_ptr(),
+            state.ior.begin_ptr(), state.ioi.begin_ptr()), 
+            state.f);
     
     // download from device
-    copy(state.v, reinterpret_cast<float*>(mxGetData(plhs[0])), state.f);
+    copy(state.ior, reinterpret_cast<float*>(mxGetData(plhs[0])), state.f);
+    copy(state.ioi, reinterpret_cast<float*>(mxGetImagData(plhs[0])), 
+            state.f);
+
     wait_for(state.f);
 
 }

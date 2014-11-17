@@ -4,6 +4,7 @@
 *.o
 a.out
 *.mexa64
+*.ptx
 
 # Compiled Dynamic libraries
 *.so
