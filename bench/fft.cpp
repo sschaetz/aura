@@ -12,7 +12,7 @@
 #include <boost/aura/backend.hpp>
 
 using namespace boost::aura;
-using namespace boost::boost::aura::backend;
+using namespace boost::aura::backend;
 
 typedef std::complex<float> cfloat;
 

@@ -34,7 +34,7 @@
 #include <boost/aura/backend.hpp>
 #include <boost/aura/misc/benchmark.hpp>
 
-using namespace boost::boost::aura::backend;
+using namespace boost::aura::backend;
 
 #if AURA_BACKEND_OPENCL
 const char * kernel_file = "experiment/overlap.cl"; 

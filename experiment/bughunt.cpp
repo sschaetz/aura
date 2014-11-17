@@ -8,7 +8,7 @@
 #include <boost/aura/backend.hpp>
 #include <boost/aura/misc/benchmark.hpp>
 
-using namespace boost::boost::aura::backend;
+using namespace boost::aura::backend;
 
 /// benchmark 2d fft performance
 

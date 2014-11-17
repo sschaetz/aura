@@ -1,12 +1,8 @@
+#include <boost/aura/backend.hpp>
 
-__device__ __forceinline__ unsigned int get_mesh_id() 
-{
-  return (gridDim.y*gridDim.x*blockIdx.z + gridDim.x*blockIdx.y + blockIdx.x) *
-    (blockDim.z*blockDim.y*blockDim.x) +
-    blockDim.y*blockDim.x*threadIdx.z + blockDim.x*threadIdx.y + threadIdx.x;
-}
 
-extern "C" __global__ void kern_c2i(int count, float* dst, float* src1, float* src2)
+AURA_KERNEL void kern_c2i(AURA_GLOBAL int count, AURA_GLOBAL float* src1, 
+		float* src2, AURA_GLOBAL float* dst)
 {
 	unsigned int i = get_mesh_id(); 
 	if (i < count) {
@@ -15,7 +11,8 @@ extern "C" __global__ void kern_c2i(int count, float* dst, float* src1, float* s
 	}	
 }
 
-extern "C" __global__ void kern_i2c(int count, float* dst1, float* dst2, float* src)
+AURA_KERNEL void kern_i2c(AURA_GLOBAL int count, AURA_GLOBAL float* src
+		AURA_GLOBAL float* dst1, AURA_GLOBAL float* dst2)
 {
 	unsigned int i = get_mesh_id(); 
 	if (i < count) {
