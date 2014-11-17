@@ -26,5 +26,7 @@ using backend::detail::host_allocator;
 } // namespace aura
 } // namespace boost
 
+#include <aura/detail/host_allocator_traits.hpp>
+
 #endif // AURA_HOST_ALLOCATOR_HPP
 
