@@ -50,7 +50,7 @@ void init(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	state.d = device(0);
 	state.f = feed(state.d);
     
-    state.m =  create_module_from_file("kernel.ptx", state.d);
+    state.m = create_module_from_file("kernel.ptx", state.d);
 	state.c2i = create_kernel(state.m, "kern_c2i");
 	state.i2c = create_kernel(state.m, "kern_i2c");
 }

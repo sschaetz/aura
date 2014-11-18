@@ -4,7 +4,7 @@
 AURA_KERNEL void kern_c2i(AURA_GLOBAL int count, AURA_GLOBAL float* src1, 
 		AURA_GLOBAL float* src2, AURA_GLOBAL float* dst)
 {
-	unsigned int i = get_mesh_id(); 
+	unsigned int i = get_mesh_id();
 	if (i < count) {
 		dst[i*2] = src1[i];
 		dst[i*2+1] = src2[i];
@@ -16,8 +16,10 @@ AURA_KERNEL void kern_i2c(AURA_GLOBAL int count, AURA_GLOBAL float* src,
 {
 	unsigned int i = get_mesh_id(); 
 	if (i < count) {
-		dst1[i] = src[2*i]*2;
-		dst2[i] = src[2*i+1]*3;
+		dst1[i] = src[2*i]*3;
+		dst2[i] = src[2*i+1]*2;
 	}		
 }
+
+
 
