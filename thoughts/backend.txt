@@ -20,7 +20,7 @@ Devices, Streams, and Events
 For peer 2 peer communication, which context needs to be specified (source or
 destination)?
 
-Popping the context every time ca be a bad idea when doing low level
+Popping the context every time can be a bad idea when doing low level
 programming. A tool should be provided to make a feed permanent.
 
 For CUDA to release memory, the correct context must be set first.
@@ -64,7 +64,7 @@ Interface Duplication
 Interfaces for all backends must currently be duplicated. Also, for the main
 interface in the aura namespace, it must also be duplicated in some way. This
 is quite tedious. Is there a better way to do this?  A way that is less 
-tedious. There could be a single code-base, littered with ifdefs. Not nice,
+tedious: there could be a single code-base, littered with ifdefs. Not nice,
 not less tedious.
 
 

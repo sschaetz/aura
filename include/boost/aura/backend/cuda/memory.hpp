@@ -126,7 +126,6 @@ template <typename T>
 void device_unmap(T* ptr, device_ptr<T>& dptr,
 		std::size_t, feed& f)
 {
-	wait_for(f);	
 	return;
 }
 
