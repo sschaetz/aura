@@ -241,6 +241,119 @@ std::lock_guard<std::mutex> guard(sink.mtx_);
   }
 }
   
+inline void dump(memory_sink & sink) {
+std::lock_guard<std::mutex> guard(sink.mtx_);
+  if(sink.data_.size() < 1 || sink.data_.size()%2 != 0) {
+    return;
+  }
+
+  // maximum and minimum
+  double min = sink.data_[0].timestamp;
+  double max = min;
+
+  // map to normalize thread_id
+  std::map<std::size_t, std::size_t> threadmap;
+  
+  // depth fields
+  std::vector<std::size_t> func_depths;
+  std::vector<std::size_t> max_depths;
+
+  // unique functions handling 
+  typedef std::tuple<std::size_t, std::size_t, const char *> t_unique_funcs_key;
+  typedef std::map<t_unique_funcs_key, std::size_t> t_unique_funcs;
+  t_unique_funcs unique_funcs;
+  std::vector<std::size_t> num_unique_funcs;
+
+  // field of functions
+  
+
+  std::vector<func_entry> funcs;
+  funcs.reserve(sink.data_.size()/2);
+
+  // overall statistics: map function -> (calls, duration)
+  std::map<const char *, std::pair<std::size_t, double> > overall_stats;
+
+  for(std::size_t i=0; i<sink.data_.size(); i++) {
+
+    // min max
+    if(min > sink.data_[i].timestamp) {
+      min = sink.data_[i].timestamp;
+    }
+    if(max < sink.data_[i].timestamp) {
+      max = sink.data_[i].timestamp;
+    }
+
+    // normalize thread_id and initialize func and depth maps
+    std::map<std::size_t, std::size_t>::const_iterator tmgot = 
+      threadmap.find(sink.data_[i].thread_id);
+    if(tmgot == threadmap.end()) {
+      threadmap.insert(std::pair<std::size_t, std::size_t>(
+        sink.data_[i].thread_id, threadmap.size()));
+      func_depths.push_back(0);
+      max_depths.push_back(0);
+      num_unique_funcs.push_back(0);
+    }
+    std::size_t tid = threadmap[sink.data_[i].thread_id];
+
+    // handle depth
+    if(sink.data_[i].start) {
+      func_depths[tid]++;
+      if(max_depths[tid] < func_depths[tid]) {
+        max_depths[tid] = func_depths[tid];
+      }
+    } else {
+      func_depths[tid]--;  
+    }
+
+    // find the stop value and build funcs
+    if(sink.data_[i].start) {
+      std::size_t j = i+1;
+      for(; j<sink.data_.size(); j++) {
+        if(sink.data_[j].thread_id == sink.data_[i].thread_id && 
+          0 == strcmp(sink.data_[j].name, sink.data_[i].name) &&
+          false == sink.data_[j].start) {
+          funcs.push_back(func_entry(sink.data_[i].name, tid, 
+            sink.data_[i].timestamp, 
+            sink.data_[j].timestamp-sink.data_[i].timestamp,
+            func_depths[tid]));
+          break;
+        }
+      }
+      // add unique function
+      t_unique_funcs::const_iterator ugot = 
+        unique_funcs.find(t_unique_funcs_key(tid, 
+          func_depths[tid], sink.data_[i].name));
+      if(ugot == unique_funcs.end()) {
+        num_unique_funcs[tid]++;
+        unique_funcs.insert(std::pair<t_unique_funcs_key, std::size_t>(
+          t_unique_funcs_key(tid, func_depths[tid], 
+            sink.data_[i].name), num_unique_funcs[tid]));
+      }
+      // add overall statistics information
+      std::map<const char *, std::pair<std::size_t, double> >::iterator 
+        sgot = overall_stats.find(sink.data_[i].name);
+      if(sgot == overall_stats.end()) {
+        overall_stats.insert(
+          std::pair<const char *, std::pair<std::size_t, double> >(
+            sink.data_[i].name, std::pair<std::size_t, double>(1, 
+              sink.data_[j].timestamp-sink.data_[i].timestamp)));
+      } else {
+        sgot->second.first++;
+        sgot->second.second+=sink.data_[j].timestamp-sink.data_[i].timestamp;
+      }
+
+    }
+  }
+
+  // print stats
+  for(std::map<const char *, std::pair<std::size_t, double> >::iterator 
+    smit = overall_stats.begin(); 
+    smit != overall_stats.end(); ++smit) {
+    printf("%s: %0.9f (%lu)\n", 
+      smit->first, smit->second.second, smit->second.first);
+  }
+} 
+
 
 } // namespace profile
 } // namespace aura

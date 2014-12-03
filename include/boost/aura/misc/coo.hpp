@@ -30,7 +30,7 @@ struct coo_index
 };
 
 
-void fill_stride_end(std::vector<coo_index>& result)
+inline void fill_stride_end(std::vector<coo_index>& result)
 {
 	result[0].end = result[0].stride * result[0].size;
 	for (std::size_t i=1; i<result.size(); i++) {
