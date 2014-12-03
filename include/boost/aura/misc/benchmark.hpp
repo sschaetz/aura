@@ -17,11 +17,36 @@
 #include <algorithm>
 #include <numeric>
 #include <functional>
+#include <ostream>
 #include <boost/aura/misc/now.hpp>
 
-namespace boost
+namespace boost 
 {
-namespace aura {
+namespace aura 
+{
+
+struct benchmark_result
+{
+	// min runtime in usec
+	double min;
+	// max runtime in usec
+	double max; 
+	// mean runtime in usec
+	double mean;
+	// stdev of runtime
+	double stdev;
+	// number of runs
+	std::size_t num;
+};
+
+/// output benchmark_result to stream
+inline std::ostream& operator << (std::ostream& o, const benchmark_result& br) 
+{
+	o << "min: " << br.min << " max: " << br.max << 
+		" mean: " << br.mean << " stdev: " << br.stdev <<
+		" runs: " << br.num;
+	return o;
+}
 
 inline void print_benchmark_results(const char * name, 
   double min, double max, double mean, double stdev, 
@@ -148,14 +173,14 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
   /* until time is not elapsed */                                              \
   num = 0;                                                                     \
   while(elapsed_time < duration) {                                             \
-    double d1 = boost::aura::now();                                                   \
+    double d1 = boost::aura::now();                                            \
     {                                                                          \
-      d2 = boost::aura::now();                                                        \
+      d2 = boost::aura::now();                                                 \
       expression;                                                              \
-      d2 = boost::aura::now() - d2;                                                   \
+      d2 = boost::aura::now() - d2;                                            \
       num++;                                                                   \
     }                                                                          \
-    d1 = boost::aura::now() - d1;                                                     \
+    d1 = boost::aura::now() - d1;                                              \
     if(d2 > 0 && d1 > 0) {                                                     \
       measurements.push_back(d2);                                              \
       elapsed_time += d1;                                                      \
@@ -171,6 +196,87 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
   max = measurements[measurements.size()-1];                                   \
 }                                                                              \
 /**/
+
+/**
+ * @brief macro to benchmark an expression
+ *
+ * @param expression the expression that should be benchmarked
+ * @param duration the amount of time the expression should execute
+ * @param br benchmark results
+ * @param num number of test runs
+ */
+#define AURA_BENCH(expression, duration, br) {                                 \
+  std::vector<double> measurements;                                            \
+  double elapsed_time(0.), d2(0.);                                             \
+  /* until time is not elapsed */                                              \
+  br.num = 0;                                                                  \
+  while(elapsed_time < duration) {                                             \
+    double d1 = boost::aura::now();                                            \
+    {                                                                          \
+      d2 = boost::aura::now();                                                 \
+      expression;                                                              \
+      d2 = boost::aura::now() - d2;                                            \
+      br.num++;                                                                \
+    }                                                                          \
+    d1 = boost::aura::now() - d1;                                              \
+    if(d2 > 0 && d1 > 0) {                                                     \
+      measurements.push_back(d2);                                              \
+      elapsed_time += d1;                                                      \
+    }                                                                          \
+  }                                                                            \
+  double sum = std::accumulate(measurements.begin(), measurements.end(), 0.0); \
+  br.mean = sum / measurements.size();                                         \
+  double sq_sum = std::inner_product(measurements.begin(), measurements.end(), \
+    measurements.begin(), 0.0);                                                \
+  br.stdev = std::sqrt(sq_sum / measurements.size() - br.mean *br.mean);       \
+  std::sort(measurements.begin(), measurements.end());                         \
+  br.min = measurements[0];                                                    \
+  br.max = measurements[measurements.size()-1];                                \
+}                                                                              \
+/**/
+
+/**
+ * @brief macro to benchmark an asynchronous expression
+ *
+ * @param expression the expression that should be benchmarked
+ * @param sync epxression that should be used to synchronize 
+ *   asynchronous expression
+ * @param duration the amount of time the expression should execute in us
+ * @param br benchmark results
+ */
+#define AURA_BENCH_ASYNC(expression, sync, duration, br) {                     \
+  std::vector<double> measurements;                                            \
+  double elapsed_time(0.), d2(0.);                                             \
+  /* until time is not elapsed */                                              \
+  br.num = 0;                                                                  \
+  while(elapsed_time < duration) {                                             \
+    double d1 = boost::aura::now();                                            \
+    {                                                                          \
+      d2 = boost::aura::now();                                                 \
+      expression;                                                              \
+      sync;                                                                    \
+      d2 = boost::aura::now() - d2;                                            \
+      br.num++;                                                                \
+    }                                                                          \
+    d1 = boost::aura::now() - d1;                                              \
+    if(d2 > 0 && d1 > 0) {                                                     \
+      measurements.push_back(d2);                                              \
+      elapsed_time += d1;                                                      \
+    }                                                                          \
+  }                                                                            \
+  double sum = std::accumulate(measurements.begin(), measurements.end(), 0.0); \
+  br.mean = sum / measurements.size();                                         \
+  double sq_sum = std::inner_product(measurements.begin(), measurements.end(), \
+    measurements.begin(), 0.0);                                                \
+  br.stdev = std::sqrt(sq_sum / measurements.size() - br.mean * br.mean);      \
+  std::sort(measurements.begin(), measurements.end());                         \
+  br.min = measurements[0];                                                    \
+  br.max = measurements[measurements.size()-1];                                \
+}                                                                              \
+/**/
+
+
+
 
 /**
  * @brief macro to benchmark an asynchronous expression
@@ -192,15 +298,15 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
   /* until time is not elapsed */                                              \
   num = 0;                                                                     \
   while(elapsed_time < duration) {                                             \
-    double d1 = boost::aura::now();                                                   \
+    double d1 = boost::aura::now();                                            \
     {                                                                          \
-      d2 = boost::aura::now();                                                        \
+      d2 = boost::aura::now();                                                 \
       expression;                                                              \
       sync;                                                                    \
-      d2 = boost::aura::now() - d2;                                                   \
+      d2 = boost::aura::now() - d2;                                            \
       num++;                                                                   \
     }                                                                          \
-    d1 = boost::aura::now() - d1;                                                     \
+    d1 = boost::aura::now() - d1;                                              \
     if(d2 > 0 && d1 > 0) {                                                     \
       measurements.push_back(d2);                                              \
       elapsed_time += d1;                                                      \
@@ -232,13 +338,13 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
   /* until time is not elapsed and we have not an unequal number of  */        \
   /* measurements, the latter is important for the median */                   \
   while(elapsed_time < duration || measurements.size() % 2 == 0) {             \
-    double d1 = boost::aura::now();                                                   \
+    double d1 = boost::aura::now();                                            \
     {                                                                          \
-      d2 = boost::aura::now();                                                        \
+      d2 = boost::aura::now();                                                 \
       expression;                                                              \
-      d2 = boost::aura::now() - d2;                                                   \
+      d2 = boost::aura::now() - d2;                                            \
     }                                                                          \
-    d1 = boost::aura::now() - d1;                                                     \
+    d1 = boost::aura::now() - d1;                                              \
     if(d2 > 0 && d1 > 0) {                                                     \
       measurements.push_back(d2);                                              \
       elapsed_time += d1;                                                      \
@@ -248,7 +354,7 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
   std::nth_element(measurements.begin(), measurements.begin()+n,               \
     measurements.end());                                                       \
   result = measurements[n];                                                    \
-  boost::aura::details::print_histogram(measurements, 10);                            \
+  boost::aura::details::print_histogram(measurements, 10);                     \
 }                                                                              \
 /**/
 
