@@ -20,6 +20,7 @@ __device__ __forceinline__ unsigned int get_bundle_id() {
 
 #define AURA_KERNEL extern "C" __global__
 #define AURA_GLOBAL 
+#define AURA_DEVICE_FUNCTION __device__
 
 #endif // AURA_BACKEND_CUDA_KERNEL_HELPER_HPP
 
