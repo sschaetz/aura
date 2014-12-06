@@ -38,108 +38,115 @@
   r15 = r0*r7+r15;     \
   /**/
 
-AURA_KERNEL void peak_flop_single(AURA_GLOBAL float * A) {
-  int id = get_mesh_id();
-  PEAK_FLOP_INIT(float);
-  for(int i=0; i<64; i++) {
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-  }
-  r0 += r1 + r2 + r3 + r4 + r5 + r6 + r7 + 
-    r8 + r9 + r10 + r11 + r12 + r13 + r14 + r15;
-  A[id] = r0;
+AURA_KERNEL void peak_flop_single(AURA_GLOBAL float * A)
+{
+	int id = get_mesh_id();
+	PEAK_FLOP_INIT(float);
+	for(int i=0; i<64; i++) {
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+	}
+	r0 += r1 + r2 + r3 + r4 + r5 + r6 + r7 +
+	      r8 + r9 + r10 + r11 + r12 + r13 + r14 + r15;
+	A[id] = r0;
 }
 
-AURA_KERNEL void peak_flop_double(AURA_GLOBAL float * A) {
-  int id = get_mesh_id();
-  PEAK_FLOP_INIT(double);
-  for(int i=0; i<64; i++) {
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-    PEAK_FLOP_MADD;
-  }
-  r0 += r1 + r2 + r3 + r4 + r5 + r6 + r7 + 
-    r8 + r9 + r10 + r11 + r12 + r13 + r14 + r15;
-  A[id] = r0;
+AURA_KERNEL void peak_flop_double(AURA_GLOBAL float * A)
+{
+	int id = get_mesh_id();
+	PEAK_FLOP_INIT(double);
+	for(int i=0; i<64; i++) {
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+		PEAK_FLOP_MADD;
+	}
+	r0 += r1 + r2 + r3 + r4 + r5 + r6 + r7 +
+	      r8 + r9 + r10 + r11 + r12 + r13 + r14 + r15;
+	A[id] = r0;
 }
 
 #if 0
-AURA_KERNEL void peak_copy(AURA_GLOBAL float * dst, AURA_GLOBAL float* src) {
-  const int bsize = 32;
-  const int mult = 64;
-  int id = (get_mesh_id() / bsize)*bsize*mult + get_mesh_id() % bsize;
-  for(int i=0; i<mult; i++) {
-    dst[id + i * bsize] = src[id + i * bsize];
-  }
+AURA_KERNEL void peak_copy(AURA_GLOBAL float * dst, AURA_GLOBAL float* src)
+{
+	const int bsize = 32;
+	const int mult = 64;
+	int id = (get_mesh_id() / bsize)*bsize*mult + get_mesh_id() % bsize;
+	for(int i=0; i<mult; i++) {
+		dst[id + i * bsize] = src[id + i * bsize];
+	}
 }
 
 
-AURA_KERNEL void peak_copy(AURA_GLOBAL float * dst, AURA_GLOBAL float * src) {
-  int id = get_mesh_id();
-  int s = get_mesh_size();
+AURA_KERNEL void peak_copy(AURA_GLOBAL float * dst, AURA_GLOBAL float * src)
+{
+	int id = get_mesh_id();
+	int s = get_mesh_size();
 #pragma unroll
-  for(int i=0; i<64; i++) {
-    dst[id] = src[id];
-    id += s;
-  }
+	for(int i=0; i<64; i++) {
+		dst[id] = src[id];
+		id += s;
+	}
 }
 
 
 AURA_KERNEL void peak_scale(AURA_GLOBAL float * dst, AURA_GLOBAL float * src,
-  float scalar) {
-  int id = get_mesh_id();
-  int s = get_mesh_size();
-  for(int i=0; i<64; i++) {
-    dst[id] = scalar * src[id];
-    id += s;
-  }
+                            float scalar)
+{
+	int id = get_mesh_id();
+	int s = get_mesh_size();
+	for(int i=0; i<64; i++) {
+		dst[id] = scalar * src[id];
+		id += s;
+	}
 }
 
 AURA_KERNEL void peak_add(AURA_GLOBAL float * dst, AURA_GLOBAL float * src1,
-  AURA_GLOBAL float * src2) {
-  int id = get_mesh_id();
-  int s = get_mesh_size();
-  for(int i=0; i<64; i++) {
-    dst[id] = src1[id] + src2[id];
-    id += s;
-  }
+                          AURA_GLOBAL float * src2)
+{
+	int id = get_mesh_id();
+	int s = get_mesh_size();
+	for(int i=0; i<64; i++) {
+		dst[id] = src1[id] + src2[id];
+		id += s;
+	}
 }
 
 AURA_KERNEL void peak_triad(AURA_GLOBAL float * dst, AURA_GLOBAL float * src1,
-  AURA_GLOBAL float * src2, float scalar) {
-  int id = get_mesh_id();
-  int s = get_mesh_size();
-  for(int i=0; i<64; i++) {
-    dst[id] = src1[id] + scalar * src2[id];
-    id += s;
-  }
+                            AURA_GLOBAL float * src2, float scalar)
+{
+	int id = get_mesh_id();
+	int s = get_mesh_size();
+	for(int i=0; i<64; i++) {
+		dst[id] = src1[id] + scalar * src2[id];
+		id += s;
+	}
 }
 
 #endif
