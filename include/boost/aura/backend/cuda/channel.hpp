@@ -45,7 +45,8 @@ public:
    * if memory is accessed seldom, p2p access from the kernel is
    * more efficient
    */
-  inline explicit channel(device& d, bounds b, memory_access ma) 
+  inline explicit channel(device& d, bounds b, 
+		  memory_access ma = memory_access::frequent) 
   {
 	/**
 	 * seldom access:

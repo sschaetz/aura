@@ -25,3 +25,31 @@ Channel
 
 
 
+device d(0);
+feed f(d);
+bounds b(100,100);
+
+channel c(d, b);
+std::vector<float> hv =<< f(c); // does this work?
+wait_for(f);
+// fill hv
+device_array<float> dv << c(f) << hv;
+wait_for(f);
+// use dv
+
+
+// -----
+
+device d(0);
+feed f(d);
+bounds b(100,100);
+
+channel c(d);
+std::vector<float, allocator> hv = c.make_host<float>(b);
+device_array<float> dv;
+
+future<void> f1 = c.move(hv, dv);
+future<void> f2 = invoke(kernel1, {512, 512}, 256, args(), f1);
+future<void> f3 = invoke(kernel2, {512, 512}, 256, args(), f1);
+
+
