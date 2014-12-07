@@ -17,6 +17,7 @@ inline unsigned int get_bundle_id() {
 
 #define AURA_KERNEL __kernel
 #define AURA_GLOBAL __global
+#define AURA_DEVICE_FUNCTION
 
 #endif // AURA_BACKEND_OPENCL_KERNEL_HELPER_HPP
 
