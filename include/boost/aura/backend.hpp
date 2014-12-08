@@ -6,7 +6,8 @@
 
 #if defined AURA_BACKEND_CUDA
 	#if defined __CUDACC__
-		#include <boost/aura/backend/cuda/kernel_helper.hpp>
+		#include <boost/aura/backend/cuda/kernel/kernel_helper.hpp>
+		#include <boost/aura/backend/cuda/kernel/complex.hpp>
 	#else
 		#include <boost/aura/backend/cuda/args.hpp>
 		#include <boost/aura/backend/cuda/bundle.hpp>
@@ -28,7 +29,7 @@
 #elif defined AURA_BACKEND_OPENCL
 
 	#if defined __OPENCL_VERSION__
-		#include <boost/aura/backend/opencl/kernel_helper.hpp>
+		#include <boost/aura/backend/opencl/kernel/kernel_helper.hpp>
 	#else
 		#include <boost/aura/backend/opencl/args.hpp>
 		#include <boost/aura/backend/opencl/bundle.hpp>
@@ -76,6 +77,15 @@ using backend::feed;
 using backend::wait_for;
 
 using backend::device_ptr;
+
+using backend::module;
+using backend::kernel;
+using backend::create_kernel;
+using backend::mesh;
+using backend::bundle;
+using backend::args;
+
+using backend::device_malloc;
 
 } // namespace aura
 } // namespace boost 

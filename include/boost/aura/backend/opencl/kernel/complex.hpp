@@ -1,10 +1,8 @@
-#ifndef AURA_BACKEND_CUDA_KERNEL_COMPLEX_HPP
-#define AURA_BACKEND_CUDA_KERNEL_COMPLEX_HPP
-
-#include <cuComplex.h>
+#ifndef AURA_BACKEND_OPENCL_KERNEL_COMPLEX_HPP
+#define AURA_BACKEND_OPENCL_KERNEL_COMPLEX_HPP
 
 // single precission -----
-typedef cuFloatComplex cfloat;
+typedef float2 cfloat;
 
 __device__ static __forceinline__ float crealf(cfloat x) 
 { 
@@ -44,12 +42,19 @@ __device__ static __forceinline__ cfloat cmulf(cfloat x, cfloat y)
 
 __device__ static __forceinline__ cfloat cdivf(cfloat x, cfloat y)
 {
-	return cuCdivf(x, y);
+	float n = x.y*x.y + y.y * y.y;
+	float r = (x.x*y.x + x.y*y.y) / n;
+	float i = (x.y-y.x + x.x*y.y) / n;
+	return make_cfloat(r, i);
 }
 
 __device__ static __forceinline__ float cabsf(cfloat x)
 {
-	return cuCabsf(x);
+	float s = x.x > x.y ? x.x : x.y;
+	if (s == 0.) {
+		return 0.;
+	}
+	return s * sqrt(x.x * x.x + x.y * x.y);
 }
 
 __device__ static __forceinline__ cuComplex cfmaf(cfloat x, cfloat y, cfloat d)
@@ -123,5 +128,5 @@ __device__ static __forceinline__ cfloat cdouble_to_cfloat(cdouble c)
 	return make_cfloat((float)creal(c), (float)cimag(c));
 }
 
-#endif // AURA_BACKEND_CUDA_KERNEL_COMPLEX_HPP
+#endif // AURA_BACKEND_OPENCL_KERNEL_COMPLEX_HPP
 

@@ -4,18 +4,20 @@
 #include <cuda.h>
 
 __device__ __forceinline__ unsigned int get_mesh_id() {
-  return (gridDim.y*gridDim.x*blockIdx.z + gridDim.x*blockIdx.y + blockIdx.x) *
-    (blockDim.z*blockDim.y*blockDim.x) +
-    blockDim.y*blockDim.x*threadIdx.z + blockDim.x*threadIdx.y + threadIdx.x;
+	return (gridDim.y*gridDim.x*blockIdx.z + 
+			gridDim.x*blockIdx.y + blockIdx.x) * 
+		(blockDim.z*blockDim.y*blockDim.x) + 
+		blockDim.y*blockDim.x*threadIdx.z + blockDim.x*threadIdx.y + 
+		threadIdx.x;
 }
 
 __device__ __forceinline__ unsigned int get_mesh_size() {
-  return gridDim.z*gridDim.y*gridDim.x * blockDim.z*blockDim.y*blockDim.x;
+	return gridDim.z*gridDim.y*gridDim.x * blockDim.z*blockDim.y*blockDim.x;
 }
 
 __device__ __forceinline__ unsigned int get_bundle_id() {
-  return blockDim.y*blockDim.x*threadIdx.z + 
-    blockDim.x*threadIdx.y + threadIdx.x;
+	return blockDim.y*blockDim.x*threadIdx.z + 
+		blockDim.x*threadIdx.y + threadIdx.x;
 }
 
 #define AURA_KERNEL extern "C" __global__

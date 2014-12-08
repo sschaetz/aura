@@ -1,4 +1,4 @@
-AURA_ADD_TEST(backend/basic.cpp ${AURA_BACKEND_LIBRARIES})
+
 AURA_ADD_TEST(backend/device_info.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/factorize.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/device_ptr.cpp ${AURA_BACKEND_LIBRARIES})
@@ -11,6 +11,8 @@ ENDIF()
 
 AURA_ADD_TEST(backend/host_allocator.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/host_memory.cpp ${AURA_BACKEND_LIBRARIES})
+AURA_ADD_TEST(backend/complex.cpp backend/complex.cc 
+	${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/kernel.cpp backend/kernel.cc 
 	${AURA_BACKEND_LIBRARIES})
 
