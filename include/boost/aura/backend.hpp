@@ -30,6 +30,7 @@
 
 	#if defined __OPENCL_VERSION__
 		#include <boost/aura/backend/opencl/kernel/kernel_helper.hpp>
+		#include <boost/aura/backend/opencl/kernel/complex.hpp>
 	#else
 		#include <boost/aura/backend/opencl/args.hpp>
 		#include <boost/aura/backend/opencl/bundle.hpp>

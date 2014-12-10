@@ -1,8 +1,11 @@
 
-#define BOOST_TEST_MODULE backend.kernel
+#define BOOST_TEST_MODULE backend.kernel_complex
 
+#include <iomanip>
+#include <limits>
 #include <cstring>
 #include <complex>
+#include <numeric>
 #include <boost/test/unit_test.hpp>
 #include <boost/aura/backend.hpp>
 #include <boost/aura/config.hpp>
@@ -21,8 +24,8 @@ BOOST_AUTO_TEST_CASE(complex_single)
 	BOOST_REQUIRE(0 < num);
 	device d(0);  
 	feed f(d);
-	std::size_t xdim = 4;
-	std::size_t ydim = 4;
+	std::size_t xdim = 64;
+	std::size_t ydim = 64;
 
 	std::vector<float> a1(xdim*ydim, 41.);
 	std::vector<float> a2(xdim*ydim);
@@ -38,15 +41,21 @@ BOOST_AUTO_TEST_CASE(complex_single)
 	copy(&a2[0], mem, xdim*ydim, f);
 	wait_for(f);
 	typedef std::complex<float> cfloat;
+
 	for(std::size_t i=0; i<a1.size(); i++) {
-		cfloat c ((float)i, (float)i*0.1);
+		cfloat c ((float)i+1, (float)(i+1)*0.1);
 		cfloat c1 = conj(cfloat(std::imag(c), std::real(c))) + c;
 		cfloat c2 = conj(cfloat(std::imag(c), std::real(c))) - c;
 		cfloat c3 = (c1*c2)/c;	
 		a1[i] = std::abs(c3);
-		std::cout << a2[i] << " " << a1[i] << std::endl;
 	}
-	BOOST_CHECK(std::equal(a1.begin(), a1.end(), a2.begin()));
+	float hsum = std::abs(std::accumulate(a1.begin(), a1.end(), .0));
+	float dsum = std::abs(std::accumulate(a2.begin(), a2.end(), .0));
+	float err = std::abs(hsum - dsum);
+	BOOST_CHECK(err < std::numeric_limits<float>::epsilon());
 	device_free(mem);
 }
+
+// TODO: test double precision
+// TODO: do more comprehensive tests
 

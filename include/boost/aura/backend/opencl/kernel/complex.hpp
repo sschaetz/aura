@@ -4,126 +4,139 @@
 // single precission -----
 typedef float2 cfloat;
 
-__device__ static __forceinline__ float crealf(cfloat x) 
+static inline float crealf(cfloat x) 
 { 
 	return x.x; 
 }
 
-__device__ static __forceinline__ float cimagf(cfloat x) 
+static inline float cimagf(cfloat x) 
 { 
 	return x.y; 
 }
 
-__device__ static __forceinline__ cfloat make_cfloat(float r, float i)
+static inline cfloat make_cfloat(float r, float i)
 {
-	return make_cuFloatComplex(r, i);
+	return (cfloat)(r, i);
 }
 
-__device__ static __forceinline__ cfloat conjf(cfloat x)
+static inline cfloat conjf(cfloat x)
 {
     return make_cfloat(x.x, -x.y);
 }
 
-__device__ static __forceinline__ cfloat caddf(cfloat x, cfloat y)
+static inline cfloat caddf(cfloat x, cfloat y)
 {
 	return make_cfloat(x.x+y.x, x.y+y.y);
 }
 
-__device__ static __forceinline__ cfloat csubf(cfloat x, cfloat y)
+static inline cfloat csubf(cfloat x, cfloat y)
 {
 	return make_cfloat(x.x-y.x, x.y-y.y);
 }
 
-__device__ static __forceinline__ cfloat cmulf(cfloat x, cfloat y)
+static inline cfloat cmulf(cfloat x, cfloat y)
 {
 	return make_cfloat(x.x * y.x - x.y * y.y, 
 			x.x*y.y + x.y*y.x);
 }
 
-__device__ static __forceinline__ cfloat cdivf(cfloat x, cfloat y)
+static inline cfloat cdivf(cfloat x, cfloat y)
 {
-	float n = x.y*x.y + y.y * y.y;
-	float r = (x.x*y.x + x.y*y.y) / n;
-	float i = (x.y-y.x + x.x*y.y) / n;
+	float n = 1.0f / (y.x*y.x + y.y*y.y);
+	float r = (x.x*y.x + x.y*y.y) * n;
+	float i = (x.y*y.x - x.x*y.y) * n;
 	return make_cfloat(r, i);
 }
 
-__device__ static __forceinline__ float cabsf(cfloat x)
+static inline float cabsf(cfloat x)
 {
-	float s = x.x > x.y ? x.x : x.y;
+	float rp = x.x;
+	float ip = x.y;
+	float s = fabs(rp);
+	if (s < fabs(ip)) {
+		s = fabs(ip);
+	}	
 	if (s == 0.) {
 		return 0.;
 	}
-	return s * sqrt(x.x * x.x + x.y * x.y);
-}
+	rp /= s;
+	ip /= s;
 
-__device__ static __forceinline__ cuComplex cfmaf(cfloat x, cfloat y, cfloat d)
-{
-	return cuCfmaf(x, y, d);
+	return s * sqrt(rp * rp + ip * ip);
 }
 
 // double precission -----
-typedef cuDoubleComplex cdouble;
+typedef double2 cdouble;
 
-__device__ static __forceinline__ double creal(cdouble x) 
+static inline double creal(cdouble x) 
 { 
 	return x.x; 
 }
 
-__device__ static __forceinline__ double cimag(cdouble x) 
+static inline double cimag(cdouble x) 
 { 
 	return x.y; 
 }
 
-__device__ static __forceinline__ cdouble make_cdouble(double r, double i)
+static inline cdouble make_cdouble(double r, double i)
 {
-	return make_cuDoubleComplex(r, i);
+	return (cdouble)(r, i);
 }
 
-__device__ static __forceinline__ cdouble conj(cdouble x)
+static inline cdouble conj(cdouble x)
 {
-	return cuConj(x);
+	return make_cdouble(x.x, -x.y);
 }
 
-__device__ static __forceinline__ cdouble cadd(cdouble x, cdouble y)
+static inline cdouble cadd(cdouble x, cdouble y)
 {
-	return cuCadd(x, y);
+	return make_cdouble(x.x+y.x, x.y+y.y);
 }
 
-__device__ static __forceinline__ cdouble csub(cdouble x, cdouble y)
+static inline cdouble csub(cdouble x, cdouble y)
 {
-	return cuCsub(x, y);
+	return make_cdouble(x.x-y.x, x.y-y.y);
 }
 
-__device__ static __forceinline__ cdouble cmul(cdouble x, cdouble y)
+static inline cdouble cmul(cdouble x, cdouble y)
 {
-	return cuCmul(x, y);
+	return make_cdouble(x.x * y.x - x.y * y.y, 
+			x.x*y.y + x.y*y.x);
 }
 
-__device__ static __forceinline__ cdouble cdiv(cdouble x, cdouble y)
+static inline cdouble cdiv(cdouble x, cdouble y)
 {
-	return cuCdiv(x, y);
+	double n = 1.0f / (y.x*y.x + y.y*y.y);
+	double r = (x.x*y.x + x.y*y.y) * n;
+	double i = (x.y*y.x - x.x*y.y) * n;
+	return make_cdouble(r, i);
 }
 
-__device__ static __forceinline__ double cabs(cdouble x)
-{
-	return cuCabs(x);
-}
+static inline double cabs(cdouble x)
+{	
+	double rp = x.x;
+	double ip = x.y;
+	double s = fabs(rp);
+	if (s < fabs(ip)) {
+		s = fabs(ip);
+	}	
+	if (s == 0.) {
+		return 0.;
+	}
+	rp /= s;
+	ip /= s;
 
-__device__ static __forceinline__ cdouble cfma(cdouble x, cdouble y, cdouble d)
-{
-	return cuCfma(x, y, d);
+	return s * sqrt(rp * rp + ip * ip);
 }
-
 
 /// promotion
-__device__ static __forceinline__ cdouble cfloat_to_cdouble(cfloat c)
+static inline cdouble cfloat_to_cdouble(cfloat c)
 {
     return make_cdouble((double)crealf(c), (double)cimagf(c));
 }
 
 /// demotion
-__device__ static __forceinline__ cfloat cdouble_to_cfloat(cdouble c) 
+static inline cfloat cdouble_to_cfloat(cdouble c) 
 {
 	return make_cfloat((float)creal(c), (float)cimag(c));
 }

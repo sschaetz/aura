@@ -18,7 +18,7 @@ __device__ static __forceinline__ float cimagf(cfloat x)
 
 __device__ static __forceinline__ cfloat make_cfloat(float r, float i)
 {
-	return make_cuFloatComplex(r, i);
+	return cuFloatComplex(r, i);
 }
 
 __device__ static __forceinline__ cfloat conjf(cfloat x)
@@ -44,17 +44,27 @@ __device__ static __forceinline__ cfloat cmulf(cfloat x, cfloat y)
 
 __device__ static __forceinline__ cfloat cdivf(cfloat x, cfloat y)
 {
-	return cuCdivf(x, y);
+	float n = 1.0f / (y.x*y.x + y.y*y.y);
+	float r = (x.x*y.x + x.y*y.y) * n;
+	float i = (x.y*y.x - x.x*y.y) * n;
+	return make_cfloat(r, i);
 }
 
 __device__ static __forceinline__ float cabsf(cfloat x)
 {
-	return cuCabsf(x);
-}
+	float rp = x.x;
+	float ip = x.y;
+	float s = fabs(rp);
+	if (s < fabs(ip)) {
+		s = fabs(ip);
+	}	
+	if (s == 0.) {
+		return 0.;
+	}
+	rp /= s;
+	ip /= s;
 
-__device__ static __forceinline__ cuComplex cfmaf(cfloat x, cfloat y, cfloat d)
-{
-	return cuCfmaf(x, y, d);
+	return s * sqrt(rp * rp + ip * ip);
 }
 
 // double precission -----
@@ -92,22 +102,31 @@ __device__ static __forceinline__ cdouble csub(cdouble x, cdouble y)
 
 __device__ static __forceinline__ cdouble cmul(cdouble x, cdouble y)
 {
-	return cuCmul(x, y);
+	return make_cdouble(x.x * y.x - x.y * y.y, 
+			x.x*y.y + x.y*y.x);
 }
 
 __device__ static __forceinline__ cdouble cdiv(cdouble x, cdouble y)
 {
-	return cuCdiv(x, y);
+	double n = 1.0f / (y.x*y.x + y.y*y.y);
+	double r = (x.x*y.x + x.y*y.y) * n;
+	double i = (x.y*y.x - x.x*y.y) * n;
+	return make_cdouble(r, i);
 }
 
 __device__ static __forceinline__ double cabs(cdouble x)
 {
-	return cuCabs(x);
-}
-
-__device__ static __forceinline__ cdouble cfma(cdouble x, cdouble y, cdouble d)
-{
-	return cuCfma(x, y, d);
+	double rp = x.x;
+	double ip = x.y;
+	double s = fabs(rp);
+	if (s < fabs(ip)) {
+		s = fabs(ip);
+	}	
+	if (s == 0.) {
+		return 0.;
+	}
+	rp /= s;
+	ip /= s;
 }
 
 
