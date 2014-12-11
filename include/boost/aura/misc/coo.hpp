@@ -10,6 +10,8 @@
 #ifndef AURA_MISC_COO_HPP
 #define AURA_MISC_COO_HPP
 
+#include <tuple>
+#include <complex>
 #include <vector>
 #include <iostream>
 #include <fstream>
