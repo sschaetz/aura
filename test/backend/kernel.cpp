@@ -150,3 +150,34 @@ BOOST_AUTO_TEST_CASE(invoke_shared)
 	device_free(mem);
 }
 
+// invoke_atomic
+// _____________________________________________________________________________
+BOOST_AUTO_TEST_CASE(invoke_atomic) 
+{
+	initialize();
+	int num = device_get_count();
+	BOOST_REQUIRE(0 < num);
+	device d(0);  
+	feed f(d);
+	std::size_t xdim = 8;
+	std::size_t ydim = 8;
+	std::size_t b = 4;
+
+	std::vector<float> a1(xdim*ydim, 0.);
+	std::vector<float> a2(xdim*ydim);
+
+	module mod = create_module_from_file(kernel_file, d, 
+	AURA_BACKEND_COMPILE_FLAGS);
+	print_module_build_log(mod, d);
+	kernel k = create_kernel(mod, "simple_atomic"); 
+	device_ptr<float> mem = device_malloc<float>(xdim*ydim, d);
+
+	copy(mem, &a1[0], xdim*ydim, f); 
+	invoke(k, mesh(ydim, xdim), bundle(b), args(mem.get()), f);
+	copy(&a2[0], mem, xdim*ydim, f);
+	wait_for(f);
+	a1[0] = ydim*xdim;
+	BOOST_CHECK(std::equal(a1.begin(), a1.end(), a2.begin()));
+	device_free(mem);
+}
+
