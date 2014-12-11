@@ -18,7 +18,10 @@ __device__ static __forceinline__ float cimagf(cfloat x)
 
 __device__ static __forceinline__ cfloat make_cfloat(float r, float i)
 {
-	return cuFloatComplex(r, i);
+	cfloat c;
+	c.x = r;
+	c.y = i;
+	return c;
 }
 
 __device__ static __forceinline__ cfloat conjf(cfloat x)
@@ -67,6 +70,7 @@ __device__ static __forceinline__ float cabsf(cfloat x)
 	return s * sqrt(rp * rp + ip * ip);
 }
 
+#ifdef AURA_KERNEL_ENABLE_DOUBLE
 // double precission -----
 typedef cuDoubleComplex cdouble;
 
@@ -82,7 +86,10 @@ __device__ static __forceinline__ double cimag(cdouble x)
 
 __device__ static __forceinline__ cdouble make_cdouble(double r, double i)
 {
-	return make_cuDoubleComplex(r, i);
+	cdouble c;
+	c.x = r;
+	c.y = i;
+	return c;
 }
 
 __device__ static __forceinline__ cdouble conj(cdouble x)
@@ -141,6 +148,8 @@ __device__ static __forceinline__ cfloat cdouble_to_cfloat(cdouble c)
 {
 	return make_cfloat((float)creal(c), (float)cimag(c));
 }
+
+#endif // AURA_KERNEL_ENABLE_DOUBLE
 
 #endif // AURA_BACKEND_CUDA_KERNEL_COMPLEX_HPP
 

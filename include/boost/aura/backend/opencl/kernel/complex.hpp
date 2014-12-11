@@ -65,6 +65,7 @@ static inline float cabsf(cfloat x)
 	return s * sqrt(rp * rp + ip * ip);
 }
 
+#ifdef AURA_KERNEL_ENABLE_DOUBLE
 // double precission -----
 typedef double2 cdouble;
 
@@ -140,6 +141,8 @@ static inline cfloat cdouble_to_cfloat(cdouble c)
 {
 	return make_cfloat((float)creal(c), (float)cimag(c));
 }
+
+#endif // AURA_KERNEL_ENABLE_DOUBLE
 
 #endif // AURA_BACKEND_OPENCL_KERNEL_COMPLEX_HPP
 

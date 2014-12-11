@@ -4,10 +4,6 @@
 #include <algorithm>
 
 #include <fftw3.h>
-#define BOOST_THREAD_PROVIDES_FUTURE
-#define BOOST_RESULT_OF_USE_DECLTYPE
-#include <boost/thread/executors/basic_thread_pool.hpp>
-#include <boost/thread/future.hpp>
 
 #include <boost/aura/config.hpp>
 #include <boost/aura/misc/coo.hpp>
@@ -16,11 +12,8 @@ using namespace boost::aura;
 
 
 
-void without_future()
+void with_future()
 {	
-	boost::basic_thread_pool pool;
-	boost::future<int> f1 =
-		boost::async(pool, []() -> int {return 123;} ); 
 	//auto in = boost::async(pool, &coo_read<std::complex<float>>, "input.coo");
 	/*
 	// load data
@@ -84,7 +77,7 @@ void without_future()
 }
 
 
-void with_future()
+void without_future()
 {	
 	// load data
 	auto in = coo_read<std::complex<float>>("input.coo");
@@ -148,8 +141,8 @@ void with_future()
 
 
 int main(void) {
-
-
+	without_future();
+	with_future();
 }
 
 
