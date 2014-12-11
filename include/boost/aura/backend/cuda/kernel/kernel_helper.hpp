@@ -20,9 +20,15 @@ __device__ __forceinline__ unsigned int get_bundle_id() {
 		blockDim.x*threadIdx.y + threadIdx.x;
 }
 
+__device__ __forceinline__ unsigned int get_bundle_size() {
+	return blockDim.y*blockDim.x*blockDim.z;
+}
+
 #define AURA_KERNEL extern "C" __global__
 #define AURA_GLOBAL 
 #define AURA_DEVICE_FUNCTION __device__
+#define AURA_SHARED __shared__
+#define AURA_SYNC __syncthreads();
 
 #endif // AURA_BACKEND_CUDA_KERNEL_HELPER_HPP
 
