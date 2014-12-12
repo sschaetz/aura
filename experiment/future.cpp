@@ -4,7 +4,7 @@
 #include <algorithm>
 
 // this experiment breaks the build, it is not yet finished
-#if 0
+
 #include <fftw3.h>
 
 #include <boost/aura/config.hpp>
@@ -140,13 +140,9 @@ void without_future()
 	coo_write(data.begin(), dims, "wo_future_out.coo");
 }
 
-#endif
-
 int main(void) {
-#if 0
 	without_future();
 	with_future();
-#endif
 }
 
 

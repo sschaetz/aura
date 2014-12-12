@@ -27,6 +27,8 @@ AURA_ADD_TARGET(exp.vec_vs_vla vec_vs_vla.cpp)
 AURA_ADD_TARGET(exp.view view.cpp)
 AURA_ADD_TARGET(exp.viewv2 viewv2.cpp)
 
-AURA_ADD_TARGET(exp.future future.cpp fftw3f 
-	${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+IF(NOT ${AURA_FFTW_LIBRARY} STREQUAL "")
+	AURA_ADD_TARGET(exp.future future.cpp ${AURA_FFTW_LIBRARY}
+		${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+ENDIF()
 

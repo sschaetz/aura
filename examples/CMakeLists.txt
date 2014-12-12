@@ -2,6 +2,9 @@
 AURA_ADD_TARGET(exa.coo_pingpong 
 	coo_pingpong.cpp ${AURA_BACKEND_LIBRARIES})
 
+AURA_ADD_TARGET(exp.reduce reduce.cpp reduce.cc 
+	${AURA_BACKEND_LIBRARIES})
+
 IF(NOT ${AURA_FFT_LIBRARIES} STREQUAL "")
 	AURA_ADD_TARGET(exa.fft
 		fft.cpp ${AURA_BACKEND_LIBRARIES} ${AURA_FFT_LIBRARIES})
