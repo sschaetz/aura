@@ -3,7 +3,7 @@
 
 #include <cuComplex.h>
 
-// single precission -----
+// single precision -----
 typedef cuFloatComplex cfloat;
 
 __device__ static __forceinline__ float crealf(cfloat x) 
@@ -71,7 +71,7 @@ __device__ static __forceinline__ float cabsf(cfloat x)
 }
 
 #ifdef AURA_KERNEL_ENABLE_DOUBLE
-// double precission -----
+// double precision -----
 typedef cuDoubleComplex cdouble;
 
 __device__ static __forceinline__ double creal(cdouble x) 

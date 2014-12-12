@@ -1,7 +1,7 @@
 #ifndef AURA_BACKEND_OPENCL_KERNEL_COMPLEX_HPP
 #define AURA_BACKEND_OPENCL_KERNEL_COMPLEX_HPP
 
-// single precission -----
+// single precision -----
 typedef float2 cfloat;
 
 static inline float crealf(cfloat x) 
@@ -66,7 +66,7 @@ static inline float cabsf(cfloat x)
 }
 
 #ifdef AURA_KERNEL_ENABLE_DOUBLE
-// double precission -----
+// double precision -----
 typedef double2 cdouble;
 
 static inline double creal(cdouble x) 

@@ -55,7 +55,7 @@ public:
    * pin 
    *
    * disable unset, context context stays associated with current thread
-   * usefull for interoperability with other libraries that use a context
+   * useful for interoperability with other libraries that use a context
    * explicitly
    */
   inline void pin() {
