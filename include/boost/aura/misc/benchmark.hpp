@@ -201,9 +201,8 @@ inline void print_histogram(std::vector<double> & vec, int bins) {
  * @brief macro to benchmark an expression
  *
  * @param expression the expression that should be benchmarked
- * @param duration the amount of time the expression should execute
+ * @param duration the amount of time the expression should execute in us
  * @param br benchmark results
- * @param num number of test runs
  */
 #define AURA_BENCH(expression, duration, br) {                                 \
   std::vector<double> measurements;                                            \
