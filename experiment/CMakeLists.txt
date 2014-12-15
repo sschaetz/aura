@@ -31,6 +31,6 @@ IF(NOT ${AURA_FFTW_LIBRARY} STREQUAL "")
 	AURA_ADD_TARGET(exp.future future.cpp pthread fftw3f ${AURA_FFTW_LIBRARY}
 		${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 ENDIF()
-AURA_ADD_TARGET(exp.ftrftr ftrftr.cpp pthread fftw3f ${AURA_FFTW_LIBRARY}
+AURA_ADD_TARGET(exp.ftrftr ftrftr.cpp pthread ${AURA_FFTW_LIBRARY}
 	${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
