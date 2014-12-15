@@ -56,8 +56,8 @@ inline float cabsf(cfloat x)
 	if (s < fabs(ip)) {
 		s = fabs(ip);
 	}	
-	if (s == 0.) {
-		return 0.;
+	if (s == 0.f) {
+		return 0.f;
 	}
 	rp /= s;
 	ip /= s;
@@ -107,7 +107,7 @@ inline cdouble cmul(cdouble x, cdouble y)
 
 inline cdouble cdiv(cdouble x, cdouble y)
 {
-	double n = 1.0f / (y.x*y.x + y.y*y.y);
+	double n = 1.0 / (y.x*y.x + y.y*y.y);
 	double r = (x.x*y.x + x.y*y.y) * n;
 	double i = (x.y*y.x - x.x*y.y) * n;
 	return make_cdouble(r, i);
