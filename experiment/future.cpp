@@ -4,9 +4,6 @@
 #include <algorithm>
 #include <future>
 
-#include <boost/thread/executors/basic_thread_pool.hpp>
-#include <boost/thread/future.hpp>
-
 #include <boost/aura/misc/benchmark.hpp>
 #include <boost/aura/misc/profile.hpp>
 #include <boost/aura/misc/profile_svg.hpp>
@@ -36,8 +33,11 @@ void with_future()
 	auto ftr1 = 
 		std::async(std::launch::async, [&]() {
 			boost::aura::profile::scope<boost::aura::profile::memory_sink> s(ms, "norm scale");
+			boost::aura::profile::start(ms, "norm data ctor");	
 			std::vector<cfloat> data(
 				std::move(std::get<0>(sftr0.get())));
+			boost::aura::profile::stop(ms, "norm data ctor");	
+			boost::aura::profile::start(ms, "calc norm");	
 			double norm = std::sqrt(
 				std::accumulate(data.begin(), data.end(), 0.0,
 					[](double res, cfloat c) {
@@ -45,6 +45,7 @@ void with_future()
 							(double)std::abs(c), 2);
 					}
 				));
+			boost::aura::profile::stop(ms, "calc norm");	
 
 			// output norm
 			// output norm asynchronously
@@ -54,11 +55,13 @@ void with_future()
 				});
 
 			// scale data
+			boost::aura::profile::start(ms, "scale");	
 			std::transform(data.begin(), data.end(), data.begin(),
 					[=](cfloat c) {
 						return c*= norm;
 					}
 				);
+			boost::aura::profile::start(ms, "stop");	
 			return make_tuple(data, std::move(ftr2));
 		});
 	auto sftr1 = ftr1.share();
@@ -87,29 +90,43 @@ void with_future()
 				std::move(std::get<0>(sftr1.get())));
 
 			// create FFT plan
-			fftwf_plan fftplan = fftwf_plan_dft_2d(dims[0], dims[1],
+			fftwf_plan fftplan;
+			{
+			boost::aura::profile::scope<boost::aura::profile::memory_sink> s(ms, "fftplan");
+			fftplan = fftwf_plan_dft_2d(dims[0], dims[1],
 					nullptr, nullptr, FFTW_FORWARD, 
 					FFTW_ESTIMATE);
+			}
 			auto pattern(std::move(ftr3.get()));
 			// fft shift
+			{
+			boost::aura::profile::scope<boost::aura::profile::memory_sink> s(ms, "shift");
 			std::transform(data.begin(), data.end(), 
 				pattern.begin(), data.begin(),
 				std::multiplies<std::complex<float>>());
+			}
 
+			{
+			boost::aura::profile::scope<boost::aura::profile::memory_sink> s(ms, "fft");
 			// do FFT
 			fftwf_execute_dft(fftplan, reinterpret_cast<fftwf_complex*>(&data[0]), 
 					reinterpret_cast<fftwf_complex*>(&data[0]));
-			
+			}	
 			// destroy FFT plan
 			fftwf_destroy_plan(fftplan);	
 			
 			// fft shift
+			{
+			boost::aura::profile::scope<boost::aura::profile::memory_sink> s(ms, "shift");
 			std::transform(data.begin(), data.end(), 
 				pattern.begin(), data.begin(),
 				std::multiplies<std::complex<float>>());
-			
+			}
+			{
+			boost::aura::profile::scope<boost::aura::profile::memory_sink> s(ms, "write");
 			// write data to file
 			coo_write(data.begin(), dims, "w_future_out.coo");
+			}
 		});
 	ftr4.wait();
 }
