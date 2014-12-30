@@ -8,8 +8,7 @@
 #include <boost/aura/backend/cuda/call.hpp>
 #include <boost/aura/backend/cuda/device.hpp>
 
-namespace boost
-{
+namespace boost {
 namespace aura {
 namespace backend_detail {
 namespace cuda {

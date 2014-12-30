@@ -13,6 +13,12 @@ enum class memory_tag
 	rw
 };
 
+enum class memory_access
+{
+	seldom,
+	frequent
+};
+
 } // namespace aura
 } // boost
 

@@ -8,8 +8,7 @@
 #include <boost/aura/backend/opencl/call.hpp>
 #include <boost/aura/backend/opencl/device.hpp>
 
-namespace boost
-{
+namespace boost {
 namespace aura {
 namespace backend_detail {
 namespace opencl {

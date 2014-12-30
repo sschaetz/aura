@@ -11,6 +11,7 @@ using namespace boost::aura::backend;
 
 const char * kernel_file = AURA_UNIT_TEST_LOCATION"kernel.cc";
 
+// basic
 // _____________________________________________________________________________
 
 BOOST_AUTO_TEST_CASE(basic) 
@@ -25,7 +26,20 @@ BOOST_AUTO_TEST_CASE(basic)
 	(void)k; 
 }
 
-// basic
+// basic2
+// _____________________________________________________________________________
+
+BOOST_AUTO_TEST_CASE(basic2) 
+{
+	initialize();
+	int num = device_get_count();
+	BOOST_REQUIRE(0 < num);
+	device d(0); 
+	kernel k = d.load_from_file(kernel_file, "noarg", 
+			AURA_BACKEND_COMPILE_FLAGS);
+	(void)k; 
+}
+
 
 // invoke_simple
 // _____________________________________________________________________________
@@ -46,6 +60,37 @@ BOOST_AUTO_TEST_CASE(invoke_simple)
 	AURA_BACKEND_COMPILE_FLAGS);
 	print_module_build_log(mod, d);
 	kernel k = create_kernel(mod, "simple_add"); 
+	device_ptr<float> mem = device_malloc<float>(xdim*ydim, d);
+
+	copy(mem, &a1[0], xdim*ydim, f); 
+	invoke(k, mesh(ydim, xdim), bundle(xdim), args(mem.get()), f);
+	copy(&a2[0], mem, xdim*ydim, f);
+	wait_for(f);
+
+	for(std::size_t i=0; i<a1.size(); i++) {
+		a1[i] += 1.0;
+	}
+	BOOST_CHECK(std::equal(a1.begin(), a1.end(), a2.begin()));
+	device_free(mem);
+}
+
+// invoke_simple2
+// _____________________________________________________________________________
+BOOST_AUTO_TEST_CASE(invoke_simple2) 
+{
+	initialize();
+	int num = device_get_count();
+	BOOST_REQUIRE(0 < num);
+	device d(0);  
+	feed f(d);
+	std::size_t xdim = 16;
+	std::size_t ydim = 16;
+
+	std::vector<float> a1(xdim*ydim, 41.);
+	std::vector<float> a2(xdim*ydim);
+
+	kernel k = d.load_kernel_from_file(kernel_file, 
+			"simple_add", AURA_BACKEND_COMPILE_FLAGS); 
 	device_ptr<float> mem = device_malloc<float>(xdim*ydim, d);
 
 	copy(mem, &a1[0], xdim*ydim, f); 
