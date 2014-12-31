@@ -82,7 +82,7 @@ public:
 			const char* build_options=NULL)
 	{
 		auto it = modules_.find(file_name);
-		if (modules_.end() != it) {
+		if (modules_.end() == it) {
 			std::ifstream in(file_name, std::ios::in);
 			AURA_CHECK_ERROR(in);
 			in.seekg(0, std::ios::end);
@@ -105,7 +105,7 @@ public:
 			const char* build_options=NULL)
 	{
 		auto it = modules_.find(kernel_string);
-		if (modules_.end() != it) {
+		if (modules_.end() == it) {
 			auto it2 = modules_.insert(
 					std::make_pair(kernel_string, 
 						create_module_from_string(

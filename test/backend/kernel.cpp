@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(invoke_simple2)
 	std::vector<float> a1(xdim*ydim, 41.);
 	std::vector<float> a2(xdim*ydim);
 
-	kernel k = d.load_kernel_from_file(kernel_file, 
+	kernel k = d.load_from_file(kernel_file, 
 			"simple_add", AURA_BACKEND_COMPILE_FLAGS); 
 	device_ptr<float> mem = device_malloc<float>(xdim*ydim, d);
 
@@ -223,6 +223,9 @@ BOOST_AUTO_TEST_CASE(invoke_atomic)
 	wait_for(f);
 	a1[0] = ydim*xdim;
 	BOOST_CHECK(std::equal(a1.begin(), a1.end(), a2.begin()));
+	for (auto x:a1) {
+		std::cout << x << " ";
+	}
 	device_free(mem);
 }
 

@@ -120,6 +120,12 @@ inline void invoke(kernel& k, const bounds& b, const args_t& a, feed& f)
 	detail::invoke_impl(k, b, a, f);
 }
 
+/// invoke kernel wiht size and args
+inline void invoke(kernel& k, const std::size_t s, const args_t& a, feed& f) 
+{
+	detail::invoke_impl(k, bounds(s), a, f);
+}
+
 } // namespace opencl
 } // namespace backend_detail
 } // namespace aura

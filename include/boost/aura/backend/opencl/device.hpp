@@ -35,6 +35,8 @@ module create_module_from_file(const char * filename, device & d,
 
 kernel create_kernel(module m, const char * kernel_name);
 
+void print_module_build_log(module & m, device & d);
+
 /**
  * device class
  *
@@ -92,7 +94,7 @@ public:
 	}
 
 	/// load a kernel from a file
-	kernel load_kernel_from_file(const char* file_name, 
+	kernel load_from_file(const char* file_name, 
 			const char* kernel_name, 
 			const char* build_options=NULL)
 	{
@@ -115,12 +117,12 @@ public:
 	}
 
 	/// load a kernel from a string 
-	kernel load_kernel_from_string(const char* kernel_string, 
+	kernel load_from_string(const char* kernel_string, 
 			const char* kernel_name, 
 			const char* build_options=NULL)
 	{
 		auto it = modules_.find(kernel_string);
-		if (modules_.end() != it) {
+		if (modules_.end() == it) {
 			auto it2 = modules_.insert(
 					std::make_pair(kernel_string, 
 						create_module_from_string(

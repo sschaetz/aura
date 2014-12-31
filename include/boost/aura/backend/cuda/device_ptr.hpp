@@ -169,6 +169,11 @@ public:
     return !(*this == nullptr);
   }
 
+  /// access the device
+  device& get_device() {
+	return *device_;
+  }
+
 private:
 
   /// actual pointer that identifies device memory
@@ -177,7 +182,7 @@ private:
   /// the offset (OpenCL does not support arithmetic on the pointer)
   std::size_t offset_;
 
-  /// reference to device the feed was created for
+  /// reference to device the pointer points to
   device * device_;
 
   /// read+write readonly writeonly?

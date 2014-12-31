@@ -1,6 +1,7 @@
 Todo
 ====
 
+Atomic seems broken on OpenCL (AMD library) running on CPU.
 
 I wonder if a truely inline kernel would be possible (using a macro,
 defining the kernel and calling it right away).
