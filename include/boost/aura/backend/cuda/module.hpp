@@ -16,6 +16,7 @@ namespace cuda {
 /// module handle
 typedef CUmodule module;
 
+
 /**
  * @brief build a kernel module from a string
  *

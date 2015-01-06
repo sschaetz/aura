@@ -1,12 +1,16 @@
 #ifndef AURA_BACKEND_CUDA_DEVICE_HPP
 #define AURA_BACKEND_CUDA_DEVICE_HPP
 
+#include <fstream>
+#include <cstddef>
 #include <cstring>
+#include <unordered_map>
 #include <boost/move/move.hpp>
+#include <vector>
 #include <cuda.h>
 #include <boost/aura/backend/cuda/call.hpp>
+#include <boost/aura/backend/shared/call.hpp>
 #include <boost/aura/backend/cuda/context.hpp>
-#include <boost/aura/backend/cuda/module.hpp>
 #include <boost/aura/misc/deprecate.hpp>
 
 namespace boost {
@@ -111,11 +115,11 @@ public:
 			in.read(&fcontent[0], fcontent.size());
 			in.close();
 			auto it2 = modules_.insert(std::make_pair(file_name,
-				create_module_from_string(fcontent,
+				create_module_from_string(fcontent.c_str(),
 						*this, build_options)));
 			it = it2.first;
 		}
-		return create_kernel(*it, kernel_name);
+		return create_kernel(it->second, kernel_name);
 	}
 
 	/// load a kernel from a string 
@@ -132,7 +136,7 @@ public:
 							build_options)));
 			it = it2.first;	
 		}
-		return create_kernel(*it, kernel_name);
+		return create_kernel(it->second, kernel_name);
 	}
 
 	/// make device active
@@ -206,7 +210,7 @@ private:
 	std::size_t ordinal_;
 
 	/// modules
-	std::unordered_map<std::strings, module> modules_;
+	std::unordered_map<std::string, module> modules_;
 };
   
 /**

@@ -169,11 +169,6 @@ public:
     return !(*this == nullptr);
   }
 
-  /// access the device
-  device& get_device() {
-	return *device_;
-  }
-
 private:
 
   /// actual pointer that identifies device memory
