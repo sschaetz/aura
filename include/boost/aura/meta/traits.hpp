@@ -25,6 +25,12 @@ std::size_t size(device_array<T>& da)
 	return da.size();
 }
 
+template <typename T>
+device& get_device(device_array<T>& da)
+{
+	return da.get_device();
+}
+
 } // namespace traits
 } // namespace aura
 } // namespace boost

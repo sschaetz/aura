@@ -94,8 +94,8 @@ public:
 	}
 
 	/// load a kernel from a file
-	kernel load_from_file(const char* file_name, 
-			const char* kernel_name, 
+	kernel load_from_file(const char* kernel_name,
+			const char* file_name, 
 			const char* build_options=NULL)
 	{
 		auto it = modules_.find(file_name);
@@ -117,8 +117,8 @@ public:
 	}
 
 	/// load a kernel from a string 
-	kernel load_from_string(const char* kernel_string, 
-			const char* kernel_name, 
+	kernel load_from_string(const char* kernel_name,
+			const char* kernel_string, 
 			const char* build_options=NULL)
 	{
 		auto it = modules_.find(kernel_string);

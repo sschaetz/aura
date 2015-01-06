@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2014 Biomedizinische NMR Forschungs GmbH
+ * Copyright (C) 2011-2015 Biomedizinische NMR Forschungs GmbH
  *         Author: Sebastian Schaetz <sschaet@gwdg.de>
  *
  *  Distributed under the Boost Software License, Version 1.0.

@@ -1,6 +1,6 @@
 # Aura
 
-Copyright (C) 2011-2014 Biomedizinische NMR Forschungs GmbH
+Copyright (C) 2011-2015 Biomedizinische NMR Forschungs GmbH
 
 
 Aura is a modern, header-only C++ library for accelerator development. Aura 

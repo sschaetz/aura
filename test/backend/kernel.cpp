@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(basic2)
 	int num = device_get_count();
 	BOOST_REQUIRE(0 < num);
 	device d(0); 
-	kernel k = d.load_from_file(kernel_file, "noarg", 
+	kernel k = d.load_from_file("noarg", kernel_file,
 			AURA_BACKEND_COMPILE_FLAGS);
 	(void)k; 
 }
@@ -89,8 +89,8 @@ BOOST_AUTO_TEST_CASE(invoke_simple2)
 	std::vector<float> a1(xdim*ydim, 41.);
 	std::vector<float> a2(xdim*ydim);
 
-	kernel k = d.load_from_file(kernel_file, 
-			"simple_add", AURA_BACKEND_COMPILE_FLAGS); 
+	kernel k = d.load_from_file("simple_add", kernel_file, 
+			AURA_BACKEND_COMPILE_FLAGS); 
 	device_ptr<float> mem = device_malloc<float>(xdim*ydim, d);
 
 	copy(mem, &a1[0], xdim*ydim, f); 

@@ -14,6 +14,25 @@ namespace aura {
 namespace backend_detail {
 namespace cuda {
 
+class device;
+
+/// module handle
+typedef CUmodule module;
+
+/// kernel handle
+typedef CUfunction kernel;
+
+module create_module_from_string(const char * str, device & d,
+		const char * build_options);
+
+module create_module_from_file(const char * filename, device & d,
+		const char * build_options);
+
+kernel create_kernel(module m, const char * kernel_name);
+
+void print_module_build_log(module & m, device & d);
+
+
 /**
  * device class
  *
@@ -77,8 +96,8 @@ public:
 	}
 
 	/// load a kernel from a file
-	kernel load_from_file(const char* file_name, 
-			const char* kernel_name, 
+	kernel load_from_file(const char* kernel_name, 
+			const char* file_name, 
 			const char* build_options=NULL)
 	{
 		auto it = modules_.find(file_name);
@@ -100,8 +119,8 @@ public:
 	}
 
 	/// load a kernel from a string 
-	kernel load_from_string(const char* kernel_string, 
-			const char* kernel_name, 
+	kernel load_from_string(const char* kernel_name, 
+			const char* kernel_string, 
 			const char* build_options=NULL)
 	{
 		auto it = modules_.find(kernel_string);

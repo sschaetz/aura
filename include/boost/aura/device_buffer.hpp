@@ -95,6 +95,11 @@ public:
 		return size_;
 	}
 
+	/// return device
+	device& get_device()
+	{
+		return ptr_.get_device();
+	}
 
 private:
 	/// finalize object (called from dtor and move assign)

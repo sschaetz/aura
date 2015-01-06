@@ -103,6 +103,12 @@ public:
 		return bounds_;
 	}
 
+	/// return device
+	device& get_device()
+	{
+		return data_.get_device();
+	}
+
 private:
 	/// bounds of array
 	bounds bounds_;
