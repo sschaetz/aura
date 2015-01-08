@@ -30,10 +30,13 @@ inline void calc_mesh_bundle(std::size_t v, std::size_t f,
 		std::array<bool, 4>::const_iterator m)
 {
 	if (f > v) {
-		std::cout << *i << " " << v << " " << f << " " << *m << std::endl;
+		++m;
+		// hack to handle 1-Dimensional bundles in OpenCL
 		if (*m) {
+			auto t = *i;
+			++i;
+			*i = t;
 		}	
-		std::cout << "returning" << std::endl;
 		return;
 	}
 	if (0 == v % f) {
@@ -47,7 +50,6 @@ inline void calc_mesh_bundle(std::size_t v, std::size_t f,
 				assert(f < *b);
 				*i *= f;
 				f /= *(i-1);
-				std::cout << "special handling for mask" << std::endl;
 				calc_mesh_bundle(v/f, f, i, b, m);
 				return;
 			}
