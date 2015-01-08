@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(basic_opencl)
 {
 
 	const std::array<std::size_t, 4> max_mb = {{
-		256, 
+		AURA_OPENCL_MAX_BUNDLE, 
 		AURA_CUDA_MAX_MESH0, 
 		AURA_CUDA_MAX_MESH1, 
 		AURA_CUDA_MAX_MESH2 
@@ -71,7 +71,18 @@ BOOST_AUTO_TEST_CASE(basic_opencl)
 	boost::aura::detail::calc_mesh_bundle(boost::aura::product(b), 2, 
 			mesh_bundle.begin(), max_mb.begin(), mask.begin());
 	BOOST_CHECK((long int)boost::aura::product(mesh_bundle) == product(b));
+	
 
+	std::cout << " ------------------- " << std::endl;
+	mesh_bundle = {{1, 1, 1, 1}};
+	b = boost::aura::bounds(128);
+	boost::aura::detail::calc_mesh_bundle(boost::aura::product(b), 2, 
+			mesh_bundle.begin(), max_mb.begin(), mask.begin());
+	for (auto x : mesh_bundle) {
+		std::cout << x << std::endl;
+	}
+	BOOST_CHECK((long int)boost::aura::product(mesh_bundle) == product(b));
+	std::cout << " ------------------- " << std::endl;
 	
 	mesh_bundle = {{1, 1, 1, 1}};
 	b = boost::aura::bounds(3, 19, 11);

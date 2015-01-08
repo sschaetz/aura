@@ -90,6 +90,8 @@ inline void invoke_impl(kernel & k, const bounds& b, const args_t & a, feed & f)
 	tb.push_back(mb[0]);
 	tb.push_back(1);
 	tb.push_back(1);
+
+	std::cout << tm << " -- " << tb << std::endl;
 	
 	// call kernel
 	AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(

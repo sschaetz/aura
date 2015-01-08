@@ -119,7 +119,7 @@ public:
 	/// load a kernel from a string 
 	kernel load_from_string(const char* kernel_name,
 			const char* kernel_string, 
-			const char* build_options=NULL)
+			const char* build_options=NULL, bool debug=false)
 	{
 		auto it = modules_.find(kernel_string);
 		if (modules_.end() == it) {
@@ -129,7 +129,11 @@ public:
 							kernel_string, *this,
 							build_options)));
 			it = it2.first;	
+			if (debug) {
+				print_module_build_log(it2.first->second, *this);
+			}
 		}
+		
 		return create_kernel(it->second, kernel_name);
 	}
 
@@ -175,6 +179,18 @@ public:
 	inline std::size_t get_ordinal() const 
 	{
 		return ordinal_; 
+	}
+
+	/// compare devices
+	inline bool operator==(const device& d)
+	{
+		return (context_ == d.context_ && ordinal_ == d.ordinal_);
+	}
+
+	/// compare devices
+	inline bool operator!=(const device& d)
+	{
+		return !(*this == d);
 	}
 
 private:

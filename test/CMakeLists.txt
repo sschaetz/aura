@@ -26,6 +26,7 @@ AURA_ADD_TEST(detail/svec.cpp)
 
 IF(${AURA_BACKEND} STREQUAL OPENCL)
 	AURA_ADD_TEST(math/norm2.cpp  ${AURA_BACKEND_LIBRARIES})
+	AURA_ADD_TEST(math/add.cpp  ${AURA_BACKEND_LIBRARIES})
 ENDIF()
 
 AURA_ADD_TEST(misc/profile.cpp pthread)

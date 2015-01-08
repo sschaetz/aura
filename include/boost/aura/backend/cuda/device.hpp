@@ -193,6 +193,18 @@ public:
 		return ordinal_; 
 	}
 
+	/// compare devices
+	inline bool operator==(const device& d)
+	{
+		return (context_ == d.context_ && ordinal_ == d.ordinal_);
+	}
+
+	/// compare devices
+	inline bool operator!=(const device& d)
+	{
+		return !(*this == d);
+	}
+
 private:
 	/// finalize object (called from dtor and move assign)
 	void finalize() 

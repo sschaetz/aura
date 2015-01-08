@@ -16,10 +16,13 @@ namespace detail {
  *
  * the mask m defines if and at what position, the algorithm
  * should restart calculating, taking the previous value
- * into 
+ * into account 
  *
- * FIXME this function ant its use is not implemented in a 
+ * FIXME this function and its use is not implemented in a 
  * general way regarding the mask, but it is ok for now
+ *
+ * @param v is the value that should be factorized
+ * @param f is the current factor
  */
 inline void calc_mesh_bundle(std::size_t v, std::size_t f, 
 		std::array<std::size_t, 4>::iterator i,
@@ -27,6 +30,10 @@ inline void calc_mesh_bundle(std::size_t v, std::size_t f,
 		std::array<bool, 4>::const_iterator m)
 {
 	if (f > v) {
+		std::cout << *i << " " << v << " " << f << " " << *m << std::endl;
+		if (*m) {
+		}	
+		std::cout << "returning" << std::endl;
 		return;
 	}
 	if (0 == v % f) {
@@ -40,6 +47,7 @@ inline void calc_mesh_bundle(std::size_t v, std::size_t f,
 				assert(f < *b);
 				*i *= f;
 				f /= *(i-1);
+				std::cout << "special handling for mask" << std::endl;
 				calc_mesh_bundle(v/f, f, i, b, m);
 				return;
 			}

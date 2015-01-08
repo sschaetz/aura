@@ -20,15 +20,33 @@ device_ptr<T> begin(device_array<T>& da)
 }
 
 template <typename T>
-std::size_t size(device_array<T>& da)
+T* begin_raw(device_array<T>& da)
+{
+	return (T*)da.begin().get();
+}
+
+template <typename T>
+std::size_t size(const device_array<T>& da)
 {
 	return da.size();
+}
+
+template <typename T>
+bounds bounds(const device_array<T>& da)
+{
+	return da.get_bounds();
 }
 
 template <typename T>
 device& get_device(device_array<T>& da)
 {
 	return da.get_device();
+}
+
+template <typename T>
+T get_value_type(device_array<T>& da)
+{
+	return T();
 }
 
 } // namespace traits
