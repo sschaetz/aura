@@ -44,14 +44,15 @@ public:
 	/**
 	 * create empty fft object without device and stream
 	 */
-	inline explicit fft() : context_(nullptr)
-	{
-	}
+	inline explicit fft() : 
+		handle_single_fwd_(nullptr),
+		handle_single_inv_(nullptr),
+		handle_double_fwd_(nullptr),
+		handle_double_inv_(nullptr)
+	{}
 
 	/**
 	 * create fft
-	 *
-	 * @param d device to create fft for
 	 */
 	inline explicit fft(const bounds& dim, const fft::type& type, 
 			std::size_t batch = 1,
@@ -59,7 +60,11 @@ public:
 	                std::size_t istride = 1, std::size_t idist = 0,
 	                const fft_embed& oembed = fft_embed(),
 	                std::size_t ostride = 1, std::size_t odist = 0) :
-		context_(d.get_context()), type_(type),
+		handle_single_fwd_(nullptr),
+		handle_single_inv_(nullptr),
+		handle_double_fwd_(nullptr),
+		handle_double_inv_(nullptr),
+		type_(type),
 		dim_(dim), batch_(batch)
 	{
 		initialize(iembed, istride, idist, oembed, ostride, odist);
@@ -67,8 +72,6 @@ public:
 
 	/**
 	 * create fft
-	 *
-	 * @param d device to create fft for
 	 */
 	inline explicit fft(std::tuple<bounds, bounds> const & dim,
 			const fft::type& type,
@@ -76,6 +79,10 @@ public:
 	                std::size_t istride = 1, std::size_t idist = 0,
 	                const fft_embed& oembed = fft_embed(),
 	                std::size_t ostride = 1, std::size_t odist = 0) :
+		handle_single_fwd_(nullptr),
+		handle_single_inv_(nullptr),
+		handle_double_fwd_(nullptr),
+		handle_double_inv_(nullptr),
 		type_(type),
 		dim_(std::get<0>(dim)), 
 		batch_(std::max(1, product(std::get<1>(dim))))
@@ -88,10 +95,19 @@ public:
 	 *
 	 * @param f fft to move here
 	 */
-	fft(BOOST_RV_REF(fft) f) : 
-		context_(f.context_), handle_(f.handle_), type_(f.type_)
+	fft(BOOST_RV_REF(fft) f) :
+		handle_single_fwd_(f.handle_single_fwd_),
+		handle_single_inv_(f.handle_single_inv_),
+		handle_double_fwd_(f.handle_double_fwd_),
+		handle_double_inv_(f.handle_double_inv_),
+		type_(f.type_),
+		dim_(f.dim_),
+		batch_(f.batch_)
 	{
-		f.context_ = nullptr;
+		f.handle_single_fwd_ = nullptr;
+		f.handle_single_inv_ = nullptr;
+		f.handle_double_fwd_ = nullptr;
+		f.handle_double_inv_ = nullptr;
 	}
 
 	/**
@@ -102,6 +118,20 @@ public:
 	fft& operator=(BOOST_RV_REF(fft) f)
 	{
 		finalize();
+
+		handle_single_fwd_ = f.handle_single_fwd_;
+		handle_single_inv_ = f.handle_single_inv_;
+		handle_double_fwd_ = f.handle_double_fwd_;
+		handle_double_inv_ = f.handle_double_inv_;
+		type_ = f.type_;
+		dim_ = f.dim_;
+		batch_ = f.batch_;
+
+		f.handle_single_fwd_ = nullptr;
+		f.handle_single_inv_ = nullptr;
+		f.handle_double_fwd_ = nullptr;
+		f.handle_double_inv_ = nullptr;
+
 		return *this;
 	}
 
@@ -136,10 +166,20 @@ public:
 		}
 	}
 
+	bool is_single()
+	{
+		return is_single(type_);
+	}
+
 	/// true if double precision FFT is requested
 	bool is_double(fft::type type)
 	{
 		return !is_single(type);
+	}
+
+	bool is_double()
+	{
+		return is_double(type_);
 	}
 
 	/// true if complex to complex (single or double) FFT is requested
@@ -155,6 +195,11 @@ public:
 		}
 	}
 
+	bool is_c2c()
+	{
+		return is_c2c(type_);
+	}
+
 	/// true if real to complex (single or double) FFT is requested
 	bool is_r2c(fft::type type)
 	{
@@ -168,6 +213,11 @@ public:
 		}
 	}
 	
+	bool is_r2c() 
+	{
+		return is_r2c(type_);
+	}
+	
 	/// true if complex to real (single or double) FFT is requested
 	bool is_c2r(fft::type type)
 	{
@@ -179,6 +229,11 @@ public:
 			default:
 				return false;
 		}
+	}
+
+	bool is_c2r()
+	{
+		return is_c2r(type_);
 	}
 
 private:
@@ -208,10 +263,10 @@ private:
 						ostride,
 						0 == odist ? product(dim_) : 
 							odist,
-						forward,
+						fwd,
 						FFTW_ESTIMATE|FFTW_UNALIGNED);
 
-				handle_single_bwd_ = 
+				handle_single_inv_ = 
 					fftwf_plan_many_dft(
 						dim_.size(), 
 						const_cast<int*>(&dim_[0]), 
@@ -230,7 +285,7 @@ private:
 						ostride,
 						0 == odist ? product(dim_) : 
 							odist,
-						backward,
+						inv,
 						FFTW_ESTIMATE|FFTW_UNALIGNED);
 			}
 		}
@@ -240,14 +295,26 @@ private:
 	void finalize()
 	{
 		
+		if (handle_single_fwd_ != nullptr) {
+			fftwf_destroy_plan(handle_single_fwd_);
+		}
+		if (handle_single_inv_ != nullptr) {
+			fftwf_destroy_plan(handle_single_inv_);
+		}
+		if (handle_double_fwd_ != nullptr) {
+			fftw_destroy_plan(handle_double_fwd_);
+		}
+		if (handle_double_inv_ != nullptr) {
+			fftw_destroy_plan(handle_double_inv_);
+		}
 	}
 
 private:
 	/// fft handle
 	fftwf_plan handle_single_fwd_;
-	fftwf_plan handle_single_bwd_;
+	fftwf_plan handle_single_inv_;
 	fftw_plan handle_double_fwd_;
-	fftw_plan handle_double_bwd_;
+	fftw_plan handle_double_inv_;
 
 	/// fft type
 	type type_;
@@ -256,12 +323,10 @@ private:
 	/// batch
 	std::size_t batch_;
 
-	template <typename T1, typename T2>
-	friend void fft_forward(device_ptr<T2> src, device_ptr<T1> dst,
-	                        fft& plan, const feed& f);
-	template <typename T1, typename T2>
-	friend void fft_inverse(device_ptr<T2> src, device_ptr<T1> dst,
-	                        fft& plan, const feed& f);
+	template <typename IT1, typename IT2>
+	friend void fft_forward(IT1 in, IT2 out, fft& plan);
+	template <typename IT1, typename IT2>
+	friend void fft_inverse(IT1 in, IT2 out, fft& plan);
 };
 
 /// initialize fft library
@@ -284,10 +349,16 @@ inline void fft_terminate()
  * @param plan that is used to calculate the fourier transform
  * @param f feed the fourier transform should be calculated in
  */
-template <typename T1, typename T2>
-void fft_forward(device_ptr<T2> src, device_ptr<T1> dst,
-                 fft& plan, const feed& f)
+template <typename IT1, typename IT2>
+void fft_forward(IT1 in, IT2 out, fft& plan)
 {
+	if (plan.is_single()) {
+		if (plan.is_c2c()) {
+			fftwf_execute_dft(plan.handle_single_fwd_,
+				reinterpret_cast<fftwf_complex*>(&(*in)), 
+				reinterpret_cast<fftwf_complex*>(&(*out)));
+		}
+	}
 }
 
 
@@ -299,10 +370,16 @@ void fft_forward(device_ptr<T2> src, device_ptr<T1> dst,
  * @param plan that is used to calculate the fourier transform
  * @param f feed the fourier transform should be calculated in
  */
-template <typename T1, typename T2>
-void fft_inverse(device_ptr<T2> src, device_ptr<T1> dst,
-                 fft& plan, const feed& f)
+template <typename IT1, typename IT2>
+void fft_inverse(IT1 in, IT2 out, fft& plan)
 {
+	if (plan.is_single()) {
+		if (plan.is_c2c()) {
+			fftwf_execute_dft(plan.handle_single_inv_,
+				reinterpret_cast<fftwf_complex*>(&(*in)), 
+				reinterpret_cast<fftwf_complex*>(&(*out)));
+		}
+	}
 }
 
 } // fftw 

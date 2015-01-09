@@ -5,12 +5,41 @@
 #include <string.h>
 #include <bitset>
 #include <tuple>
+#include <vector>
 #include <complex>
+#include <fftw3.h>
 
 #include <boost/aura/ext/fftw.hpp>
 
+using namespace boost::aura::fftw;
+
+typedef std::complex<float> cfloat;
+
+const int samples = 4;
+cfloat signal[] = 
+      {cfloat(1, 1), cfloat(2, 2), cfloat(3, 3), cfloat(4, 4)};
+const cfloat spectrum[] = 
+      {cfloat(10, 10), cfloat(-4, 0), cfloat(-2, -2), cfloat(0, -4)};
+
 int main(void)
 {
+	bounds b(2, 2);
+	std::vector<std::complex<float>> in(product(b), 
+			std::complex<float>(5., 5.));
+	std::vector<std::complex<float>> out(product(b), 
+			std::complex<float>(0., 0.));
+	
+	fft_initialize();
+	fft plan(b, fft::type::c2c);
+	fft_forward(signal, out.begin(), plan);
+	
+	for (auto x:out) {
+		std::cout << x << std::endl;
+	}
+	for (auto x:spectrum) {
+		std::cout << x << std::endl;
+	}
+	fft_terminate();
 }
 
 
