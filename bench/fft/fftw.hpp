@@ -37,8 +37,8 @@ public:
 	};
 
 	enum direction {
-		fwd = CUFFT_FORWARD,
-		inv = CUFFT_INVERSE
+		fwd = FFTW_FORWARD,
+		inv = FFTW_BACKWARD
 	};
 
 	/**
@@ -114,14 +114,6 @@ public:
 	}
 
 	/**
-	 * return fft handle
-	 */
-	const cufftHandle& get_handle() const
-	{
-		return handle_;
-	}
-
-	/**
 	 * return fft type
 	 */
 	const type& get_type() const
@@ -129,17 +121,63 @@ public:
 		return type_;
 	}
 
-	/// map fft type to cufftType
-	cufftType map_type(fft::type type)
+	/// true if single precision FFT is requested 
+	bool is_single(fft::type type)
+	{	
+		switch(type) {
+			case r2c:
+				return true;
+			case c2r:
+				return true;
+			case c2c:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	/// true if double precision FFT is requested
+	bool is_double(fft::type type)
+	{
+		return !is_single(type);
+	}
+
+	/// true if complex to complex (single or double) FFT is requested
+	bool is_c2c(fft::type type)
+	{
+		switch(type) {
+			case c2c:
+				return true;
+			case z2z:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	/// true if real to complex (single or double) FFT is requested
+	bool is_r2c(fft::type type)
 	{
 		switch(type) {
 			case r2c:
-			case c2r:
-			case c2c:
+				return true;
 			case d2z:
-			case z2d:
-			case z2z:
+				return true;
 			default:
+				return false;
+		}
+	}
+	
+	/// true if complex to real (single or double) FFT is requested
+	bool is_c2r(fft::type type)
+	{
+		switch(type) {
+			case c2r:
+				return true;
+			case z2d:
+				return true;
+			default:
+				return false;
 		}
 	}
 
@@ -149,7 +187,53 @@ private:
 	                const fft_embed& oembed = fft_embed(),
 	                std::size_t ostride = 1, std::size_t odist = 0)
 	{
+		if (is_single(type_)) {
+			if (is_c2c(type_)) {
+				handle_single_fwd_ = 
+					fftwf_plan_many_dft(
+						dim_.size(), 
+						const_cast<int*>(&dim_[0]), 
+						batch_,
+						NULL, 
+						0 == iembed.size() ? NULL : 
+							const_cast<int*>(
+								&iembed[0]),
+						istride,
+						0 == idist ? product(dim_) : 
+							idist,
+						NULL,
+						0 == oembed.size() ? NULL : 
+							const_cast<int*>(
+								&oembed[0]),
+						ostride,
+						0 == odist ? product(dim_) : 
+							odist,
+						forward,
+						FFTW_ESTIMATE|FFTW_UNALIGNED);
 
+				handle_single_bwd_ = 
+					fftwf_plan_many_dft(
+						dim_.size(), 
+						const_cast<int*>(&dim_[0]), 
+						batch_,
+						NULL, 
+						0 == iembed.size() ? NULL : 
+							const_cast<int*>(
+								&iembed[0]),
+						istride,
+						0 == idist ? product(dim_) : 
+							idist,
+						NULL,
+						0 == oembed.size() ? NULL : 
+							const_cast<int*>(
+								&oembed[0]),
+						ostride,
+						0 == odist ? product(dim_) : 
+							odist,
+						backward,
+						FFTW_ESTIMATE|FFTW_UNALIGNED);
+			}
+		}
 	}
 
 	/// finalize object (called from dtor and move assign)
@@ -160,7 +244,11 @@ private:
 
 private:
 	/// fft handle
-	cufftHandle handle_;
+	fftwf_plan handle_single_fwd_;
+	fftwf_plan handle_single_bwd_;
+	fftw_plan handle_double_fwd_;
+	fftw_plan handle_double_bwd_;
+
 	/// fft type
 	type type_;
 	/// fft dims
@@ -179,11 +267,13 @@ private:
 /// initialize fft library
 inline void fft_initialize()
 {
+	fftw_init_threads();
 }
 
 /// finalize fft library and release all associated resources
 inline void fft_terminate()
 {
+	fftw_cleanup_threads();
 }
 
 /**
