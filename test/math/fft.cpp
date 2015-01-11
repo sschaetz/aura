@@ -1,19 +1,16 @@
 #define BOOST_TEST_MODULE backend.fft
 
 #include <complex>
+#include <type_traits>
 #include <boost/test/unit_test.hpp>
 #include <boost/aura/backend.hpp>
 #include <boost/aura/config.hpp>
 
-typedef std::complex<float> cfloat;
+#include "fft_data.hpp"
 
+using namespace boost::aura;
 using namespace boost::aura::backend;
 
-const int samples = 4;
-const cfloat signal[] = 
-      {cfloat(1, 1), cfloat(2, 2), cfloat(3, 3), cfloat(4, 4)};
-const cfloat spectrum[] = 
-      {cfloat(10, 10), cfloat(-4, 0), cfloat(-2, -2), cfloat(0, -4)};
 
 // _____________________________________________________________________________
 
@@ -23,30 +20,31 @@ BOOST_AUTO_TEST_CASE(basic)
 	fft_initialize(); 
 	int num = device_get_count();
 	BOOST_REQUIRE(0 < num);
-	assert(samples == sizeof(signal) / sizeof(signal[0]));
 
-	std::vector<cfloat> input(signal, signal+samples);
-	std::vector<cfloat> output(samples, cfloat(555., 666.));
 	device d(0);
 	feed f(d); 
 
-	device_ptr<cfloat> m1 = device_malloc<cfloat>(samples, d);
-	device_ptr<cfloat> m2 = device_malloc<cfloat>(samples, d);
-	copy(m1, &input[0], samples, f);
-	copy(m2, &output[0], samples, f);
+	// 1d
+	{
+		bounds b(std::extent<decltype(signal_1d_4)>::value);
+		std::vector<cfloat> i(product(b), cfloat(0., 0.));
+		std::vector<cfloat> o(product(b), cfloat(0., 0.));
 
-	fft fh(d, f, bounds(samples), fft::type::c2c);
-	fft_forward(m1, m2, fh, f);
+		device_array<cfloat> id(b, d);
+		device_array<cfloat> od(b, d);
 
-	copy(&output[0], m2, samples, f);
-	wait_for(f);
-	BOOST_CHECK(std::equal(output.begin(), 
-				output.end(), spectrum));
-	device_free(m1);
-	device_free(m2);
+		fft fh(d, f, b, fft::type::c2c);
+		copy(signal_1d_4, id.begin(), product(b), f);
+		fft_forward(id, od, f);
+		copy(od.begin(), &o[0], product(b), f);
+		wait_for(f);
+		BOOST_CHECK(std::equal(output.begin(), 
+					output.end(), spectrum_1d_4));
+	}
+	
 	fft_terminate();
 }
-
+# if 0
 // _____________________________________________________________________________
 
 BOOST_AUTO_TEST_CASE(batched_1d) 
@@ -88,4 +86,4 @@ BOOST_AUTO_TEST_CASE(batched_1d)
 	device_free(m2);
 	fft_terminate();
 }
-
+#endif
