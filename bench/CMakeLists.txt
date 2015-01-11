@@ -9,8 +9,6 @@ IF(NOT ${AURA_FFT_LIBRARIES} STREQUAL "")
 	AURA_ADD_TARGET(bench.fft fft.cpp ${AURA_BACKEND_LIBRARIES}
                 ${AURA_FFT_LIBRARIES} pthread)
 ENDIF()
-AURA_ADD_TARGET(bench.fftcpu fftcpu.cpp ${AURA_BACKEND_LIBRARIES}
-	fftw3f fftw3 fftw3f_threads fftw3_threads pthread m)
 
 AURA_ADD_TARGET(bench.peak peak.cpp peak.cc
                 ${AURA_BACKEND_LIBRARIES})

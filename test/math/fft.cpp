@@ -5,12 +5,16 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/aura/backend.hpp>
 #include <boost/aura/config.hpp>
+#include <boost/aura/device_array.hpp>
+#include <boost/aura/fft.hpp>
 
 #include "fft_data.hpp"
 
 using namespace boost::aura;
 using namespace boost::aura::backend;
 
+// this is just a rudimentary set of tests, checking c2c 1d 2d and 3d on
+// small data sizes witch batch=1 and batch=4
 
 // _____________________________________________________________________________
 
@@ -27,21 +31,53 @@ BOOST_AUTO_TEST_CASE(basic)
 	// 1d
 	{
 		bounds b(std::extent<decltype(signal_1d_4)>::value);
-		std::vector<cfloat> i(product(b), cfloat(0., 0.));
 		std::vector<cfloat> o(product(b), cfloat(0., 0.));
 
 		device_array<cfloat> id(b, d);
 		device_array<cfloat> od(b, d);
 
 		fft fh(d, f, b, fft::type::c2c);
-		copy(signal_1d_4, id.begin(), product(b), f);
-		fft_forward(id, od, f);
-		copy(od.begin(), &o[0], product(b), f);
+		copy(id.begin(), &signal_1d_4[0], product(b), f);
+		fft_forward(id, od, fh, f);
+		copy(&o[0], od.begin(), product(b), f);
 		wait_for(f);
-		BOOST_CHECK(std::equal(output.begin(), 
-					output.end(), spectrum_1d_4));
+		BOOST_CHECK(std::equal(o.begin(), o.end(), spectrum_1d_4));
 	}
-	
+
+	// 2d
+	{
+		std::size_t dim = 
+			std::sqrt(std::extent<decltype(signal_2d_4)>::value);
+		bounds b(dim, dim);
+		std::vector<cfloat> o(product(b), cfloat(0., 0.));
+
+		device_array<cfloat> id(b, d);
+		device_array<cfloat> od(b, d);
+
+		fft fh(d, f, b, fft::type::c2c);
+		copy(id.begin(), &signal_2d_4[0], product(b), f);
+		fft_forward(id, od, fh, f);
+		copy(&o[0], od.begin(), product(b), f);
+		wait_for(f);
+		BOOST_CHECK(std::equal(o.begin(), o.end(), spectrum_2d_4));
+	}
+	// 3d
+	{
+		std::size_t dim = 
+			std::cbrt(std::extent<decltype(signal_3d_4)>::value);
+		bounds b(dim, dim, dim);
+		std::vector<cfloat> o(product(b), cfloat(0., 0.));
+
+		device_array<cfloat> id(b, d);
+		device_array<cfloat> od(b, d);
+
+		fft fh(d, f, b, fft::type::c2c);
+		copy(id.begin(), &signal_3d_4[0], product(b), f);
+		fft_forward(id, od, fh, f);
+		copy(&o[0], od.begin(), product(b), f);
+		wait_for(f);
+		BOOST_CHECK(std::equal(o.begin(), o.end(), spectrum_3d_4));
+	}
 	fft_terminate();
 }
 # if 0

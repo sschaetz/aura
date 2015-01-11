@@ -1,5 +1,6 @@
 # generate data for math tests, in particular the FFT
 
+import os
 import numpy as np
 
 # 1d 4 samples
@@ -17,7 +18,7 @@ spectrum_3d_4 = np.fft.fftn(signal_3d_4)
 def cprint(name, A):
     print("const cfloat ", name, "[] = {", sep="", end="\n\t")
     el = 0
-    for x in np.nditer(A):
+    for x in np.nditer(A, order='C'):
         if el%4 == 0:
             en = "\n\t"
         else:
@@ -28,15 +29,21 @@ def cprint(name, A):
         el+=1
     print("\n};", sep="")
 
-print("#include <complex>")
-print("typedef std::complex<float> cfloat;")
+print("#include <complex>", os.linesep)
+print("typedef std::complex<float> cfloat;", os.linesep)
 
 cprint('signal_1d_4', signal_1d_4)
+print("")
 cprint('spectrum_1d_4', spectrum_1d_4)
+print(os.linesep)
 
 cprint('signal_2d_4', signal_2d_4)
+print("")
 cprint('spectrum_2d_4', spectrum_2d_4)
+print(os.linesep)
 
 cprint('signal_3d_4', signal_3d_4)
+print("")
 cprint('spectrum_3d_4', spectrum_3d_4)
+print(os.linesep)
 
