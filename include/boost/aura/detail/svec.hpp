@@ -77,6 +77,13 @@ public:
 	#undef AURA_SVEC_ASSIGN
 	#undef AURA_SVEC_ARGS
 
+	/// create a new bundle of existing bundle, adding another element
+	inline explicit svec(const svec<T, max_size_>& other, const T& another) :
+		size_(other.size_), data_(other.data_)
+	{
+		push_back(another);
+	}
+
 	/// copy ctor and assignment can be provided by compiler
 
 	/// operator []
