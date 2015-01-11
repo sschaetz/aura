@@ -4,11 +4,6 @@ AURA_ADD_TEST(backend/factorize.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/device_ptr.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/feed.cpp ${AURA_BACKEND_LIBRARIES})
 
-IF(NOT ${AURA_FFT_LIBRARIES} STREQUAL "")
-	AURA_ADD_TEST(backend/fft.cpp pthread 
-		${AURA_BACKEND_LIBRARIES} ${AURA_FFT_LIBRARIES})
-ENDIF()
-
 AURA_ADD_TEST(backend/host_allocator.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/host_memory.cpp ${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/complex.cpp backend/complex.cc 
@@ -28,6 +23,12 @@ IF(${AURA_BACKEND} STREQUAL OPENCL)
 	AURA_ADD_TEST(math/norm2.cpp  ${AURA_BACKEND_LIBRARIES})
 	AURA_ADD_TEST(math/add.cpp  ${AURA_BACKEND_LIBRARIES})
 ENDIF()
+
+IF(NOT ${AURA_FFT_LIBRARIES} STREQUAL "")
+	AURA_ADD_TEST(math/fft.cpp pthread 
+		${AURA_BACKEND_LIBRARIES} ${AURA_FFT_LIBRARIES})
+ENDIF()
+
 
 AURA_ADD_TEST(misc/profile.cpp pthread)
 

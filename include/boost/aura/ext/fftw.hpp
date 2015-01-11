@@ -71,6 +71,29 @@ public:
 	}
 
 	/**
+	 * create fft with measured plan
+	 */
+	template <typename IT1, typename IT2>
+	inline explicit fft(const bounds& dim, const fft::type& type, 
+			IT1 in, IT2 out,		
+			std::size_t batch = 1,
+	                const fft_embed& iembed = fft_embed(),
+	                std::size_t istride = 1, std::size_t idist = 0,
+	                const fft_embed& oembed = fft_embed(),
+	                std::size_t ostride = 1, std::size_t odist = 0) :
+		handle_single_fwd_(nullptr),
+		handle_single_inv_(nullptr),
+		handle_double_fwd_(nullptr),
+		handle_double_inv_(nullptr),
+		type_(type),
+		dim_(dim), 
+		batch_(batch)
+	{
+		initialize(in, out, iembed, istride, idist, 
+				oembed, ostride, odist);
+	}
+
+	/**
 	 * create fft
 	 */
 	inline explicit fft(std::tuple<bounds, bounds> const & dim,
@@ -287,6 +310,63 @@ private:
 							odist,
 						inv,
 						FFTW_ESTIMATE|FFTW_UNALIGNED);
+			}
+		}
+	}
+	
+	template <typename IT1, typename IT2>
+	inline void initialize(IT1 in, IT2 out,
+			const fft_embed& iembed = fft_embed(),
+	                std::size_t istride = 1, std::size_t idist = 0,
+	                const fft_embed& oembed = fft_embed(),
+	                std::size_t ostride = 1, std::size_t odist = 0)
+	{
+		typedef fftwf_complex* sptr;
+		if (is_single(type_)) {
+			if (is_c2c(type_)) {
+				handle_single_fwd_ = 
+					fftwf_plan_many_dft(
+						dim_.size(), 
+						const_cast<int*>(&dim_[0]), 
+						batch_,
+						reinterpret_cast<sptr>(&(*in)),
+						0 == iembed.size() ? NULL : 
+							const_cast<int*>(
+								&iembed[0]),
+						istride,
+						0 == idist ? product(dim_) : 
+							idist,
+						reinterpret_cast<sptr>(&(*out)), 
+						0 == oembed.size() ? NULL : 
+							const_cast<int*>(
+								&oembed[0]),
+						ostride,
+						0 == odist ? product(dim_) : 
+							odist,
+						fwd,
+						FFTW_PATIENT);
+
+				handle_single_inv_ = 
+					fftwf_plan_many_dft(
+						dim_.size(), 
+						const_cast<int*>(&dim_[0]), 
+						batch_,
+						reinterpret_cast<sptr>(&(*in)),
+						0 == iembed.size() ? NULL : 
+							const_cast<int*>(
+								&iembed[0]),
+						istride,
+						0 == idist ? product(dim_) : 
+							idist,
+						reinterpret_cast<sptr>(&(*out)),
+						0 == oembed.size() ? NULL : 
+							const_cast<int*>(
+								&oembed[0]),
+						ostride,
+						0 == odist ? product(dim_) : 
+							odist,
+						inv,
+						FFTW_PATIENT);
 			}
 		}
 	}

@@ -29,15 +29,28 @@ int main(void)
 	std::vector<std::complex<float>> out(product(b), 
 			std::complex<float>(0., 0.));
 	
-	fft_initialize();
-	fft plan(b, fft::type::c2c);
-	fft_forward(signal, out.begin(), plan);
-	
-	for (auto x:out) {
-		std::cout << x << std::endl;
+	fft_initialize(); 
+	{
+		fft plan(b, fft::type::c2c);
+		fft_forward(signal, out.begin(), plan);
+		
+		for (auto x:out) {
+			std::cout << x << std::endl;
+		}
+		for (auto x:spectrum) {
+			std::cout << x << std::endl;
+		}
 	}
-	for (auto x:spectrum) {
-		std::cout << x << std::endl;
+	{
+		fft plan(b, fft::type::c2c, in.begin(), out.begin());
+		fft_forward(signal, out.begin(), plan);
+		
+		for (auto x:out) {
+			std::cout << x << std::endl;
+		}
+		for (auto x:spectrum) {
+			std::cout << x << std::endl;
+		}
 	}
 	fft_terminate();
 }
