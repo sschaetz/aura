@@ -164,7 +164,8 @@ protected:
 	detail::context * context_;
 
 private:
-	inline explicit initialize(device & d, feed & f,
+	inline void initialize(device & d, feed & f,
+			const fft_embed& iembed = fft_embed(),
 	                std::size_t istride = 1, std::size_t idist = 0,
 	                const fft_embed& oembed = fft_embed(),
 	                std::size_t ostride = 1, std::size_t odist = 0)
@@ -172,7 +173,7 @@ private:
 		// FIXME handle strides and embed etc.
 		// we need to create a default plan
 
-		assert(dim.size() <=3);
+		assert(dim_.size() <=3);
 		// clFFT needs an array of std::size_t, 
 		// bounds is an array of ints: typecast and copy
 		svec<fft_size, 3> dim_tmp;
@@ -188,7 +189,7 @@ private:
 		AURA_CLFFT_SAFE_CALL(clfftSetPlanBatchSize(inplace_handle_,
 					batch_));
 
-		clfft_type temptype = map_type(type);
+		clfft_type temptype = map_type(type_);
 
 		AURA_CLFFT_SAFE_CALL(clfftSetPlanPrecision(inplace_handle_,
 		                     std::get<0>(temptype)));

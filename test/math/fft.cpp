@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(batched)
 		device_array<cfloat> id(bounds(b, bs), d);
 		device_array<cfloat> od(bounds(b, bs), d);
 
-		fft fh(d, f, bounds(b, bs), fft::type::c2c);
+		fft fh(d, f, bounds(b), fft::type::c2c, bs);
 		for (int i=0; i<bs; i++) {
 			copy(id.begin()+i*product(b), &signal_1d_4[0],
 					product(b), f);
@@ -115,8 +115,8 @@ BOOST_AUTO_TEST_CASE(batched)
 		wait_for(f);
 		
 		for(int i=0; i<bs; i++) {
-			BOOST_CHECK(std::equal(o.begin()+i*samples,
-						o.begin()+(i+1)*samples,
+			BOOST_CHECK(std::equal(o.begin()+i*dim,
+						o.begin()+(i+1)*dim,
 						spectrum_1d_4));
 		}	
 	}
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(batched)
 		device_array<cfloat> id(bounds(b, bs), d);
 		device_array<cfloat> od(bounds(b, bs), d);
 
-		fft fh(d, f, bounds(b, bs), fft::type::c2c);
+		fft fh(d, f, bounds(b), fft::type::c2c, bs);
 		for (int i=0; i<bs; i++) {
 			copy(id.begin()+i*product(b), &signal_2d_4[0],
 					product(b), f);
@@ -141,10 +141,11 @@ BOOST_AUTO_TEST_CASE(batched)
 		wait_for(f);
 		
 		for(int i=0; i<bs; i++) {
-			BOOST_CHECK(std::equal(o.begin()+i*samples,
-						o.begin()+(i+1)*samples,
+			BOOST_CHECK(std::equal(o.begin()+i*product(b),
+						o.begin()+(i+1)*product(b),
 						spectrum_2d_4));
-		}	
+		}
+
 	}
 
 	// 3d
@@ -157,7 +158,7 @@ BOOST_AUTO_TEST_CASE(batched)
 		device_array<cfloat> id(bounds(b, bs), d);
 		device_array<cfloat> od(bounds(b, bs), d);
 
-		fft fh(d, f, bounds(b, bs), fft::type::c2c);
+		fft fh(d, f, bounds(b), fft::type::c2c, bs);
 		for (int i=0; i<bs; i++) {
 			copy(id.begin()+i*product(b), &signal_3d_4[0],
 					product(b), f);
@@ -167,8 +168,8 @@ BOOST_AUTO_TEST_CASE(batched)
 		wait_for(f);
 		
 		for(int i=0; i<bs; i++) {
-			BOOST_CHECK(std::equal(o.begin()+i*samples,
-						o.begin()+(i+1)*samples,
+			BOOST_CHECK(std::equal(o.begin()+i*product(b),
+						o.begin()+(i+1)*product(b),
 						spectrum_3d_4));
 		}	
 	}
