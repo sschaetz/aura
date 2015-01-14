@@ -17,9 +17,11 @@
 #include <boost/aura/backend.hpp>
 #include <boost/aura/misc/sequence.hpp>
 #include <boost/aura/misc/benchmark.hpp>
+#include <boost/aura/host_allocator.hpp>
 
 const char * ops_tbl[] = { "sflop", "dflop", "devcopy", "devscale",
-                           "devadd", "devtriad", "tphtd", "tpdth"
+                           "devadd", "devtriad", "tphtd", "tpdth",
+			   "tphtdp", "tpdthp"
                          };
 
 using namespace boost::aura;
@@ -30,16 +32,33 @@ const char * kernel_file = "bench/peak.cc";
 inline void run_host_to_device(feed & f, device_ptr<float> dst,
                                std::vector<float> & src)
 {
-	copy(dst, &src[0], src.size()*sizeof(float), f);
+	copy(dst, &src[0], src.size(), f);
 	wait_for(f);
 }
 
 inline void run_device_to_host(feed & f, std::vector<float> & dst,
                                device_ptr<float> src)
 {
-	copy(&dst[0], src, dst.size()*sizeof(float), f);
+	copy(&dst[0], src, dst.size(), f);
 	wait_for(f);
 }
+
+inline void run_host_to_device_pinned(feed & f, 
+		device_ptr<float> dst, 
+		std::vector<float, boost::aura::host_allocator<float>> & src)
+{
+	copy(dst, &src[0], src.size(), f);
+	wait_for(f);
+}
+
+inline void run_device_to_host_pinned(feed & f, 
+		std::vector<float, boost::aura::host_allocator<float>> & dst,
+		device_ptr<float> src)
+{
+	copy(&dst[0], src, dst.size(), f);
+	wait_for(f);
+}
+
 
 template <typename T>
 inline void run_kernel(feed & f, kernel & k,
@@ -436,8 +455,8 @@ inline void run_tests(
 				AURA_BENCHMARK(run_host_to_device(f, m, a1),
 				               runtime, min, max,
 				               mean, stdev, runs);
-				std::cout << ops_tbl[6] << " (" << sizes[s] <<
-				          ") min " << min << " max " << max <<
+				std::cout << ops_tbl[6] << " " << sizes[s] <<
+				          " min " << min << " max " << max <<
 				          " mean " << mean << " stdev " <<
 				          stdev << " runs " << runs <<
 				          " runtime " << runtime << std::endl;
@@ -457,8 +476,8 @@ inline void run_tests(
 				AURA_BENCHMARK(run_device_to_host(f, a2, m),
 				               runtime, min, max, mean, stdev,
 				               runs);
-				std::cout << ops_tbl[6] << " (" << sizes[s] <<
-				          ") min " << min <<
+				std::cout << ops_tbl[6] << " " << sizes[s] <<
+				          " min " << min <<
 				          " max " << max << " mean " << mean <<
 				          " stdev " << stdev <<
 				          " runs " << runs << " runtime " <<
@@ -467,6 +486,65 @@ inline void run_tests(
 			device_free(m);
 		}
 	}
+
+	if(ops[8] || ops[9]) {
+		for(std::size_t s=0; s<sizes.size(); s++) {
+			boost::aura::host_allocator<float> alloc(f);
+			std::vector<float, 
+				boost::aura::host_allocator<float>> a1(
+						sizes[s][0], 42., alloc);
+			std::vector<float, 
+				boost::aura::host_allocator<float>> a2(
+						sizes[s][0], alloc);
+			device_ptr<float> m =
+			        device_malloc<float>(sizes[s][0], d);
+
+			if (ops[8]) { // tphtdp
+				run_host_to_device_pinned(f, m, a1);
+				copy(&a2[0], m, a2.size(), f);
+				wait_for(f);
+
+				if (!std::equal(a1.begin(), a1.end(),
+				                a2.begin())) {
+					printf("%s failed!\n", ops_tbl[6]);
+					return;
+				}
+
+				AURA_BENCHMARK(run_host_to_device_pinned(f, m, a1),
+				               runtime, min, max,
+				               mean, stdev, runs);
+				std::cout << ops_tbl[8] << " " << sizes[s] <<
+				          " min " << min << " max " << max <<
+				          " mean " << mean << " stdev " <<
+				          stdev << " runs " << runs <<
+				          " runtime " << runtime << std::endl;
+			}
+
+			if (ops[9]) { // tpdthp
+				std::fill(a2.begin(), a2.end(), 0.0);
+				copy(m, &a1[0], a1.size(), f);
+				run_device_to_host_pinned(f, a2, m);
+
+				if (!std::equal(a1.begin(), a1.end(),
+				                a2.begin())) {
+					printf("%s failed!\n", ops_tbl[7]);
+					return;
+				}
+
+				AURA_BENCHMARK(run_device_to_host_pinned(f, a2, m),
+				               runtime, min, max, mean, stdev,
+				               runs);
+				std::cout << ops_tbl[9] << " " << sizes[s] <<
+				          " min " << min <<
+				          " max " << max << " mean " << mean <<
+				          " stdev " << stdev <<
+				          " runs " << runs << " runtime " <<
+				          runtime << std::endl;
+			}
+			device_free(m);
+		}
+	}
+
 }
 
 
@@ -546,7 +624,7 @@ int main(int argc, char *argv[])
 	for (unsigned int i=0; i<sizeof(ops_tbl)/sizeof(ops_tbl[0]); i++) {
 		ops[i] = false;
 		for (int j=optind; j<argc; j++) {
-			if (NULL != strstr(argv[j], ops_tbl[i])) {
+			if (0 == strcmp(ops_tbl[i], argv[j])) {
 				printf("%s ", ops_tbl[i]);
 				ops[i] = true;
 			}
