@@ -3,6 +3,9 @@
 import os
 import numpy as np
 
+
+### c2c ###
+
 # 1d 4 samples
 signal_1d_4 = np.array([1.+1.j, 2.+2.j, 3.+3.j, 4.+4.j])
 spectrum_1d_4 = np.fft.fft(signal_1d_4)
@@ -14,6 +17,23 @@ spectrum_2d_4 = np.fft.fft2(signal_2d_4)
 # 3d 4x4x4 samples
 signal_3d_4 = np.tile(signal_1d_4, [4,4,1])
 spectrum_3d_4 = np.fft.fftn(signal_3d_4)
+
+
+### r2c ###
+
+# 1d 4 samples
+signal_1d_4_r = np.array([1., 2., 3., 4.])
+spectrum_1d_4_c = np.fft.rfft(signal_1d_4_r)
+
+# 2d 4x4 samples
+signal_2d_4_r = np.tile(signal_1d_4_r, [4,1])
+spectrum_2d_4_c = np.fft.rfft2(signal_2d_4_r)
+
+# 3d 4x4x4 samples
+signal_3d_4_r = np.tile(signal_1d_4_r, [4,4,1])
+spectrum_3d_4_c = np.fft.rfftn(signal_3d_4_r)
+
+
 
 def cprint(name, A):
     print("const cfloat ", name, "[] = {", sep="", end="\n\t")

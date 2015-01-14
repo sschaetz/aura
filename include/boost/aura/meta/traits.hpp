@@ -11,9 +11,6 @@ namespace traits
 {
 
 template <typename T>
-using value_type = typename aura::device_array<T>::value_type;
-
-template <typename T>
 device_ptr<T> begin(device_array<T>& da)
 {
 	return da.begin();
