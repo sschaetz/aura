@@ -95,6 +95,30 @@ wait_for(m1);
 f1.continue_when(m2);
 ~~~
 
+# FFT
+
+Aura provides a wrapper for the cuFFT and clFFT libraries. 
+
+~~~{.cpp}
+bounds b(128, 128);
+std::vector<std::complex<float>> hv0(product(b), std::complex<float>(41., 42.));
+
+// upload to device
+device_array<cfloat> dv0(b, d);
+device_array<cfloat> dv1(b, d);
+copy(hv0, dv0, f);
+
+// calculate inverse transform
+fft_initialize();
+fft fh(d, f, b, fft::type::c2c);
+fft_inverse(dv0, dv1, fh, f);
+fft_terminate();
+
+// download from device
+std::vector<cfloat> hv1(product(b), cfloat(0.0, 0.0));
+copy(dv1, hv1, f);
+wait_for(f);
+~~~
 
 ----------------------------
 
