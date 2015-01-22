@@ -95,7 +95,7 @@ wait_for(m1);
 f1.continue_when(m2);
 ~~~
 
-# FFT
+## FFT
 
 Aura provides a wrapper for the cuFFT and clFFT libraries. 
 
