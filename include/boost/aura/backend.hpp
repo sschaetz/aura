@@ -89,6 +89,7 @@ using backend::bundle;
 using backend::args;
 
 using backend::device_malloc;
+using backend::invoke;
 
 } // namespace aura
 } // namespace boost 

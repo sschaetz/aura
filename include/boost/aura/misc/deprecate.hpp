@@ -7,6 +7,10 @@
 // since the API changes, this can help to dected use of
 // old interfaces at compile time
 
+#ifdef __APPLE__
+// TODO deprecation for Mac OS
+#define DEPRECATED(func) func 
+#else
 #ifdef __GNUC__
 #define DEPRECATED(func) func __attribute__ ((deprecated))
 #elif defined(_MSC_VER)
@@ -14,6 +18,7 @@
 #else
 #pragma message("WARNING: You need to implement DEPRECATED for this compiler")
 #define DEPRECATED(func) func
+#endif
 #endif
 
 #endif

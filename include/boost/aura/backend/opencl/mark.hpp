@@ -1,7 +1,11 @@
 #ifndef AURA_BACKEND_OPENCL_MARK_HPP
 #define AURA_BACKEND_OPENCL_MARK_HPP
 
-#include <CL/cl.h>
+#ifdef __APPLE__
+	#include "OpenCL/opencl.h"
+#else
+	#include "CL/cl.h"
+#endif
 #include <boost/move/move.hpp>
 #include <boost/aura/backend/opencl/call.hpp>
 #include <boost/aura/backend/opencl/device.hpp>

@@ -34,6 +34,7 @@ inline module create_module_from_string(const char * str, device & d,
 	AURA_OPENCL_CHECK_ERROR(errorcode);
 	AURA_OPENCL_SAFE_CALL(clBuildProgram(m, 1, &d.get_backend_device(),
 				build_options, NULL, NULL));
+	print_module_build_log(m, d);
 	return m;
 }
 

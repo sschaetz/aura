@@ -2,7 +2,11 @@
 #define AURA_BACKEND_OPENCL_DEVICE_PTR_HPP
 
 #include <cstddef>
-#include <CL/cl.h>
+#ifdef __APPLE__
+	#include "OpenCL/opencl.h"
+#else
+	#include "CL/cl.h"
+#endif
 #include <boost/aura/backend/opencl/device.hpp>
 #include <boost/aura/backend/shared/memory_tag.hpp>
 

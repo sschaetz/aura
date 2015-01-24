@@ -1,3 +1,4 @@
+#include <numeric>
 
 #include <boost/aura/backend.hpp>
 #include <boost/aura/copy.hpp>

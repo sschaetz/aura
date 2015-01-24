@@ -8,7 +8,11 @@
 #include <unordered_map>
 #include <boost/move/move.hpp>
 #include <vector>
-#include <CL/cl.h>
+#ifdef __APPLE__
+	#include "OpenCL/opencl.h"
+#else
+	#include "CL/cl.h"
+#endif
 #include <boost/aura/backend/shared/call.hpp>
 #include <boost/aura/backend/opencl/call.hpp>
 #include <boost/aura/backend/opencl/context.hpp>

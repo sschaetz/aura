@@ -1,6 +1,12 @@
 Todo
 ====
 
+The more I think of it, the more sense it makes sense to use the CUDA
+way of defining mesh/bundle/fiber.
+
+Clean up function and method names: get_bounds() -> bounds() 
+make clear how to get at the backend type for all functions
+
 Atomic seems broken on OpenCL (AMD library) running on CPU.
 
 I wonder if a truely inline kernel would be possible (using a macro,

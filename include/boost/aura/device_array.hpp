@@ -5,6 +5,7 @@
 #include <boost/move/move.hpp>
 #include <boost/aura/device_buffer.hpp>
 #include <boost/aura/bounds.hpp>
+#include <boost/aura/copy.hpp>
 
 namespace boost
 {
@@ -35,7 +36,24 @@ public:
 	device_array(const bounds & b, backend::device & d) :
 		bounds_(b), data_(product(b), d) 
 	{}
-	
+
+	/// create one-dimensional array from std vector on device
+	device_array(const std::vector<T>& vec, 
+			backend::device & d, backend::feed & f) :
+		bounds_(vec.size()), data_(vec.size(), d) 
+	{
+		copy(vec, *this, f);
+	}
+
+	/// create multi-dimensional array from std vector on device
+	device_array(const std::vector<T>& vec, const bounds & b,
+			backend::device & d, backend::feed & f) :
+		bounds_(b), data_(vec.size(), d) 
+	{
+		assert(product(b) == vec.size());
+		copy(vec, *this, f);
+	}
+
 	/// destroy object
 	~device_array() 
 	{}

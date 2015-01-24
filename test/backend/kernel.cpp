@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(basic)
 	device d(0); 
 	module m = create_module_from_file(kernel_file, d, 
 	AURA_BACKEND_COMPILE_FLAGS);
-	kernel k = create_kernel(m, "noarg");
+	kernel k = create_kernel(m, "donothing");
 	(void)k; 
 }
 
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(basic2)
 	int num = device_get_count();
 	BOOST_REQUIRE(0 < num);
 	device d(0); 
-	kernel k = d.load_from_file("noarg", kernel_file,
+	kernel k = d.load_from_file("donothing", kernel_file,
 			AURA_BACKEND_COMPILE_FLAGS);
 	(void)k; 
 }
@@ -105,9 +105,9 @@ BOOST_AUTO_TEST_CASE(invoke_simple2)
 	device_free(mem);
 }
 
-// invoke_noarg
+// invoke_donothing
 // _____________________________________________________________________________
-BOOST_AUTO_TEST_CASE(invoke_noarg) 
+BOOST_AUTO_TEST_CASE(invoke_donothing) 
 {
 	initialize();
 	int num = device_get_count();
@@ -120,8 +120,8 @@ BOOST_AUTO_TEST_CASE(invoke_noarg)
 	module mod = create_module_from_file(kernel_file, d, 
 	AURA_BACKEND_COMPILE_FLAGS);
 
-	kernel k = create_kernel(mod, "noarg"); 
-	invoke(k, mesh(ydim), bundle(xdim), f);
+	kernel k = create_kernel(mod, "donothing"); 
+	invoke(k, mesh(ydim), bundle(xdim), args(NULL), f);
 	wait_for(f);
 }
 

@@ -1,7 +1,11 @@
 #ifndef AURA_BACKEND_OPENCL_KERNEL_HPP
 #define AURA_BACKEND_OPENCL_KERNEL_HPP
 
-#include <CL/cl.h>
+#ifdef __APPLE__
+	#include "OpenCL/opencl.h"
+#else
+	#include "CL/cl.h"
+#endif
 #include <boost/aura/backend/opencl/call.hpp>
 #include <boost/aura/backend/opencl/device.hpp>
 #include <boost/aura/backend/opencl/module.hpp>

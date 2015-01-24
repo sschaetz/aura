@@ -22,8 +22,11 @@ BOOST_AUTO_TEST_CASE(basic)
 BOOST_AUTO_TEST_CASE(extended) 
 {
   initialize();
-  device d(0);
-  device_info di = device_get_info(d);
-  print_device_info(di); 
+  for (int i=0; i<device_get_count(); i++) {
+	  device d(i);
+	  device_info di = device_get_info(d);
+	  std::cout << "device ordinal " << i << ": ";
+	  print_device_info(di);
+  }
 }
 

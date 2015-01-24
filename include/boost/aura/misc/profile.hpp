@@ -4,6 +4,7 @@
 #include <vector>
 #include <stdio.h>
 #include <sys/types.h>
+#include <stdlib.h>
 #include <thread>
 #include <mutex>
 #include <sys/types.h>

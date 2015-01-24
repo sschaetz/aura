@@ -9,6 +9,9 @@ namespace boost
 namespace aura 
 {
 
+template <typename T>
+class device_array;
+
 /// copy to device array
 template <typename T>
 void copy(const T* src, device_array<T>& dst, backend::feed& f) 

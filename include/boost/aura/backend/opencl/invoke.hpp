@@ -3,7 +3,11 @@
 
 #include <assert.h>
 #include <cstddef>
-#include <CL/cl.h>
+#ifdef __APPLE__
+	#include "OpenCL/opencl.h"
+#else
+	#include "CL/cl.h"
+#endif
 #include <boost/aura/bounds.hpp>
 #include <boost/aura/detail/svec.hpp>
 #include <boost/aura/backend/opencl/kernel.hpp>

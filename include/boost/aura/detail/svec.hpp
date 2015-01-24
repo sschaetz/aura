@@ -4,6 +4,7 @@
 #include <iostream> 
 #include <assert.h>
 #include <array>
+#include <type_traits>
 #include <boost/preprocessor/arithmetic/inc.hpp>
 #include <boost/preprocessor/repetition/repeat_from_to.hpp>
 #include <boost/type_traits/has_multiplies_assign.hpp>
@@ -120,7 +121,7 @@ public:
 	/**
 	 * @brief return the size of the small vector 
 	 */
-	inline const std::size_t & size() const 
+	inline const std::size_t size() const 
 	{ 
 		return size_; 
 	}
@@ -128,7 +129,7 @@ public:
 	/**
 	 * @brief return the maximum size of the small vector
 	 */
-	inline const std::size_t & max_size() const 
+	inline const std::size_t max_size() const 
 	{ 
 		return max_size_; 
 	}
@@ -263,7 +264,10 @@ T product_impl(const std::array<T, size_> & v, std::size_t size,
 template <typename T, std::size_t max_size_>
 T product(const svec<T, max_size_> & v) 
 {
-	assert(0 < v.size());
+	if(0 >= v.size()) {
+		// FIXME: should this return 1?
+		return 0;	
+	}
 	return product_impl(v.array(), v.size(), 
 			boost::has_multiplies_assign<T, T, T>());
 }

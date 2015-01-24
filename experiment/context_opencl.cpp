@@ -1,6 +1,10 @@
 #include <vector>
 #include <stdio.h>
-#include <CL/cl.h>
+#ifdef __APPLE__
+	#include "OpenCL/opencl.h"
+#else
+	#include "CL/cl.h"
+#endif
 #include <boost/thread.hpp>
 
 #define TESTSIZE 512*512
@@ -38,6 +42,9 @@ int main(void) {
   char platform_name[251];
   clGetPlatformInfo (platform, CL_PLATFORM_NAME, 250, platform_name, NULL);
   printf("platform name: %s\n", platform_name);
+  char platform_version[251];
+  clGetPlatformInfo (platform, CL_PLATFORM_VERSION, 250, platform_version, NULL);
+  printf("platform version: %s\n", platform_version);
 
   /* Access a device */
   err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &dev, NULL);
