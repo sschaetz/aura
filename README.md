@@ -120,6 +120,21 @@ copy(dv1, hv1, f);
 wait_for(f);
 ~~~
 
+Aura contains also a wrapper for FFTW. The code to call FFTW is very similar:
+
+~~~{.cpp}
+bounds b(128, 128);
+std::vector<std::complex<float>> in(product(b), std::complex<float>(41., 42.));
+std::vector<std::complex<float>> out(product(b), std::complex<float>(0., 0.));
+
+// calculate inverse transform
+fftw::fft_initialize();
+fftw::fft fh(b, fftw::fft::type::c2c);
+fftw::fft_inverse(dv0, dv1, fh);
+fftw::fft_terminate();
+~~~
+
+
 ----------------------------
 
 Author: Sebastian Schaetz <seb.schaetz@gmail.com>
