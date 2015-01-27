@@ -358,6 +358,7 @@ inline void run_tests(
 
 	module m = create_module_from_file(kernel_file, d,
 	                                   AURA_BACKEND_COMPILE_FLAGS);
+	kernel ktriad = create_kernel(m, "peak_triad");
 
 	if (ops[0] || ops[1]) {
 		kernel ksflop = create_kernel(m, "peak_flop_single");
