@@ -25,10 +25,16 @@ IF(${AURA_BACKEND} STREQUAL OPENCL)
 ENDIF()
 
 IF(NOT ${AURA_FFT_LIBRARIES} STREQUAL "")
-	AURA_ADD_TEST(math/fft.cpp pthread 
-		${AURA_BACKEND_LIBRARIES} ${AURA_FFT_LIBRARIES})
+	AURA_ADD_TEST(math/fft.cpp  
+		${AURA_BACKEND_LIBRARIES} ${AURA_FFT_LIBRARIES} pthread)
 ENDIF()
 
+# this comparison is intentionally written like this because it is a list
+IF(NOT "${AURA_FFT_HOST_LIBRARIES}" STREQUAL " ")
+	MESSAGE("${AURA_FFT_HOST_LIBRARIES}")
+	AURA_ADD_TEST(math/fft_host.cpp pthread 
+		${AURA_BACKEND_LIBRARIES} ${AURA_FFT_HOST_LIBRARIES})
+ENDIF()
 
 AURA_ADD_TEST(misc/profile.cpp pthread)
 

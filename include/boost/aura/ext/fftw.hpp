@@ -1,6 +1,7 @@
 #ifndef AURA_BENCH_FFT_FFTW_HPP
 #define AURA_BENCH_FFT_FFTW_HPP
 
+#include <fftw3.h>
 #include <boost/move/move.hpp>
 #include <boost/aura/detail/svec.hpp>
 #include <boost/aura/bounds.hpp>
@@ -432,10 +433,11 @@ inline void fft_terminate()
 template <typename IT1, typename IT2>
 void fft_forward(IT1 in, IT2 out, fft& plan)
 {
+	// C-style cast because FFTW interface wants this type non-const
 	if (plan.is_single()) {
 		if (plan.is_c2c()) {
 			fftwf_execute_dft(plan.handle_single_fwd_,
-				reinterpret_cast<fftwf_complex*>(&(*in)), 
+				(fftwf_complex*)(&(*in)),
 				reinterpret_cast<fftwf_complex*>(&(*out)));
 		}
 	}
@@ -456,7 +458,7 @@ void fft_inverse(IT1 in, IT2 out, fft& plan)
 	if (plan.is_single()) {
 		if (plan.is_c2c()) {
 			fftwf_execute_dft(plan.handle_single_inv_,
-				reinterpret_cast<fftwf_complex*>(&(*in)), 
+				(fftwf_complex*)(&(*in)), 
 				reinterpret_cast<fftwf_complex*>(&(*out)));
 		}
 	}

@@ -42,6 +42,15 @@ BOOST_AUTO_TEST_CASE(basic)
 		copy(&o[0], od.begin(), product(b), f);
 		wait_for(f);
 		BOOST_CHECK(std::equal(o.begin(), o.end(), spectrum_1d_4));
+	
+		copy(id.begin(), &spectrum_1d_4[0], product(b), f);
+		fft_inverse(id, od, fh, f);
+		copy(&o[0], od.begin(), product(b), f);
+		wait_for(f);
+		BOOST_CHECK(std::equal(o.begin(), o.end(), signal_1d_4));
+
+
+
 	}
 
 	// 2d
@@ -60,6 +69,12 @@ BOOST_AUTO_TEST_CASE(basic)
 		copy(&o[0], od.begin(), product(b), f);
 		wait_for(f);
 		BOOST_CHECK(std::equal(o.begin(), o.end(), spectrum_2d_4));
+
+		copy(id.begin(), &spectrum_2d_4[0], product(b), f);
+		fft_inverse(id, od, fh, f);
+		copy(&o[0], od.begin(), product(b), f);
+		wait_for(f);
+		BOOST_CHECK(std::equal(o.begin(), o.end(), signal_2d_4));
 	}
 	// 3d
 	{
@@ -77,6 +92,12 @@ BOOST_AUTO_TEST_CASE(basic)
 		copy(&o[0], od.begin(), product(b), f);
 		wait_for(f);
 		BOOST_CHECK(std::equal(o.begin(), o.end(), spectrum_3d_4));
+
+		copy(id.begin(), &spectrum_3d_4[0], product(b), f);
+		fft_inverse(id, od, fh, f);
+		copy(&o[0], od.begin(), product(b), f);
+		wait_for(f);
+		BOOST_CHECK(std::equal(o.begin(), o.end(), signal_3d_4));
 	}
 	fft_terminate();
 }
@@ -118,7 +139,21 @@ BOOST_AUTO_TEST_CASE(batched)
 			BOOST_CHECK(std::equal(o.begin()+i*dim,
 						o.begin()+(i+1)*dim,
 						spectrum_1d_4));
-		}	
+		}
+
+		for (int i=0; i<bs; i++) {
+			copy(id.begin()+i*product(b), &spectrum_1d_4[0],
+					product(b), f);
+		}
+		fft_inverse(id, od, fh, f);
+		copy(&o[0], od.begin(), product(b)*bs, f);
+		wait_for(f);
+		
+		for(int i=0; i<bs; i++) {
+			BOOST_CHECK(std::equal(o.begin()+i*dim,
+						o.begin()+(i+1)*dim,
+						signal_1d_4));
+		}
 	}
 
 	// 2d
@@ -146,6 +181,20 @@ BOOST_AUTO_TEST_CASE(batched)
 						spectrum_2d_4));
 		}
 
+		for (int i=0; i<bs; i++) {
+			copy(id.begin()+i*product(b), &spectrum_2d_4[0],
+					product(b), f);
+		}
+		fft_inverse(id, od, fh, f);
+		copy(&o[0], od.begin(), product(b)*bs, f);
+		wait_for(f);
+		
+		for(int i=0; i<bs; i++) {
+			BOOST_CHECK(std::equal(o.begin()+i*dim,
+						o.begin()+(i+1)*dim,
+						signal_2d_4));
+		}
+
 	}
 
 	// 3d
@@ -171,7 +220,22 @@ BOOST_AUTO_TEST_CASE(batched)
 			BOOST_CHECK(std::equal(o.begin()+i*product(b),
 						o.begin()+(i+1)*product(b),
 						spectrum_3d_4));
-		}	
+		}
+
+
+		for (int i=0; i<bs; i++) {
+			copy(id.begin()+i*product(b), &spectrum_3d_4[0],
+					product(b), f);
+		}
+		fft_inverse(id, od, fh, f);
+		copy(&o[0], od.begin(), product(b)*bs, f);
+		wait_for(f);
+		
+		for(int i=0; i<bs; i++) {
+			BOOST_CHECK(std::equal(o.begin()+i*dim,
+						o.begin()+(i+1)*dim,
+						signal_3d_4));
+		}
 	}
 	
 	fft_terminate();
