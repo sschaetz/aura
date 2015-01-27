@@ -8,30 +8,26 @@
 #include <complex>
 
 #include <boost/aura/ext/fftw.hpp>
-
-int main(void)
-{
-}
-
-
-#if 0
+#include <boost/aura/misc/sequence.hpp>
+#include <boost/aura/misc/benchmark.hpp>
+#include <boost/aura/backend.hpp>
 
 using namespace boost::aura;
-using namespace boost::aura::backend;
 
 typedef std::complex<float> cfloat;
 
 // FIXME missing type (double, float) and r2c c2r
 
 // configuration
-std::vector<bounds> size;
-std::vector<boost::aura::svec<std::size_t, 1> > batch;
+std::vector<bounds> sizes;
+std::vector<boost::aura::svec<std::size_t, 1> > batches;
 std::size_t runtime;
-
-boost::aura::svec<std::size_t> devordinals;
-
+int devordinal;
+bool bench_fftw;
 const char * ops_tbl[] = { "fwdip", "invip", "fwdop", "invop" };
 std::bitset< sizeof(ops_tbl)/sizeof(ops_tbl[0]) > ops;
+
+#if 0
 
 // we have multiple wait_for free functions, std::for_each
 // can not decide which one should be used
@@ -52,8 +48,7 @@ void run_fwdip(std::vector<device_ptr<cfloat> > & mem1,
 }
 
 void run_invip(std::vector<device_ptr<cfloat> > & mem1,
-               std::vector<fft> & ffth, std::vector<feed> & feeds)
-{
+               std::vector<fft> & ffth, std::vector<feed> & feeds) {
 	for(std::size_t n = 0; n<feeds.size(); n++) {
 		fft_inverse(mem1[n], mem1[n], ffth[n], feeds[n]);
 	}
@@ -170,6 +165,78 @@ void run_tests()
 	boost::aura::backend::fft_terminate();
 }
 
+#endif
+
+void run_bench_fftw()
+{
+	fftw::fft_initialize();
+	fftw_plan_with_nthreads(8);
+	for(auto batch : batches) {
+		for(auto size : sizes) {
+			std::vector<cfloat> v1(product(size));
+			std::vector<cfloat> v2(product(size));
+			fftw::fft fh(size, fftw::fft::type::c2c, 
+					v1.begin(), v2.begin(), batch);
+			benchmark_result bs;
+			if(ops[0]) {
+				fftw::fft_forward(v1.begin(), v1.begin(), fh);
+				AURA_BENCH(fftw::fft_forward(
+							v1.begin(), 
+							v1.begin(), fh),
+				               runtime, bs);
+				std::cout << ops_tbl[0] << " batch " << 
+					batch << " size " << 
+					size << " " << bs << std::endl;
+			}
+			if(ops[1]) {
+				fftw::fft_inverse(v1.begin(), v1.begin(), fh);
+				AURA_BENCH(fftw::fft_forward(
+							v1.begin(), 
+							v1.begin(), fh),
+				               runtime, bs);
+				std::cout << ops_tbl[1] << " batch " << 
+					batch << " size " << 
+					size << " " << bs << std::endl;
+			}
+			if(ops[2]) {
+				fftw::fft_forward(v1.begin(), v2.begin(), fh);
+				AURA_BENCH(fftw::fft_forward(
+							v1.begin(), 
+							v2.begin(), fh),
+				               runtime, bs);
+				std::cout << ops_tbl[2] << " batch " << 
+					batch << " size " << 
+					size << " " << bs << std::endl;
+			}
+			if(ops[3]) {
+				fftw::fft_inverse(v1.begin(), v1.begin(), fh);
+				AURA_BENCH(fftw::fft_forward(
+							v1.begin(), 
+							v2.begin(), fh),
+				               runtime, bs);
+				std::cout << ops_tbl[3] << " batch " << 
+					batch << " size " << 
+					size << " " << bs << std::endl;
+			}		
+		}
+	}
+
+
+}
+
+void run_tests()
+{
+	if (bench_fftw) {
+		run_bench_fftw();
+	}
+}
+
+// nifty code from 
+// http://rosettacode.org/wiki/Determine_if_a_string_is_numeric#C.2B.2B
+bool is_numeric(const std::string& input) {
+    return std::all_of(input.begin(), input.end(), ::isdigit);
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -182,41 +249,49 @@ int main(int argc, char *argv[])
 	int opt;
 	while ((opt = getopt(argc, argv, "s:b:t:d:")) != -1) {
 		switch (opt) {
-		case 's': {
-			printf("size: %s ", optarg);
-			size = boost::aura::generate_sequence<int, AURA_SVEC_MAX_SIZE>(optarg);
-			printf("(%lu) ", size.size());
-			break;
-		}
-		case 't': {
-			runtime = atoi(optarg);
-			printf("time: %lu ms ", runtime);
-			// benchmark script expects us
-			runtime *= 1000;
-			break;
-		}
-		case 'b': {
-			printf("batch: %s ", optarg);
-			batch = boost::aura::generate_sequence<std::size_t, 1>(optarg);
-			printf("(%lu) ", batch.size());
-			break;
-		}
-		case 'd': {
-			char * optarg_copy = optarg;
-			while(true) {
-				char * cur = strsep(&optarg_copy, ",");
-				if(cur == NULL) {
-					break;
-				}
-				devordinals.push_back(atoi(cur));
+			case 's': 
+			{
+				printf("size: %s ", optarg);
+				sizes = boost::aura::generate_sequence<int, 
+				     AURA_SVEC_MAX_SIZE>(optarg);
+				printf("(%lu) ", sizes.size());
+				break;
 			}
-			break;
-		}
-		default: {
-			fprintf(stderr, "Usage: %s -s <vectorsize> -b <batchsize> -t <runtime> "
-			        "<operations>\n", argv[0]);
-			exit(-1);
-		}
+			case 't': 
+			{
+				runtime = atoi(optarg);
+				printf("time: %lu ms ", runtime);
+				// benchmark script expects us
+				runtime *= 1000;
+				break;
+			}
+			case 'b': 
+			{
+				printf("batch: %s ", optarg);
+				batches = boost::aura::generate_sequence<
+					std::size_t, 1>(optarg);
+				printf("(%lu) ", batches.size());
+				break;
+			}
+			case 'd': 
+			{
+				devordinal = -1;
+				bench_fftw = false;
+				
+				if (is_numeric(std::string(optarg))) {
+					devordinal = std::stoi(
+							std::string(optarg));
+				} else if (*optarg == 'f') {
+					bench_fftw = true;
+				}
+				break;
+			}
+			default: {
+				fprintf(stderr, "Usage: %s -s <vectorsize> -b "
+						"<batchsize> -t <runtime> "
+						"<operations>\n", argv[0]);
+				exit(-1);
+			}
 		}
 	}
 	printf("options: ");
@@ -229,17 +304,13 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
-	printf("\ndevices: ");
-	for(unsigned int i=0; i<devordinals.size(); i++) {
-		printf("%lu ", devordinals[i]);
-	}
-	printf("\nepxected runtime %1.2fs\n",
-	       batch.size()*size.size()*runtime*ops.count()/1000./1000.);
-
+	std::cout << std::endl << "device: " << devordinal;
+	std::cout << std::endl << "bench_fftw: " << bench_fftw;
+	std::cout << std::endl << "epxected runtime: " << 
+		batches.size()*sizes.size()*runtime*ops.count()/1000./1000.;
+	std::cout << std::endl;
 
 	run_tests();
-
 }
 
-#endif
 
