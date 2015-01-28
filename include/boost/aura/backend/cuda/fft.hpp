@@ -174,6 +174,18 @@ public:
 		}
 	}
 
+
+	/**
+	 * check if the handle is a valid handle
+	 */
+	bool valid() 
+	{
+		if (context_ == nullptr) {
+			return false;	
+		}
+		return true;
+	}
+
 private:
 	inline void initialize(const fft_embed& iembed = fft_embed(),
 	                std::size_t istride = 1, std::size_t idist = 0,
@@ -211,16 +223,6 @@ private:
 		}
 	}
 
-	/**
-	 * check if the handle is a valid handle
-	 */
-	bool valid() 
-	{
-		if (context_ == nullptr) {
-			return false;	
-		}
-		return true;
-	}
 
 protected:
 	/// device context
