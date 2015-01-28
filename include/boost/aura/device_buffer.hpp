@@ -64,7 +64,24 @@ public:
 		db.size_ = 0;
 		return *this;
 	}
+
+	// resize the buffer to contain size elements on device d
+	void resize(const std::size_t size, device& d)
+	{
+		finalize();
+		ptr_ = backend::device_malloc<T>(size, d);
+		size_ = size;
+	}
 	
+	// resize the buffer to contain size elements
+	void resize(const std::size_t size)
+	{
+		// we need to make sure we know which device so we need
+		// an existing pointer for this signature
+		assert(ptr_ != nullptr);
+		resize(size, ptr_.get_device());
+	}
+
 	/// return beginning of buffer
 	iterator begin() const
 	{
@@ -75,6 +92,18 @@ public:
 	iterator end() const
 	{
 		return ptr_+size_;
+	}
+
+	/// return pointer to underlying array
+	T* data()
+	{
+		return (T*)ptr_.get();
+	}
+
+	/// return pointer to underlying array
+	const T* data() const
+	{
+		return (T*)ptr_.get();
 	}
 
 	/// return beginning of buffer as raw pointer

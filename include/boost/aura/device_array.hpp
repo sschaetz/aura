@@ -82,6 +82,34 @@ public:
 		return *this;
 	}
 
+	// resize the buffer to contain size elements on device d
+	void resize(const std::size_t size, device& d)
+	{
+		data_.resize(size, d);
+		bounds_ = bounds(size);
+	}
+	
+	// resize the buffer to contain size elements
+	void resize(const std::size_t size)
+	{
+		data_.resize(size);
+		bounds_ = bounds(size);
+	}
+
+	// resize the buffer to contain bounds elements on device d
+	void resize(const bounds b, device& d)
+	{
+		data_.resize(product(b), d);
+		bounds_ = b;
+	}
+	
+	// resize the buffer to contain bounds elements
+	void resize(const bounds b)
+	{
+		data_.resize(product(b));
+		bounds_ = b;
+	}
+
 	/// return beginning of buffer
 	iterator begin() const
 	{
@@ -92,6 +120,18 @@ public:
 	iterator end() const
 	{
 		return data_.end();
+	}
+
+	/// return pointer to underlying array
+	T* data()
+	{
+		return data_.data();
+	}
+
+	/// return pointer to underlying array
+	const T* data() const
+	{
+		return data_.data();
 	}
 
 	/// return beginning of array as raw pointer
