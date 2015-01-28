@@ -76,6 +76,27 @@ public:
 	}
 
 	/**
+	 * create fft
+	 *
+	 * @param d device to create fft for
+	 */
+	inline explicit fft(device & d, feed & f,
+	                    std::tuple<bounds, bounds> const & dim, 
+			    const fft::type & type,
+	                    const fft_embed & iembed = fft_embed(),
+	                    std::size_t istride = 1, std::size_t idist = 0,
+	                    const fft_embed & oembed = fft_embed(),
+	                    std::size_t ostride = 1, std::size_t odist = 0) :
+		context_(d.get_context()), buffer_(), type_(type), 
+		dim_(std::get<0>(dim)), 
+		batch_(std::max(1, product(std::get<1>(dim))))
+	{
+		initialize(d, f, iembed, istride, idist,
+				oembed, ostride, odist);
+	}
+
+
+	/**
 	 * move constructor, move fft information here, invalidate other
 	 *
 	 * @param f fft to move here
