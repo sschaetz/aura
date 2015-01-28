@@ -209,6 +209,12 @@ void run_bench_accelerator()
 			device_array<cfloat> v1(size, d);
 			device_array<cfloat> v2(size, d);
 			fft fh(d, f, size, fft::type::c2c, batch);
+			if (!fh.valid()) {
+				std::cout << "INVALID FFT PLAN batch " << 
+					batch << " size " << 
+					size << std::endl;
+				continue;
+			}
 			benchmark_result bs;
 
 			if(ops[0]) {
@@ -245,7 +251,7 @@ void run_bench_accelerator()
 			}
 		}
 	}
-
+	fft_terminate();
 
 }
 

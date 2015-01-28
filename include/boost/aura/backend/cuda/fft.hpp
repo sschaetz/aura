@@ -211,6 +211,17 @@ private:
 		}
 	}
 
+	/**
+	 * check if the handle is a valid handle
+	 */
+	bool valid() 
+	{
+		if (context_ == nullptr) {
+			return false;	
+		}
+		return true;
+	}
+
 protected:
 	/// device context
 	detail::context * context_;

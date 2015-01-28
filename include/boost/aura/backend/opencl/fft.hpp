@@ -179,6 +179,17 @@ public:
 			return clfft_type(ENDPRECISION, ENDLAYOUT, ENDLAYOUT);
 		}
 	}
+	
+	/**
+	 * check if the handle is a valid handle
+	 */
+	bool valid() 
+	{
+		if (context_ == nullptr) {
+			return false;	
+		}
+		return true;
+	}
 
 protected:
 	/// context handle
@@ -193,6 +204,7 @@ private:
 	{
 		// FIXME handle strides and embed etc.
 		// we need to create a default plan
+		try {
 
 		assert(dim_.size() <=3);
 		// clFFT needs an array of std::size_t, 
@@ -247,6 +259,10 @@ private:
 			buffer_ = device_malloc<char>(
 					(buffer_size1 > buffer_size2) ?
 					buffer_size1 : buffer_size2, d);
+		}
+		
+		} catch (...) {
+			context_ = nullptr;
 		}
 	}
 

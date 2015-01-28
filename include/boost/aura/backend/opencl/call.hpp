@@ -2,6 +2,7 @@
 #define AURA_BACKEND_OPENCL_CALL_HPP
 
 #include <stdio.h>
+#include <iostream>
 
 #define AURA_OPENCL_SAFE_CALL(call) { \
   int err = call; \
@@ -12,10 +13,13 @@
 /**/
 
 #define AURA_CLFFT_SAFE_CALL(call) { \
-  int err = call; \
-  if (err != CLFFT_SUCCESS) { \
-    printf("clFFT error %d at %s:%d\n", err, __FILE__, __LINE__ ); \
-  } \
+	int err = call; \
+	if (err != CLFFT_SUCCESS) { \
+		std::ostringstream os; \
+		os << "clFFT error " << err << " file " << \
+			__FILE__ << " line " << __LINE__; \
+		throw os.str(); \
+	} \
 } \
 /**/
 
