@@ -1,6 +1,12 @@
 Todo
 ====
 
+You should be able to choose if certain parameters should be set
+at compiletime or at runtime (like max mesh- and bundle-sizes). They
+should be accessible as a member of the device, 
+i.e. device.get_max_mesh_size_0 or 
+device.get_mesh_capacity_0
+
 The more I think of it, the more sense it makes sense to use the CUDA
 way of defining mesh/bundle/fiber.
 
