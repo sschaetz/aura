@@ -11,6 +11,8 @@
 #include <boost/aura/misc/sequence.hpp>
 #include <boost/aura/misc/benchmark.hpp>
 #include <boost/aura/backend.hpp>
+#include <boost/aura/device_array.hpp>
+#include <boost/aura/fft.hpp>
 
 using namespace boost::aura;
 
@@ -167,6 +169,86 @@ void run_tests()
 
 #endif
 
+
+void run_acc_fwdip(device_array<cfloat>& v1, fft& fh, feed& f)
+{
+	fft_forward(v1, v1, fh, f);
+	wait_for(f);
+}
+
+void run_acc_invip(device_array<cfloat>& v1, fft& fh, feed& f)
+{
+	fft_inverse(v1, v1, fh, f);
+	wait_for(f);
+}
+
+void run_acc_fwdop(device_array<cfloat>& v1,
+		device_array<cfloat>& v2, fft& fh, feed& f)
+{
+	fft_forward(v1, v2, fh, f);
+	wait_for(f);
+}
+
+void run_acc_invop(device_array<cfloat>& v1,
+		device_array<cfloat>& v2, fft& fh, feed& f)
+{
+	fft_inverse(v1, v2, fh, f);
+	wait_for(f);
+}
+
+
+void run_bench_accelerator()
+{
+	initialize();
+	fft_initialize();
+
+	device d(devordinal);
+	feed f(d);
+	for(auto batch : batches) {
+		for(auto size : sizes) {
+			device_array<cfloat> v1(size, d);
+			device_array<cfloat> v2(size, d);
+			fft fh(d, f, size, fft::type::c2c, batch);
+			benchmark_result bs;
+
+			if(ops[0]) {
+				run_acc_fwdip(v1, fh, f);
+				AURA_BENCH(run_acc_fwdip(v1, fh, f),
+				               runtime, bs);
+				std::cout << ops_tbl[0] << " batch " << 
+					batch << " size " << 
+					size << " " << bs << std::endl;
+			}
+			if(ops[1]) {
+				run_acc_invip(v1, fh, f);
+				AURA_BENCH(run_acc_invip(v1, fh, f),
+				               runtime, bs);
+				std::cout << ops_tbl[1] << " batch " << 
+					batch << " size " << 
+					size << " " << bs << std::endl;
+			}
+			if(ops[2]) {
+				run_acc_fwdop(v1, v2, fh, f);
+				AURA_BENCH(run_acc_fwdop(v1, v2, fh, f),
+				               runtime, bs);
+				std::cout << ops_tbl[2] << " batch " << 
+					batch << " size " << 
+					size << " " << bs << std::endl;
+			}
+			if(ops[3]) {
+				run_acc_invop(v1, v2, fh, f);
+				AURA_BENCH(run_acc_invop(v1, v2, fh, f),
+				               runtime, bs);
+				std::cout << ops_tbl[3] << " batch " << 
+					batch << " size " << 
+					size << " " << bs << std::endl;
+			}
+		}
+	}
+
+
+}
+
 void run_bench_fftw()
 {
 	fftw::fft_initialize();
@@ -220,14 +302,15 @@ void run_bench_fftw()
 			}		
 		}
 	}
-
-
+	fft_terminate();
 }
 
 void run_tests()
 {
 	if (bench_fftw) {
 		run_bench_fftw();
+	} else if (devordinal != -1) {
+		run_bench_accelerator();
 	}
 }
 
