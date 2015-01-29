@@ -46,11 +46,19 @@ inline void calc_mesh_bundle(std::size_t v, std::size_t f,
 			++m;
 			// special handling for mask
 			if (*m) {
+				if (f * *(i-1) > *b) {
+					*i = *(i-1);
+					// go to next
+					++i;
+					++b;
+					++m;
+					calc_mesh_bundle(v,f,i,b,m);
+				} else {
 				f *= *(i-1);
-				assert(f < *b);
 				*i *= f;
 				f /= *(i-1);
 				calc_mesh_bundle(v/f, f, i, b, m);
+				}
 				return;
 			}
 			// if next dimension can hold value
