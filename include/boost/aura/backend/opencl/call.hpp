@@ -2,7 +2,7 @@
 #define AURA_BACKEND_OPENCL_CALL_HPP
 
 #include <stdio.h>
-#include <iostream>
+#include <sstream>
 
 #define AURA_OPENCL_SAFE_CALL(call) { \
   int err = call; \

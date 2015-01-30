@@ -17,6 +17,7 @@
 #include <boost/aura/backend/opencl/call.hpp>
 #include <boost/aura/backend/opencl/context.hpp>
 #include <boost/aura/misc/deprecate.hpp>
+#include <boost/aura/device_lock.hpp>
 
 namespace boost {
 namespace aura {

@@ -175,7 +175,7 @@ private:
 	device_buffer<T> data_;
 };
 
-} // namespace arua
+} // namespace aura
 } // boost
 
 #endif // AURA_DEVICE_ARRAY_HPP

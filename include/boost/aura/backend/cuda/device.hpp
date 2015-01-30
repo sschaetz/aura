@@ -12,6 +12,7 @@
 #include <boost/aura/backend/shared/call.hpp>
 #include <boost/aura/backend/cuda/context.hpp>
 #include <boost/aura/misc/deprecate.hpp>
+#include <boost/aura/device_lock.hpp>
 
 namespace boost {
 namespace aura {
@@ -78,6 +79,7 @@ public:
 		context_(d.context_), 
 		ordinal_(d.ordinal_), 
 		modules_(std::move(d.modules_)) 
+		device_lock_(std::move(d.device_lock_))
 	{
 		d.context_ = nullptr;
 		d.modules_.clear();
@@ -94,6 +96,7 @@ public:
 		context_ = d.context_;
 		ordinal_ = d.ordinal_;
 		modules_ = std::move(d.modules_);
+		device_lock_ = std::move(d.device_lock_);
 		d.context_ = nullptr;
 		d.modules_.clear();
 		return *this;
@@ -223,6 +226,9 @@ private:
 
 	/// modules
 	std::unordered_map<std::string, module> modules_;
+
+	/// device_lock
+	device_lock device_lock_;
 };
   
 /**

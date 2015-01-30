@@ -23,7 +23,7 @@ ELSE ()
   ENDIF ()
 ENDIF()
 SET(BOOST_ROOT ${BOOST_ROOT} "/usr/local/boost")
-FIND_PACKAGE(Boost COMPONENTS system thread unit_test_framework)
+FIND_PACKAGE(Boost COMPONENTS system thread filesystem unit_test_framework)
 
 # find CUDA libraries #####
 FIND_PACKAGE(CUDA)
@@ -89,6 +89,8 @@ SET(CMAKE_CXX_FLAGS "-Wall -std=c++0x -g")
 SET(AURA_KERNEL_COMPILER_ARGS "${AURA_KERNEL_COMPILER_ARGS} -I${PROJECT_SOURCE_DIR}/include/")
 SET(AURA_KERNEL_COMPILER_ARGS "${AURA_KERNEL_COMPILER_ARGS} -I${CMAKE_BINARY_DIR}")
 ADD_DEFINITIONS(-DAURA_BACKEND_COMPILE_FLAGS="${AURA_KERNEL_COMPILER_ARGS}")
+# looks like if we do this, we don't need to link liboostsystem
+ADD_DEFINITIONS(-DBOOST_SYSTEM_NO_DEPRECATED)
 
 # used for unittests to find the kernels
 ADD_DEFINITIONS(-DAURA_UNIT_TEST_LOCATION="${CMAKE_BINARY_DIR}/test/")
