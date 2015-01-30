@@ -206,8 +206,10 @@ void run_bench_accelerator()
 	feed f(d);
 	for(auto batch : batches) {
 		for(auto size : sizes) {
-			device_array<cfloat> v1(size, d);
-			device_array<cfloat> v2(size, d);
+			auto size2 = size;
+			size2.push_back(batch);
+			device_array<cfloat> v1(size2, d);
+			device_array<cfloat> v2(size2, d);
 			fft fh(d, f, size, fft::type::c2c, batch);
 			if (!fh.valid()) {
 				std::cout << "INVALID FFT PLAN batch " << 
@@ -216,7 +218,7 @@ void run_bench_accelerator()
 				continue;
 			}
 			benchmark_result bs;
-
+		{
 			if(ops[0]) {
 				run_acc_fwdip(v1, fh, f);
 				AURA_BENCH(run_acc_fwdip(v1, fh, f),
@@ -249,6 +251,8 @@ void run_bench_accelerator()
 					batch << " size " << 
 					size << " " << bs << std::endl;
 			}
+		}
+			wait_for(f);
 		}
 	}
 	fft_terminate();
