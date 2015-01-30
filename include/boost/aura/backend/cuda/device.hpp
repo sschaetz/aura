@@ -78,7 +78,7 @@ public:
 	device(BOOST_RV_REF(device) d) : 
 		context_(d.context_), 
 		ordinal_(d.ordinal_), 
-		modules_(std::move(d.modules_)) 
+		modules_(std::move(d.modules_)),
 		device_lock_(std::move(d.device_lock_))
 	{
 		d.context_ = nullptr;

@@ -51,7 +51,7 @@ public:
 	/**
 	 * create empty fft object without device and stream
 	 */
-	inline explicit fft() : context_(nullptr)
+	inline explicit fft() : context_(nullptr), valid_(false)
 	{
 	}
 
@@ -100,9 +100,11 @@ public:
 	 * @param f fft to move here
 	 */
 	fft(BOOST_RV_REF(fft) f) : 
-		context_(f.context_), handle_(f.handle_), type_(f.type_)
+		context_(f.context_), handle_(f.handle_), type_(f.type_), 
+		valid_(f.valid_)
 	{
 		f.context_ = nullptr;
+		f.valid_ = false;
 	}
 
 	/**
@@ -115,8 +117,10 @@ public:
 		finalize();
 		context_= f.context_;
 		handle_ = f.handle_;
+		valid_ = f.valid_;
 		type_ = f.type_;
 		f.context_ = nullptr;
+		f.valid_ = false;
 		return *this;
 	}
 
@@ -180,10 +184,7 @@ public:
 	 */
 	bool valid() 
 	{
-		if (context_ == nullptr) {
-			return false;	
-		}
-		return true;
+		return valid_;
 	}
 
 private:
@@ -192,31 +193,36 @@ private:
 	                const fft_embed& oembed = fft_embed(),
 	                std::size_t ostride = 1, std::size_t odist = 0)
 	{
-		context_->set();
-		AURA_CUFFT_SAFE_CALL(
-		        cufftPlanMany(
-		                &handle_,
-		                dim_.size(),
-		                const_cast<int*>(&dim_[0]),
-		                0 == iembed.size() ? NULL : 
-					const_cast<int*>(&iembed[0]),
-		                istride,
-		                0 == idist ? product(dim_) : idist,
-		                0 == oembed.size() ? NULL : 
-					const_cast<int*>(&oembed[0]),
-		                ostride,
-		                0 == odist ? product(dim_) : odist,
-		                map_type(type_),
-		                batch_
-		        )
-		);
-		context_->unset();
+		try {
+			context_->set();
+			AURA_CUFFT_SAFE_CALL(
+				cufftPlanMany(
+					&handle_,
+					dim_.size(),
+					const_cast<int*>(&dim_[0]),
+					0 == iembed.size() ? NULL : 
+						const_cast<int*>(&iembed[0]),
+					istride,
+					0 == idist ? product(dim_) : idist,
+					0 == oembed.size() ? NULL : 
+						const_cast<int*>(&oembed[0]),
+					ostride,
+					0 == odist ? product(dim_) : odist,
+					map_type(type_),
+					batch_
+				)
+			);
+			context_->unset();
+			valid_ = true;
+		} catch (...) {
+			valid_ = false;
+		}
 	}
 
 	/// finalize object (called from dtor and move assign)
 	void finalize()
 	{
-		if(nullptr != context_) {
+		if(nullptr != context_ && valid_) {
 			context_->set();
 			AURA_CUFFT_SAFE_CALL(cufftDestroy(handle_));
 			context_->unset();
@@ -237,6 +243,8 @@ private:
 	bounds dim_;
 	/// batch
 	std::size_t batch_;
+	/// valid (indicates if plan is valid)
+	bool valid_;
 
 	template <typename T1, typename T2>
 	friend void fft_forward(device_ptr<T2> src, device_ptr<T1> dst,

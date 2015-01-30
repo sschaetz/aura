@@ -17,10 +17,13 @@
 
 /// check if a call returned error and throw exception if it did
 #define AURA_CUFFT_SAFE_CALL(call) { \
-  cufftResult err = call; \
-  if (err != CUFFT_SUCCESS) { \
-    printf("CUFFT error %d at %s:%d\n", err, __FILE__, __LINE__ ); \
-  } \
+	cufftResult err = call; \
+	if (err != CUFFT_SUCCESS) { \
+		std::ostringstream os; \
+		os << "CUFFT error " << err << " file " << \
+			__FILE__ << " line " << __LINE__; \
+		throw os.str(); \
+	} \
 } \
 /**/
 
