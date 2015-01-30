@@ -218,7 +218,6 @@ void run_bench_accelerator()
 				continue;
 			}
 			benchmark_result bs;
-		{
 			if(ops[0]) {
 				run_acc_fwdip(v1, fh, f);
 				AURA_BENCH(run_acc_fwdip(v1, fh, f),
@@ -251,8 +250,6 @@ void run_bench_accelerator()
 					batch << " size " << 
 					size << " " << bs << std::endl;
 			}
-		}
-			wait_for(f);
 		}
 	}
 	fft_terminate();
