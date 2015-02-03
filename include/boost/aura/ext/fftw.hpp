@@ -345,7 +345,7 @@ private:
 						0 == odist ? product(dim_) : 
 							odist,
 						fwd,
-						FFTW_PATIENT);
+						FFTW_MEASURE);
 
 				handle_single_inv_ = 
 					fftwf_plan_many_dft(

@@ -24,6 +24,7 @@ typedef std::complex<float> cfloat;
 std::vector<bounds> sizes;
 std::vector<boost::aura::svec<std::size_t, 1> > batches;
 std::size_t runtime;
+std::size_t threads;
 int devordinal;
 bool bench_fftw;
 const char * ops_tbl[] = { "fwdip", "invip", "fwdop", "invop" };
@@ -259,54 +260,56 @@ void run_bench_accelerator()
 void run_bench_fftw()
 {
 	fftw::fft_initialize();
-	fftw_plan_with_nthreads(8);
+	fftwf_plan_with_nthreads(threads);
 	for(auto batch : batches) {
 		for(auto size : sizes) {
-			std::vector<cfloat> v1(product(size));
-			std::vector<cfloat> v2(product(size));
+			std::complex<float>* v1 = (cfloat*)fftwf_malloc(sizeof(cfloat)*product(size));
+			std::complex<float>* v2 = (cfloat*)fftwf_malloc(sizeof(cfloat)*product(size));
 			fftw::fft fh(size, fftw::fft::type::c2c, 
-					v1.begin(), v2.begin(), batch);
+					v1, v2, batch);
 			benchmark_result bs;
 			if(ops[0]) {
-				fftw::fft_forward(v1.begin(), v1.begin(), fh);
+				fftw::fft_forward(v1, v1, fh);
 				AURA_BENCH(fftw::fft_forward(
-							v1.begin(), 
-							v1.begin(), fh),
+							v1, 
+							v1, fh),
 				               runtime, bs);
 				std::cout << ops_tbl[0] << " batch " << 
 					batch << " size " << 
 					size << " " << bs << std::endl;
 			}
 			if(ops[1]) {
-				fftw::fft_inverse(v1.begin(), v1.begin(), fh);
+				fftw::fft_inverse(v1, v1, fh);
 				AURA_BENCH(fftw::fft_forward(
-							v1.begin(), 
-							v1.begin(), fh),
+							v1, 
+							v1, fh),
 				               runtime, bs);
 				std::cout << ops_tbl[1] << " batch " << 
 					batch << " size " << 
 					size << " " << bs << std::endl;
 			}
 			if(ops[2]) {
-				fftw::fft_forward(v1.begin(), v2.begin(), fh);
+				fftw::fft_forward(v1, v2, fh);
 				AURA_BENCH(fftw::fft_forward(
-							v1.begin(), 
-							v2.begin(), fh),
+							v1, 
+							v2, fh),
 				               runtime, bs);
 				std::cout << ops_tbl[2] << " batch " << 
 					batch << " size " << 
 					size << " " << bs << std::endl;
 			}
 			if(ops[3]) {
-				fftw::fft_inverse(v1.begin(), v1.begin(), fh);
+				fftw::fft_inverse(v1, v2, fh);
 				AURA_BENCH(fftw::fft_forward(
-							v1.begin(), 
-							v2.begin(), fh),
+							v1, 
+							v2, fh),
 				               runtime, bs);
 				std::cout << ops_tbl[3] << " batch " << 
 					batch << " size " << 
 					size << " " << bs << std::endl;
 			}		
+			fftwf_free(v1);
+			fftwf_free(v2);
 		}
 	}
 	fft_terminate();
@@ -337,7 +340,7 @@ int main(int argc, char *argv[])
 	// and the options: fwdip, invip, fwdop, invop
 
 	int opt;
-	while ((opt = getopt(argc, argv, "s:b:t:d:")) != -1) {
+	while ((opt = getopt(argc, argv, "s:b:t:d:p:")) != -1) {
 		switch (opt) {
 			case 's': 
 			{
@@ -355,6 +358,14 @@ int main(int argc, char *argv[])
 				runtime *= 1000;
 				break;
 			}
+			case 'p': 
+			{
+				threads = atoi(optarg);
+				printf("threads: %lu ", threads);
+				// benchmark script expects us
+				break;
+			}
+
 			case 'b': 
 			{
 				printf("batch: %s ", optarg);

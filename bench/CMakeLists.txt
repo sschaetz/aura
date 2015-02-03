@@ -7,7 +7,7 @@ AURA_ADD_TARGET(bench.micro micro.cpp micro.cl micro.cu
 
 IF(NOT ${AURA_FFT_LIBRARIES} STREQUAL "")
 	AURA_ADD_TARGET(bench.fft fft.cpp ${AURA_BACKEND_LIBRARIES}
-		${AURA_FFT_LIBRARIES} ${AURA_FFT_HOST_LIBRARIES} pthread)
+		${AURA_FFT_LIBRARIES} fftw3f fftw3 fftw3_threads fftw3f_threads  pthread)
 ENDIF()
 
 AURA_ADD_TARGET(bench.peak peak.cpp peak.cc

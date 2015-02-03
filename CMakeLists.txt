@@ -83,7 +83,7 @@ IF(${FFTW_FOUND})
 ENDIF()
 
 # compiler settings
-SET(CMAKE_CXX_FLAGS "-Wall -std=c++0x -g")
+SET(CMAKE_CXX_FLAGS "-Wall -std=c++0x -g -O3")
 
 # used for OpenCL kernels that need to have the include dirs at runtime
 SET(AURA_KERNEL_COMPILER_ARGS "${AURA_KERNEL_COMPILER_ARGS} -I${PROJECT_SOURCE_DIR}/include/")
