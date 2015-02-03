@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <boost/move/move.hpp>
 #include <boost/aura/device_buffer.hpp>
+#include <boost/aura/device_range.hpp>
 #include <boost/aura/bounds.hpp>
 #include <boost/aura/copy.hpp>
 
@@ -11,6 +12,9 @@ namespace boost
 {
 namespace aura 
 {
+
+template <typename T>
+class device_range;
 
 /// continuous block of memory holding multiple instances of a type T
 template <typename T>
@@ -80,6 +84,11 @@ public:
 		data_ = boost::move(da.data_);
 		da.bounds_.clear();
 		return *this;
+	}
+
+	device_range<T> operator [](index i)
+	{
+		return device_range<T>(*this, i);
 	}
 
 	// resize the buffer to contain size elements on device d

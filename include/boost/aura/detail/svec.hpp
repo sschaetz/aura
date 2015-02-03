@@ -50,7 +50,7 @@ public:
 	// number of args > max_size
 
 	/**
-	 * @brief construct dim with T
+	 * @brief construct svec with T
 	 *
 	 * There are more constructors that take more Ts, with the maximum
 	 * being the the template argument max_size_ 
@@ -164,6 +164,9 @@ public:
 	inline svec<T, max_size_> take(std::size_t const n) const 
 	{
 		svec<T, max_size_> ret;
+		if (n == 0) {
+			return ret;
+		}
 		for (std::size_t s=0; s<std::min(n, size_); s++) {
 			ret.push_back(data_[s]);
 		}
@@ -175,7 +178,16 @@ public:
 	 */
 	inline svec<T, max_size_> drop(std::size_t const n) const 
 	{
+		std::cout << "drop arg " << n << std::endl;
+		if (n == 0) {
+			return *this;	
+		}
 		svec<T, max_size_> ret;
+		if (n >= size_) {
+			
+			std::cout << "drop arg nothin " << n << std::endl;
+			return ret;
+		}
 		std::size_t n2 = n;
 		if (n > size_) {
 			n2 = size_;
@@ -325,11 +337,15 @@ void svec_snprintf(char * c, std::size_t s,
 template <typename T, std::size_t max_size_>
 std::ostream& operator << (std::ostream & o, const svec<T, max_size_> & a) 
 {
-	std::size_t i;
-	for(i=0; i<a.size()-1; i++) {
-		o << a[i] << " ";
+	std::size_t i = 0;
+	if (a.size() > 1) {
+		for(i=0; i<a.size() - 1; i++) {
+			o << a[i] << " ";
+		}
 	}
-	o << a[i];
+	if (a.size() > 0) {
+		o << a[i];
+	}
 	return o;
 }
 
