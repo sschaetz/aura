@@ -3,7 +3,7 @@
 
 #include <cstddef>
 #include <boost/aura/bounds.hpp>
-#include <boost/aura/index.hpp>
+#include <boost/aura/slice.hpp>
 #include <boost/aura/backend.hpp>
 #include <boost/aura/device_array.hpp>
 
@@ -30,25 +30,12 @@ public:
 	device_range()  {}
 
 	/// create one-dimensional range of size on device
-	device_range(device_array& da, index idx) :
+	device_range(device_array<T>& da, slice idx)
 	{
-		const bounds b = da.get_bounds();
-		bool locked = false;	
-		// initialize offset and bounds
-		std::size_t offset = b[0];
-		if (idx[0] != _) {
-			locked = true;
-			offset = idx[0];
-		}
-		// calculate the increment and the bounds
-		for (int i=1; i<b.size(); i++) {
-			if (idx[i] != _) {
-				locked = true;
-				offset += idx[i];
-			}
-		}
-		// take the pointer of the array, increment it, store it
-		// calculate the bounds
+		std::size_t offset;
+		std::tie(offset, bounds_) = 
+			get_offset_and_bounds(da.get_bounds(), idx);
+		ptr_ = da.begin() + offset;
 	}
 
 	/// destroy object
@@ -92,6 +79,30 @@ public:
 	/// return copy of bounds
 	bounds get_bounds() {
 		return bounds_;
+	}
+
+private:
+	std::tuple<std::size_t, bounds> get_offset_and_bounds(
+			bounds b, slice idx)
+	{
+		bounds ret;
+		std::size_t offset = 0;
+		for (std::size_t i=0; i<idx.size(); i++) {
+			if (idx[i] == _) {
+				ret.push_back(b[i]);
+			}
+			if (i > 0) {
+				idx[i-1] = b[i-1];
+			}
+			if (idx[i] != _) {
+				offset += product(take(i+1, idx));
+			} 
+		}
+
+		if (ret.size() == 0) {
+			ret.push_back(1);
+		}
+		return std::make_tuple(offset, ret);
 	}
 
 private:

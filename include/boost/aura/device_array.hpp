@@ -86,7 +86,7 @@ public:
 		return *this;
 	}
 
-	device_range<T> operator [](index i)
+	device_range<T> operator [](slice i)
 	{
 		return device_range<T>(*this, i);
 	}
