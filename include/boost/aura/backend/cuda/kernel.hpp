@@ -33,7 +33,7 @@ inline kernel create_kernel(module m, const char * kernel_name) {
  * @param m the module that is built
  * @param d the device the module is built for
  */
-inline void print_module_build_log(module & m, device & d) {
+inline void print_module_build_log(module & m, const device & d) {
   // FIXME
 }
 

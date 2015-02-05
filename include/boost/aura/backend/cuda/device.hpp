@@ -35,7 +35,7 @@ module create_module_from_file(const char * filename, device & d,
 
 kernel create_kernel(module m, const char * kernel_name);
 
-void print_module_build_log(module & m, device & d);
+void print_module_build_log(module & m, const device & d);
 
 
 /**
@@ -197,13 +197,13 @@ public:
 	}
 
 	/// compare devices
-	inline bool operator==(const device& d)
+	inline bool operator==(const device& d) const
 	{
 		return (context_ == d.context_ && ordinal_ == d.ordinal_);
 	}
 
 	/// compare devices
-	inline bool operator!=(const device& d)
+	inline bool operator!=(const device& d) const
 	{
 		return !(*this == d);
 	}

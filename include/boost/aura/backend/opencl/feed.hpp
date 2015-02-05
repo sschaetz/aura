@@ -148,6 +148,11 @@ public:
 	}
 
 	/// get stream
+	inline cl_command_queue& get_backend_stream()
+	{
+		return stream_;
+	}
+	
 	inline const cl_command_queue & get_backend_stream() const
 	{
 		return stream_;

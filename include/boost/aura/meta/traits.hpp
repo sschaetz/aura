@@ -23,6 +23,12 @@ T* begin_raw(device_array<T>& da)
 }
 
 template <typename T>
+const T* begin_raw(const device_array<T>& da)
+{
+	return (T*)da.begin().get();
+}
+
+template <typename T>
 std::size_t size(const device_array<T>& da)
 {
 	return da.size();
@@ -41,7 +47,19 @@ device& get_device(device_array<T>& da)
 }
 
 template <typename T>
+const device& get_device(const device_array<T>& da)
+{
+	return da.get_device();
+}
+
+template <typename T>
 T get_value_type(device_array<T>& da)
+{
+	return T();
+}
+
+template <typename T>
+T get_value_type(const device_array<T>& da)
 {
 	return T();
 }

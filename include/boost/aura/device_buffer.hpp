@@ -83,13 +83,21 @@ public:
 	}
 
 	/// return beginning of buffer
-	iterator begin() const
+	iterator begin()
+	{
+		return ptr_;
+	}
+	const iterator begin() const
 	{
 		return ptr_;
 	}
 	
 	/// return end of buffer
-	iterator end() const
+	iterator end()
+	{
+		return ptr_+size_;
+	}
+	const iterator end() const
 	{
 		return ptr_+size_;
 	}
@@ -107,13 +115,21 @@ public:
 	}
 
 	/// return beginning of buffer as raw pointer
-	T * begin_ptr() const
+	T * begin_ptr()
+	{
+		return (T*)ptr_.get();
+	}
+	const T * begin_ptr() const
 	{
 		return (T*)ptr_.get();
 	}
 	
 	/// return end of buffer as raw pointer 
-	T * end_ptr() const
+	T * end_ptr()
+	{
+		return (T*)ptr_.get() + size_;
+	}
+	const T * end_ptr() const
 	{
 		return (T*)ptr_.get() + size_;
 	}
@@ -125,6 +141,10 @@ public:
 	}
 
 	/// return device
+	const device& get_device () const
+	{
+		return ptr_.get_device();
+	}
 	device& get_device()
 	{
 		return ptr_.get_device();

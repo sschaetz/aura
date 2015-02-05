@@ -76,6 +76,7 @@ public:
   std::size_t get_offset() const { return offset_; }
   
   /// returns a pointer to the device memory 
+  const device & get_device() const { return *device_; }
   device & get_device() { return *device_; }
 
   /// returns the memory tag

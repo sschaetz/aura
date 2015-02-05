@@ -7,6 +7,8 @@
 #include <boost/aura/device_range.hpp>
 #include <boost/aura/bounds.hpp>
 #include <boost/aura/copy.hpp>
+#include <boost/aura/backend.hpp>
+
 
 namespace boost
 {
@@ -120,13 +122,21 @@ public:
 	}
 
 	/// return beginning of buffer
-	iterator begin() const
+	iterator begin()
+	{
+		return data_.begin();
+	}
+	const iterator begin() const
 	{
 		return data_.begin();
 	}
 	
 	/// return end of buffer
-	iterator end() const
+	iterator end()
+	{
+		return data_.end();
+	}
+	const iterator end() const
 	{
 		return data_.end();
 	}
@@ -144,33 +154,49 @@ public:
 	}
 
 	/// return beginning of array as raw pointer
-	T * begin_ptr() const
+	T * begin_ptr()
+	{
+		return data_.begin_ptr();
+	}
+	const T * begin_ptr() const
 	{
 		return data_.begin_ptr();
 	}
 	
 	/// return end of array as raw pointer 
-	T * end_ptr() const
+	T * end_ptr()
+	{
+		return data_.end_ptr();
+	}
+	const T * end_ptr() const
 	{
 		return data_.end_ptr();
 	}
 	
 	/// return number of elements in array
-	std::size_t size() const {
+	std::size_t size() const
+	{
 		return data_.size();
 	}
 
 	/// return bounds
-	const bounds & get_bounds() const {
+	const bounds & get_bounds() const
+	{
 		return bounds_;
 	}
 
 	/// return copy of bounds
-	bounds get_bounds() {
+	bounds get_bounds()
+	{
 		return bounds_;
 	}
 
 	/// return device
+	const device& get_device() const
+	{
+		return data_.get_device();
+	}
+
 	device& get_device()
 	{
 		return data_.get_device();

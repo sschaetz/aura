@@ -74,7 +74,7 @@ public:
   /// returns a pointer to the device memory 
   const_backend_type get() const { return memory_; }
   
-  /// returns a pointer to the device memory 
+  /// returns the offset
   std::size_t get_offset() const { return offset_; }
 
   /// returns the memory tag
@@ -169,10 +169,14 @@ public:
   }
 
   /// access the device
-  device& get_device() {
+  const device& get_device() const 
+  {
 	return *device_;
   }
-
+  device& get_device()
+  {
+	return *device_;
+  }
 private:
 
   /// actual pointer that identifies device memory
