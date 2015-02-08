@@ -69,6 +69,18 @@ public:
 	{}
 
 	/**
+	 * create device form ordinal with lock
+	 *
+	 * @param ordinal device number
+	 * @param device_lock a device lock object
+	 */
+	inline explicit device(std::size_t ordinal, device_lock dl) : 
+		context_(new detail::context(ordinal)),
+		ordinal_(ordinal),
+		device_lock_(dl)
+	{}
+
+	/**
 	 * move constructor, move device information here, invalidate other
 	 *
 	 * @param d device to move here
@@ -76,7 +88,8 @@ public:
 	device(BOOST_RV_REF(device) d) : 
 		context_(d.context_), 
 		ordinal_(d.ordinal_),
-		modules_(std::move(d.modules_))
+		modules_(std::move(d.modules_)),
+		device_lock_(std::move(d.device_lock_))
 	{
 		d.context_ = nullptr;
 		d.modules_.clear();
@@ -93,6 +106,7 @@ public:
 		context_ = d.context_;
 		ordinal_ = d.ordinal_;
 		modules_ = std::move(d.modules_);
+		device_lock_ = std::move(d.device_lock_);
 		d.context_ = nullptr;
 		d.modules_.clear();
 		return *this;
@@ -216,6 +230,9 @@ private:
 	
 	/// modules
 	std::unordered_map<std::string, module> modules_;
+
+	/// device_lock
+	device_lock device_lock_;
 };
 
 
@@ -343,6 +360,18 @@ inline device_info device_get_info(device & d)
 	CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(wgs), &wgs, NULL));
 	di.max_fibers_per_bundle = wgs;
 	return di;
+}
+
+inline device create_device_exclusive()
+{
+	int num = device_get_count();
+	for (int n=0; n<device_get_count(); n++) {
+		auto dl = create_device_lock(num);
+		if (dl) {
+			return device(n, dl);	
+		}
+	}
+	throw "no device available!";
 }
 
 

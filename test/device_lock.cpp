@@ -4,9 +4,9 @@
 #include <memory>
 
 #include <boost/test/unit_test.hpp>
-#include <boost/aura/device_lock.hpp>
+#include <boost/aura/backend.hpp>
 
-namespace ip = boost::interprocess;
+using namespace boost::aura;
 
 // basic
 // _____________________________________________________________________________
@@ -21,5 +21,22 @@ BOOST_AUTO_TEST_CASE(basic)
 	}
 }
 
+// create_device
+// _____________________________________________________________________________
 
+BOOST_AUTO_TEST_CASE(create_device) 
+{
+	// we use two processes here, one must throw
+	if (fork() == 0) {
+		initialize();
+		device d0= backend::create_device_exclusive();	
+		device d1= backend::create_device_exclusive();
+		exit(0);
+	} else {
+		initialize();
+		device d0 = backend::create_device_exclusive();	
+		device d1 = backend::create_device_exclusive();
+		exit(0);
+	}
+}
 

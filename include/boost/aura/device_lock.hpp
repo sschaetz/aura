@@ -13,7 +13,6 @@ namespace boost
 namespace aura 
 {
 
-
 // mwahahahahahahaha 
 typedef boost::optional<
 		std::pair<
@@ -86,7 +85,6 @@ inline device_lock create_device_lock(std::size_t ordinal)
 
 
 } // namespace aura
-} // boost
-
+} // namespace boost
 #endif // AURA_DEVICE_LOCK_HPP
 

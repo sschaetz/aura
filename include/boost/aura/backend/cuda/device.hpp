@@ -64,6 +64,18 @@ public:
 		ordinal_(ordinal) 
 	{}
 
+	/**
+	 * create device form ordinal with lock
+	 *
+	 * @param ordinal device number
+	 * @param device_lock a device lock object
+	 */
+	inline explicit device(std::size_t ordinal, device_lock&& dl) : 
+		context_(new detail::context(ordinal)),
+		ordinal_(ordinal),
+		device_lock_(dl)
+	{}
+	
 	/// destroy device
 	inline ~device() 
 	{
