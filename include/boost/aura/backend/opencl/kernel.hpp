@@ -53,7 +53,9 @@ inline void print_module_build_log(module & m, const device & d) {
     log_size, log, NULL);
 
   // Print the log
-  printf("%s\n", log);
+  if (strncmp("\n\0", log, 2) != 0) {
+	printf("%s\n", log);
+  }
   free(log);
 }
 

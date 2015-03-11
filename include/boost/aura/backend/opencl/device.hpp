@@ -148,9 +148,6 @@ public:
 							kernel_string, *this,
 							build_options)));
 			it = it2.first;	
-			if (debug) {
-				print_module_build_log(it2.first->second, *this);
-			}
 		}
 		
 		return create_kernel(it->second, kernel_name);
