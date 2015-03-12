@@ -42,8 +42,7 @@ void add(DeviceRangeType& input_range1,
 	backend::kernel k = aura::traits::get_device(input_range1).
 		load_from_string(std::get<0>(kernel_data),
 				std::get<1>(kernel_data),
-				AURA_BACKEND_COMPILE_FLAGS, true);
-
+				AURA_BACKEND_COMPILE_FLAGS);
 	invoke(k, aura::traits::bounds(input_range1), 
 			args(aura::traits::begin_raw(input_range1), 
 				aura::traits::begin_raw(input_range2),

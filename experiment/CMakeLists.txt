@@ -8,6 +8,8 @@ IF(${AURA_BACKEND} STREQUAL OPENCL)
     ${Boost_THREAD_LIBRARY} pthread rt)
   AURA_ADD_TARGET(exp.oclpinning oclpinning.cpp 
     ${AURA_BACKEND_LIBRARIES})
+  AURA_ADD_TARGET(exp.opencl_kernel_leak opencl_kernel_leak.cpp
+    ${AURA_BACKEND_LIBRARIES})
   # TODO: this does not work on NVIDIA currently
   # reason: NVIDIA supports OCL 1.0, we need 1.1/1.2
   #AURA_ADD_TARGET(exp.ocltexture ocltexture.cpp

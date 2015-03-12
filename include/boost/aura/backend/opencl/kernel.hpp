@@ -1,6 +1,6 @@
 #ifndef AURA_BACKEND_OPENCL_KERNEL_HPP
 #define AURA_BACKEND_OPENCL_KERNEL_HPP
-
+#if 0
 #ifdef __APPLE__
 	#include "OpenCL/opencl.h"
 #else
@@ -8,13 +8,15 @@
 #endif
 #include <boost/aura/backend/opencl/call.hpp>
 #include <boost/aura/backend/opencl/device.hpp>
-#include <boost/aura/backend/opencl/module.hpp>
+
 
 namespace boost
 {
 namespace aura {
 namespace backend_detail {
 namespace opencl {
+
+class module;
 
 /// kernel handle
 typedef cl_kernel kernel;
@@ -32,37 +34,12 @@ inline kernel create_kernel(module m, const char * kernel_name) {
   return k;
 }
 
-/**
- * @brief print the module build log
- *
- * @param m the module that is built
- * @param d the device the module is built for
- */
-inline void print_module_build_log(module & m, const device & d) {
-  // from http://stackoverflow.com/a/9467325/244786
-  // Determine the size of the log
-  std::size_t log_size;
-  clGetProgramBuildInfo(m, d.get_backend_device(), 
-    CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
 
-  // Allocate memory for the log
-  char *log = (char *) malloc(log_size);
-
-  // Get the log
-  clGetProgramBuildInfo(m, d.get_backend_device(), CL_PROGRAM_BUILD_LOG, 
-    log_size, log, NULL);
-
-  // Print the log
-  if (strncmp("\n\0", log, 2) != 0) {
-	printf("%s\n", log);
-  }
-  free(log);
-}
 
 } // opencl
 } // backend_detail
 } // aura
 } // boost
-
+#endif // 0
 #endif // AURA_BACKEND_OPENCL_KERNEL_HPP
 
