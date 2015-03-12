@@ -18,29 +18,25 @@
 #include <boost/aura/backend/opencl/context.hpp>
 #include <boost/aura/misc/deprecate.hpp>
 #include <boost/aura/device_lock.hpp>
-
+#include <boost/aura/backend/opencl/module.hpp>
 namespace boost {
 namespace aura {
 namespace backend_detail {
 namespace opencl {
 
 class device;
-
-/// module handle
-typedef cl_program module;
+class module;
 
 /// kernel handle
 typedef cl_kernel kernel;
 
-module create_module_from_string(const char * str, device & d,
-		const char * build_options);
+
 
 module create_module_from_file(const char * filename, device & d,
 		const char * build_options);
 
-kernel create_kernel(module m, const char * kernel_name);
+kernel create_kernel(module& m, const char * kernel_name);
 
-void print_module_build_log(module & m, const device & d);
 
 /**
  * device class
@@ -119,20 +115,12 @@ public:
 	{
 		auto it = modules_.find(file_name);
 		if (modules_.end() == it) {
-			std::ifstream in(file_name, std::ios::in);
-			AURA_CHECK_ERROR(in);
-			in.seekg(0, std::ios::end);
-			std::string fcontent;
-			fcontent.resize(in.tellg());
-			in.seekg(0, std::ios::beg);
-			in.read(&fcontent[0], fcontent.size());
-			in.close();
 			auto it2 = modules_.insert(std::make_pair(file_name,
-				create_module_from_string(fcontent.c_str(),
+				create_module_from_file(file_name,
 						*this, build_options)));
 			it = it2.first;
 		}
-		return create_kernel(it->second, kernel_name);
+		return it->second.get_kernel(kernel_name);
 	}
 
 	/// load a kernel from a string 
@@ -143,17 +131,13 @@ public:
 		auto it = modules_.find(kernel_string);
 		if (modules_.end() == it) {
 			auto it2 = modules_.insert(
-					std::make_pair(kernel_string, 
-						create_module_from_string(
-							kernel_string, *this,
-							build_options)));
+					std::move(std::make_pair(kernel_string,
+						std::move(module(kernel_string, *this,
+							build_options)))));
 			it = it2.first;	
-			if (debug) {
-				print_module_build_log(it2.first->second, *this);
-			}
 		}
 		
-		return create_kernel(it->second, kernel_name);
+		return it->second.get_kernel(kernel_name);
 	}
 
 	/**
@@ -374,6 +358,20 @@ inline device create_device_exclusive()
 	throw "no device available!";
 }
 
+
+inline kernel create_kernel(module& m, const char * kernel_name)
+{
+	return m.get_kernel(kernel_name);
+}
+
+inline const cl_device_id & get_backend_device(const device & d)
+{
+	return d.get_backend_device();
+}
+inline const cl_context & get_backend_context(const device & d)
+{
+	return d.get_backend_context();
+}
 
 } // opencl 
 } // backend_detail

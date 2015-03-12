@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(basic)
 	int num = device_get_count();
 	BOOST_REQUIRE(0 < num);
 	device d(0); 
-	module m = create_module_from_file(kernel_file, d, 
+	module m = create_module_from_file(kernel_file, d,
 	AURA_BACKEND_COMPILE_FLAGS);
 	kernel k = create_kernel(m, "donothing");
 	(void)k; 
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(invoke_simple)
 	std::vector<float> a1(xdim*ydim, 41.);
 	std::vector<float> a2(xdim*ydim);
 
-	module mod = create_module_from_file(kernel_file, d, 
+	module mod = create_module_from_file(kernel_file, d,
 	AURA_BACKEND_COMPILE_FLAGS);
 	print_module_build_log(mod, d);
 	kernel k = create_kernel(mod, "simple_add"); 
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(invoke_donothing)
 	std::size_t xdim = 16;
 	std::size_t ydim = 16;
 
-	module mod = create_module_from_file(kernel_file, d, 
+	module mod = create_module_from_file(kernel_file, d,
 	AURA_BACKEND_COMPILE_FLAGS);
 
 	kernel k = create_kernel(mod, "donothing"); 
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(invoke_shared)
 	std::vector<float> a1(xdim*ydim, 0.);
 	std::vector<float> a2(xdim*ydim);
 
-	module mod = create_module_from_file(kernel_file, d, 
+	module mod = create_module_from_file(kernel_file, d,
 	AURA_BACKEND_COMPILE_FLAGS);
 	print_module_build_log(mod, d);
 	kernel k = create_kernel(mod, "simple_shared"); 
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE(invoke_atomic)
 	std::vector<float> a1(xdim*ydim, 0.);
 	std::vector<float> a2(xdim*ydim);
 
-	module mod = create_module_from_file(kernel_file, d, 
+	module mod = create_module_from_file(kernel_file, d,
 	AURA_BACKEND_COMPILE_FLAGS);
 	print_module_build_log(mod, d);
 	kernel k = create_kernel(mod, "simple_atomic"); 
