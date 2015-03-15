@@ -79,6 +79,26 @@ void copy(const device_array<T>& src, device_array<T>& dst, feed& f)
 	backend::copy<T>(dst.begin(), src.begin(), src.size(), f);
 }
 
+
+
+
+/// copy from and to device ranges
+template <typename T>
+void copy(const device_array<T>& src, device_range<T>& dst, feed& f)
+{
+    backend::copy<T>(dst.begin(), src.begin(), src.size(), f);
+}
+template <typename T>
+void copy(const device_range<T>& src, device_array<T>& dst, feed& f)
+{
+    backend::copy<T>(dst.begin(), src.begin(), src.size(), f);
+}
+template <typename T>
+void copy(const device_range<T>& src, device_range<T>& dst, feed& f)
+{
+    backend::copy<T>(dst.begin(), src.begin(), src.size(), f);
+}
+
 } // namespace aura
 } // boost
 

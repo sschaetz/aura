@@ -88,10 +88,23 @@ public:
 		return *this;
 	}
 
-	device_range<T> operator [](slice i)
+	// create a device range from a slice (calculate bounds automatically)
+	device_range<T> operator()(slice s)
 	{
-		return device_range<T>(*this, i);
+		return device_range<T>(*this, s);
 	}
+
+	// create a device range from a slice and bounds
+	device_range<T> operator()(slice s, bounds b)
+	{
+		return device_range<T>(*this, s, b);
+	}
+
+    // create a device range from a slice and bounds
+    const device_range<T> operator()(slice s, bounds b) const
+    {
+        return device_range<T>(*this, s, b);
+    }
 
 	// resize the buffer to contain size elements on device d
 	void resize(const std::size_t size, device& d)

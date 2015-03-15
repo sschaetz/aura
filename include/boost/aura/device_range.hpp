@@ -22,6 +22,7 @@ class device_range
 {
 
 public:
+    typedef T value_type;
 	typedef device_ptr<T> iterator;
 	typedef const device_ptr<T> const_iterator;
 	
@@ -67,21 +68,36 @@ public:
 	}
 	
 	/// return number of elements in range 
-	std::size_t size() const {
+	std::size_t size() const 
+	{
 		return product(bounds_);
 	}
 
 	/// return bounds
-	const bounds & get_bounds() const {
+	const bounds & get_bounds() const 
+	{
 		return bounds_;
 	}
 
 	/// return copy of bounds
-	bounds get_bounds() {
+	bounds get_bounds() 
+	{
 		return bounds_;
 	}
 
+	/// return device
+	const device& get_device() const
+	{
+		return ptr_.get_device();
+	}
+
+	device& get_device()
+	{
+		return ptr_.get_device();
+	}
+
 private:
+	/// return offset and bounds from a slice
 	std::tuple<std::size_t, bounds> get_offset_and_bounds(
 			bounds b, slice idx)
 	{
@@ -104,6 +120,8 @@ private:
 		}
 		return std::make_tuple(offset, ret);
 	}
+
+
 
 private:
 	/// pointer to device memory

@@ -1,6 +1,44 @@
 Nomenclature 
 ============
 
+Names are clearly not sensible yet in Aura. Here are rules for naming
+member functions for common tasks:
+
+There is the question of having get_ style functions or without get
+functions.
+
+So I'm thinking get_* for Aura types and get_backend_* for accessing
+backend types. This is already implemented.
+
+The STL has
+
+vector<T>:
+	get_allocator (that speaks for get_ functions)
+	data() -> T*
+	begin(), end() -> iterator
+	operator[] -> T
+	front(), back() -> T
+
+Now Aura has the device_ptr<T> in-between the container and T*.
+The questions are:
+	should there be a proper iterator or should device_ptr simply
+	implement the iterator interface, possibly using the boost
+	iterator helpers?
+
+Maybe having a data() member to access the raw handle is a good
+idea? Let's look at shared_ptr - it has the get() member.
+To pass a raw-handle to a kernel one would have to call
+A.begin().get() which is ugly
+A.data() is cooler
+but seems inconsistent.
+Invoke could of course resolve the iterator to the raw handle but then
+the kernel interface and the invoke call do not match which is confusing.
+Then again, only on the iterator type is arithmetic possible, the OpenCL
+backend would not allow A.data() + 15, instead it should be
+std::advance(A.begin(), 15)
+
+
+
 OpenCL has global_work_size, local_work_size, work-groups and work_items
 CUDA has grids, blocks, threads
 

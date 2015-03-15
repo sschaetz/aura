@@ -43,6 +43,9 @@
 	#if AURA_FFT_CLFFT
 		#include <boost/aura/backend/opencl/fft.hpp>
 	#endif // AURA_FFT_CLFFT
+	#if AURA_BLAS_CLBLAS
+		#include <boost/aura/backend/opencl/blas.hpp>
+	#endif // AURA_BLAS_CLBLAS
 		#include <boost/aura/backend/opencl/mesh.hpp>
 		#include <boost/aura/backend/opencl/init.hpp>
 		#include <boost/aura/backend/opencl/invoke.hpp>
