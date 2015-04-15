@@ -1,7 +1,7 @@
 #ifndef AURA_DETAIL_SVEC_HPP
 #define AURA_DETAIL_SVEC_HPP
 
-#include <iostream> 
+#include <iostream>
 #include <assert.h>
 #include <array>
 #include <type_traits>
@@ -15,45 +15,45 @@
 
 namespace boost
 {
-namespace aura 
+namespace aura
 {
 
 template <typename T, std::size_t max_size_ = AURA_SVEC_MAX_SIZE>
 class svec;
 
 template <typename T, std::size_t max_size_>
-T product(const svec<T, max_size_> & v); 
+T product(const svec<T, max_size_> & v);
 
 /**
-* svec small vector class, probably can be replaced by std::array with
-* initializer lits, but for now this works 
-*/
+ * svec small vector class, probably can be replaced by std::array with
+ * initializer lits, but for now this works
+ */
 template <typename T, std::size_t max_size_>
-class svec 
+class svec
 {
 
 // make sure we have constructors for the specified size
 BOOST_MPL_ASSERT((
-	boost::mpl::less_equal< 
-		boost::mpl::int_<max_size_>, 
+	boost::mpl::less_equal<
+		boost::mpl::int_<max_size_>,
 		boost::mpl::int_<AURA_SVEC_MAX_SIZE> >
 ));
 
 public:
 
 	/**
-	 * @brief empty small vector 
+	 * @brief empty small vector
 	 */
 	inline svec() : size_(0) { }
 
-	// FIXME ctor should throw or better not compile if 
+	// FIXME ctor should throw or better not compile if
 	// number of args > max_size
 
 	/**
 	 * @brief construct svec with T
 	 *
 	 * There are more constructors that take more Ts, with the maximum
-	 * being the the template argument max_size_ 
+	 * being the the template argument max_size_
 	 */
 	inline explicit svec(const T & i0) : size_(1) { data_[0] = i0; }
 
@@ -71,7 +71,7 @@ public:
 	/**/
 
 	// constructors with 0...AURA_SVEC_MAX_SIZE
-	BOOST_PP_REPEAT_FROM_TO(2,  
+	BOOST_PP_REPEAT_FROM_TO(2,
 	BOOST_PP_INC(AURA_SVEC_MAX_SIZE), AURA_SVEC_CTOR, _)
 
 	#undef AURA_SVEC_CTOR
@@ -79,30 +79,43 @@ public:
 	#undef AURA_SVEC_ARGS
 
 	/// create a new bundle of existing bundle, adding another element
-	inline explicit svec(const svec<T, max_size_>& other, const T& another) :
-		size_(other.size_), data_(other.data_)
+	inline explicit svec(const svec<T, max_size_>& other, const T& another)
+        : size_(other.size_)
+        , data_(other.data_)
 	{
 		push_back(another);
+	}
+
+	/// create a new svec of std::vector
+	template <typename U>
+	inline explicit svec(const std::vector<U>& other)
+		: size_(0)
+	{
+		assert(other.size() <= max_size_);
+		for (const U& a : other)
+		{
+			push_back(static_cast<T>(a));
+		}
 	}
 
 	/// copy ctor and assignment can be provided by compiler
 
 	/// operator []
-	T & operator [](const int & offset) 
-	{ 
-		return data_[offset]; 
+	T & operator [](const int & offset)
+	{
+		return data_[offset];
 	}
 
 	/// operator []
-	const T & operator [](const int & offset) const 
-	{ 
-		return data_[offset]; 
+	const T & operator [](const int & offset) const
+	{
+		return data_[offset];
 	}
 
 	/**
 	 * @brief add element to vector and increment size
 	 */
-	void push_back(const T& e) 
+	void push_back(const T& e)
 	{
 		assert(size_+1 <= max_size_);
 		data_[size_] = e;
@@ -112,26 +125,26 @@ public:
 	/**
 	 * @brief return last element from vector and decrement size
 	 */
-	T pop_back() 
+	T pop_back()
 	{
 		size_--;
 		return data_[size_];
 	}
 
 	/**
-	 * @brief return the size of the small vector 
+	 * @brief return the size of the small vector
 	 */
-	inline const std::size_t size() const 
-	{ 
-		return size_; 
+	inline const std::size_t size() const
+	{
+		return size_;
 	}
 
 	/**
 	 * @brief return the maximum size of the small vector
 	 */
-	inline const std::size_t max_size() const 
-	{ 
-		return max_size_; 
+	inline const std::size_t max_size() const
+	{
+		return max_size_;
 	}
 
 	/**
@@ -142,10 +155,10 @@ public:
 	}
 
 	/**
-	 * returns a tuple where first element is the prefix of the svec 
-	 * n elements and second element is the remainder of the svec 
+	 * returns a tuple where first element is the prefix of the svec
+	 * n elements and second element is the remainder of the svec
 	 */
-	std::tuple<svec<T, max_size_>, svec<T, max_size_>> 
+	std::tuple<svec<T, max_size_>, svec<T, max_size_>>
 		split_at(std::size_t const n) const
 	{
 		std::tuple<svec<T, max_size_>, svec<T, max_size_>> ret;
@@ -157,11 +170,11 @@ public:
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * return the prefix of the svec of length n
 	 */
-	inline svec<T, max_size_> take(std::size_t const n) const 
+	inline svec<T, max_size_> take(std::size_t const n) const
 	{
 		svec<T, max_size_> ret;
 		if (n == 0) {
@@ -176,15 +189,15 @@ public:
 	/**
 	 * returns the suffix of the svec of length n
 	 */
-	inline svec<T, max_size_> drop(std::size_t const n) const 
+	inline svec<T, max_size_> drop(std::size_t const n) const
 	{
 		std::cout << "drop arg " << n << std::endl;
 		if (n == 0) {
-			return *this;	
+			return *this;
 		}
 		svec<T, max_size_> ret;
 		if (n >= size_) {
-			
+
 			std::cout << "drop arg nothin " << n << std::endl;
 			return ret;
 		}
@@ -212,7 +225,7 @@ public:
 	/**
 	 * @brief get data
 	 */
-	const std::array<T, max_size_> & array() const 
+	const std::array<T, max_size_> & array() const
 	{
 		return data_;
 	}
@@ -220,9 +233,9 @@ public:
 	/**
 	 * cast to size operator
 	 */
-	operator T() 
+	operator T()
 	{
-		return product(*this);			
+		return product(*this);
 	}
 
 	/**
@@ -230,11 +243,11 @@ public:
 	 */
 	bool operator==(const svec<T, AURA_SVEC_MAX_SIZE>& b)
 	{
-		return size_ == b.size_ && 
-			std::equal(data_.begin(), data_.begin()+size_, 
+		return size_ == b.size_ &&
+			std::equal(data_.begin(), data_.begin()+size_,
 					b.data_.begin());
 	}
-	
+
 	/**
 	 * not equal to
 	 */
@@ -244,17 +257,17 @@ public:
 	}
 
 private:
-	/// number of Ts in object 
+	/// number of Ts in object
 	std::size_t size_;
 
-	/// array containing data 
+	/// array containing data
 	std::array<T, max_size_> data_;
 };
 
 
 template <typename T, std::size_t size_>
-T product_impl(const std::array<T, size_> & v, std::size_t size, 
-		const boost::true_type &) 
+T product_impl(const std::array<T, size_> & v, std::size_t size,
+		const boost::true_type &)
 {
 	T r = v[0];
 	for(std::size_t i=1; i<size; i++) {
@@ -265,22 +278,22 @@ T product_impl(const std::array<T, size_> & v, std::size_t size,
 
 template <typename T, std::size_t size_, bool b>
 T product_impl(const std::array<T, size_> & v, std::size_t size,
-	const boost::integral_constant<bool, b> &) 
+	const boost::integral_constant<bool, b> &)
 {
 	// FIXME
 	assert(false);
 }
 
-/// calculate the product of all elements of svec 
+/// calculate the product of all elements of svec
 /// (if *= operator exists for T)
 template <typename T, std::size_t max_size_>
-T product(const svec<T, max_size_> & v) 
+T product(const svec<T, max_size_> & v)
 {
 	if(0 >= v.size()) {
 		// FIXME: should this return 1?
-		return 0;	
+		return 0;
 	}
-	return product_impl(v.array(), v.size(), 
+	return product_impl(v.array(), v.size(),
 			boost::has_multiplies_assign<T, T, T>());
 }
 
@@ -299,28 +312,28 @@ svec<T, max_size_> drop(std::size_t const n, const svec<T, max_size_> & v)
 }
 
 /// return tuple of svec, the first containing the first n elements,
-/// the second containing the last size - n elements 
+/// the second containing the last size - n elements
 template <typename T, std::size_t max_size_>
-std::tuple<svec<T, max_size_>, svec<T, max_size_>> 
+std::tuple<svec<T, max_size_>, svec<T, max_size_>>
 	split_at(std::size_t const n, const svec<T, max_size_> & v)
 {
 	return v.split_at(n);
 }
 
-/// calculate the product of all elements of std::array 
+/// calculate the product of all elements of std::array
 /// (if *= operator exists for T)
 template <typename T, std::size_t size_>
-T product(const std::array<T, size_> & v) 
+T product(const std::array<T, size_> & v)
 {
 	assert(0 < v.size());
-	return product_impl(v, v.size(), 
+	return product_impl(v, v.size(),
 			boost::has_multiplies_assign<T, T, T>());
 }
 
 /// write content of svec to sized buffer
 template <std::size_t max_size_>
-void svec_snprintf(char * c, std::size_t s, 
-	const svec<std::size_t, max_size_> & v) 
+void svec_snprintf(char * c, std::size_t s,
+	const svec<std::size_t, max_size_> & v)
 {
 	assert(0 < v.size());
 	std::size_t l = 0;
@@ -335,7 +348,7 @@ void svec_snprintf(char * c, std::size_t s,
 
 /// output content of svec to ostream
 template <typename T, std::size_t max_size_>
-std::ostream& operator << (std::ostream & o, const svec<T, max_size_> & a) 
+std::ostream& operator << (std::ostream & o, const svec<T, max_size_> & a)
 {
 	std::size_t i = 0;
 	if (a.size() > 1) {

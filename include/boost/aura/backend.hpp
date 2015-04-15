@@ -65,9 +65,9 @@ namespace boost
 namespace aura 
 {
 
-#ifdef AURA_BACKEND_CUDA
+#if defined AURA_BACKEND_CUDA
 namespace backend = backend_detail::cuda;
-#elif AURA_BACKEND_OPENCL
+#elif defined AURA_BACKEND_OPENCL
 namespace backend = backend_detail::opencl;
 #endif
 

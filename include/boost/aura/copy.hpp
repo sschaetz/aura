@@ -1,6 +1,8 @@
 #ifndef AURA_COPY_HPP
 #define AURA_COPY_HPP
 
+#include <type_traits>
+
 #include <boost/aura/backend.hpp>
 #include <boost/aura/device_array.hpp>
 #include <boost/aura/device_range.hpp>
@@ -15,6 +17,16 @@ class device_array;
 
 template <typename T>
 class device_range;
+
+/// copy to device array from an iterator
+template <typename T, typename Iterator>
+void copy(Iterator src, device_array<T>& dst, backend::feed& f)
+{
+    typedef typename std::iterator_traits<Iterator>::value_type T2;
+    static_assert(std::is_same<T, T2>::value,
+            "iterator value type and device_array type must match");
+	backend::copy<T>(dst.begin(), &(*src), dst.size(), f);
+}
 
 /// copy to device array
 template <typename T>

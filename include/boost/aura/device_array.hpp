@@ -1,7 +1,9 @@
 #ifndef AURA_DEVICE_ARRAY_HPP
 #define AURA_DEVICE_ARRAY_HPP
 
+#include <numeric>
 #include <cstddef>
+
 #include <boost/move/move.hpp>
 #include <boost/aura/device_buffer.hpp>
 #include <boost/aura/device_range.hpp>
@@ -12,7 +14,7 @@
 
 namespace boost
 {
-namespace aura 
+namespace aura
 {
 
 template <typename T>
@@ -25,28 +27,28 @@ class device_array {
 public:
 	typedef device_ptr<T> iterator;
 	typedef const device_ptr<T> const_iterator;
-	
+
 private:
 	BOOST_MOVABLE_BUT_NOT_COPYABLE(device_array)
 
 public:
-	/// create empty array 
+	/// create empty array
 	device_array() : data_() {}
 
 	/// create one-dimensional array of size on device
 	device_array(std::size_t size, backend::device & d) :
-		bounds_(size), data_(size, d) 
+		bounds_(size), data_(size, d)
 	{}
-	
+
 	/// create multi-dimensional array of size on device
 	device_array(const bounds & b, backend::device & d) :
-		bounds_(b), data_(product(b), d) 
+		bounds_(b), data_(product(b), d)
 	{}
 
 	/// create one-dimensional array from std vector on device
-	device_array(const std::vector<T>& vec, 
+	device_array(const std::vector<T>& vec,
 			backend::device & d, backend::feed & f) :
-		bounds_(vec.size()), data_(vec.size(), d) 
+		bounds_(vec.size()), data_(vec.size(), d)
 	{
 		copy(vec, *this, f);
 	}
@@ -54,14 +56,25 @@ public:
 	/// create multi-dimensional array from std vector on device
 	device_array(const std::vector<T>& vec, const bounds & b,
 			backend::device & d, backend::feed & f) :
-		bounds_(b), data_(vec.size(), d) 
+		bounds_(b), data_(vec.size(), d)
 	{
 		assert(product(b) == vec.size());
 		copy(vec, *this, f);
 	}
 
+	/// create multi-dimensional array from an iterator and std::vector bounds on device
+	template <typename Iterator>
+	device_array(Iterator it, const std::vector<std::size_t>& b,
+			backend::device & d, backend::feed & f)
+		: bounds_(b)
+		, data_(std::accumulate(b.begin(), b.end(),
+			1, std::multiplies<std::size_t>()), d)
+	{
+		copy(it, *this, f);
+	}
+
 	/// destroy object
-	~device_array() 
+	~device_array()
 	{}
 
 	/**
@@ -100,11 +113,11 @@ public:
 		return device_range<T>(*this, s, b);
 	}
 
-    // create a device range from a slice and bounds
-    const device_range<T> operator()(slice s, bounds b) const
-    {
-        return device_range<T>(*this, s, b);
-    }
+	// create a device range from a slice and bounds
+	const device_range<T> operator()(slice s, bounds b) const
+	{
+		return device_range<T>(*this, s, b);
+	}
 
 	// resize the buffer to contain size elements on device d
 	void resize(const std::size_t size, device& d)
@@ -112,7 +125,7 @@ public:
 		data_.resize(size, d);
 		bounds_ = bounds(size);
 	}
-	
+
 	// resize the buffer to contain size elements
 	void resize(const std::size_t size)
 	{
@@ -126,7 +139,7 @@ public:
 		data_.resize(product(b), d);
 		bounds_ = b;
 	}
-	
+
 	// resize the buffer to contain bounds elements
 	void resize(const bounds b)
 	{
@@ -143,7 +156,7 @@ public:
 	{
 		return data_.begin();
 	}
-	
+
 	/// return end of buffer
 	iterator end()
 	{
@@ -175,8 +188,8 @@ public:
 	{
 		return data_.begin_ptr();
 	}
-	
-	/// return end of array as raw pointer 
+
+	/// return end of array as raw pointer
 	T * end_ptr()
 	{
 		return data_.end_ptr();
@@ -185,7 +198,7 @@ public:
 	{
 		return data_.end_ptr();
 	}
-	
+
 	/// return number of elements in array
 	std::size_t size() const
 	{
