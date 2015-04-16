@@ -101,46 +101,46 @@ public:
 		return *this;
 	}
 
-	// create a device range from a slice (calculate bounds automatically)
+	/// create a device range from a slice (calculate bounds automatically)
 	device_range<T> operator()(slice s)
 	{
 		return device_range<T>(*this, s);
 	}
 
-	// create a device range from a slice and bounds
+	/// create a device range from a slice and bounds
 	device_range<T> operator()(slice s, bounds b)
 	{
 		return device_range<T>(*this, s, b);
 	}
 
-	// create a device range from a slice and bounds
+	/// create a device range from a slice and bounds
 	const device_range<T> operator()(slice s, bounds b) const
 	{
 		return device_range<T>(*this, s, b);
 	}
 
-	// resize the buffer to contain size elements on device d
+	/// resize the buffer to contain size elements on device d
 	void resize(const std::size_t size, device& d)
 	{
 		data_.resize(size, d);
 		bounds_ = bounds(size);
 	}
 
-	// resize the buffer to contain size elements
+	/// resize the buffer to contain size elements
 	void resize(const std::size_t size)
 	{
 		data_.resize(size);
 		bounds_ = bounds(size);
 	}
 
-	// resize the buffer to contain bounds elements on device d
+	/// resize the buffer to contain bounds elements on device d
 	void resize(const bounds b, device& d)
 	{
 		data_.resize(product(b), d);
 		bounds_ = b;
 	}
 
-	// resize the buffer to contain bounds elements
+	/// resize the buffer to contain bounds elements
 	void resize(const bounds b)
 	{
 		data_.resize(product(b));
@@ -152,6 +152,7 @@ public:
 	{
 		return data_.begin();
 	}
+
 	const iterator begin() const
 	{
 		return data_.begin();
@@ -177,26 +178,6 @@ public:
 	const T* data() const
 	{
 		return data_.data();
-	}
-
-	/// return beginning of array as raw pointer
-	T * begin_ptr()
-	{
-		return data_.begin_ptr();
-	}
-	const T * begin_ptr() const
-	{
-		return data_.begin_ptr();
-	}
-
-	/// return end of array as raw pointer
-	T * end_ptr()
-	{
-		return data_.end_ptr();
-	}
-	const T * end_ptr() const
-	{
-		return data_.end_ptr();
 	}
 
 	/// return number of elements in array

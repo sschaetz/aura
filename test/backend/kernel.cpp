@@ -14,41 +14,41 @@ const char * kernel_file = AURA_UNIT_TEST_LOCATION"kernel.cc";
 // basic
 // _____________________________________________________________________________
 
-BOOST_AUTO_TEST_CASE(basic) 
+BOOST_AUTO_TEST_CASE(basic)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(0 < num);
-	device d(0); 
+	device d(0);
 	module m = create_module_from_file(kernel_file, d,
 	AURA_BACKEND_COMPILE_FLAGS);
 	kernel k = create_kernel(m, "donothing");
-	(void)k; 
+	(void)k;
 }
 
 // basic2
 // _____________________________________________________________________________
 
-BOOST_AUTO_TEST_CASE(basic2) 
+BOOST_AUTO_TEST_CASE(basic2)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(0 < num);
-	device d(0); 
+	device d(0);
 	kernel k = d.load_from_file("donothing", kernel_file,
 			AURA_BACKEND_COMPILE_FLAGS);
-	(void)k; 
+	(void)k;
 }
 
 
 // invoke_simple
 // _____________________________________________________________________________
-BOOST_AUTO_TEST_CASE(invoke_simple) 
+BOOST_AUTO_TEST_CASE(invoke_simple)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(0 < num);
-	device d(0);  
+	device d(0);
 	feed f(d);
 	std::size_t xdim = 16;
 	std::size_t ydim = 16;
@@ -59,11 +59,11 @@ BOOST_AUTO_TEST_CASE(invoke_simple)
 	module mod = create_module_from_file(kernel_file, d,
 	AURA_BACKEND_COMPILE_FLAGS);
 	print_module_build_log(mod, d);
-	kernel k = create_kernel(mod, "simple_add"); 
+	kernel k = create_kernel(mod, "simple_add");
 	device_ptr<float> mem = device_malloc<float>(xdim*ydim, d);
 
-	copy(mem, &a1[0], xdim*ydim, f); 
-	invoke(k, mesh(ydim, xdim), bundle(xdim), args(mem.get()), f);
+	copy(mem, &a1[0], xdim*ydim, f);
+	invoke(k, mesh(ydim, xdim), bundle(xdim), args(mem.get_base()), f);
 	copy(&a2[0], mem, xdim*ydim, f);
 	wait_for(f);
 
@@ -76,12 +76,12 @@ BOOST_AUTO_TEST_CASE(invoke_simple)
 
 // invoke_simple2
 // _____________________________________________________________________________
-BOOST_AUTO_TEST_CASE(invoke_simple2) 
+BOOST_AUTO_TEST_CASE(invoke_simple2)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(0 < num);
-	device d(0);  
+	device d(0);
 	feed f(d);
 	std::size_t xdim = 16;
 	std::size_t ydim = 16;
@@ -89,12 +89,12 @@ BOOST_AUTO_TEST_CASE(invoke_simple2)
 	std::vector<float> a1(xdim*ydim, 41.);
 	std::vector<float> a2(xdim*ydim);
 
-	kernel k = d.load_from_file("simple_add", kernel_file, 
-			AURA_BACKEND_COMPILE_FLAGS); 
+	kernel k = d.load_from_file("simple_add", kernel_file,
+			AURA_BACKEND_COMPILE_FLAGS);
 	device_ptr<float> mem = device_malloc<float>(xdim*ydim, d);
 
-	copy(mem, &a1[0], xdim*ydim, f); 
-	invoke(k, mesh(ydim, xdim), bundle(xdim), args(mem.get()), f);
+	copy(mem, &a1[0], xdim*ydim, f);
+	invoke(k, mesh(ydim, xdim), bundle(xdim), args(mem.get_base()), f);
 	copy(&a2[0], mem, xdim*ydim, f);
 	wait_for(f);
 
@@ -107,12 +107,12 @@ BOOST_AUTO_TEST_CASE(invoke_simple2)
 
 // invoke_donothing
 // _____________________________________________________________________________
-BOOST_AUTO_TEST_CASE(invoke_donothing) 
+BOOST_AUTO_TEST_CASE(invoke_donothing)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(0 < num);
-	device d(0);  
+	device d(0);
 	feed f(d);
 	std::size_t xdim = 16;
 	std::size_t ydim = 16;
@@ -120,20 +120,20 @@ BOOST_AUTO_TEST_CASE(invoke_donothing)
 	module mod = create_module_from_file(kernel_file, d,
 	AURA_BACKEND_COMPILE_FLAGS);
 
-	kernel k = create_kernel(mod, "donothing"); 
+	kernel k = create_kernel(mod, "donothing");
 	invoke(k, mesh(ydim), bundle(xdim), args(NULL), f);
 	wait_for(f);
 }
 
 // invoke_nomesh
 // _____________________________________________________________________________
-BOOST_AUTO_TEST_CASE(invoke_nomesh) 
+BOOST_AUTO_TEST_CASE(invoke_nomesh)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(0 < num);
-	
-	device d(0);  
+
+	device d(0);
 	feed f(d);
 	bounds b(64, 64, 32);
 	std::vector<float> a1(product(b), 41.);
@@ -144,11 +144,11 @@ BOOST_AUTO_TEST_CASE(invoke_nomesh)
 		AURA_BACKEND_COMPILE_FLAGS);
 	print_module_build_log(mod, d);
 
-	kernel k = create_kernel(mod, "simple_add"); 
+	kernel k = create_kernel(mod, "simple_add");
 	device_array<float> v(b, d);
 
-	copy(v.begin(), &a1[0], product(b), f); 
-	invoke(k, b, args(v.begin().get()), f);
+	copy(v.begin(), &a1[0], product(b), f);
+	invoke(k, b, args(v.begin().get_base()), f);
 	copy(&a2[0], v.begin(), product(b), f);
 	wait_for(f);
 
@@ -160,12 +160,12 @@ BOOST_AUTO_TEST_CASE(invoke_nomesh)
 
 // invoke_shared
 // _____________________________________________________________________________
-BOOST_AUTO_TEST_CASE(invoke_shared) 
+BOOST_AUTO_TEST_CASE(invoke_shared)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(0 < num);
-	device d(0);  
+	device d(0);
 	feed f(d);
 	std::size_t xdim = 8;
 	std::size_t ydim = 8;
@@ -177,11 +177,11 @@ BOOST_AUTO_TEST_CASE(invoke_shared)
 	module mod = create_module_from_file(kernel_file, d,
 	AURA_BACKEND_COMPILE_FLAGS);
 	print_module_build_log(mod, d);
-	kernel k = create_kernel(mod, "simple_shared"); 
+	kernel k = create_kernel(mod, "simple_shared");
 	device_ptr<float> mem = device_malloc<float>(xdim*ydim, d);
 
-	copy(mem, &a1[0], xdim*ydim, f); 
-	invoke(k, mesh(ydim, xdim), bundle(b), args(mem.get()), f);
+	copy(mem, &a1[0], xdim*ydim, f);
+	invoke(k, mesh(ydim, xdim), bundle(b), args(mem.get_base()), f);
 	copy(&a2[0], mem, xdim*ydim, f);
 	wait_for(f);
 
@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE(invoke_shared)
 	int cur = 0;
 	std::generate(a1.begin(), a1.end(), [&]() { return (float)cur++; } );
 	for (std::size_t i=0; i<a1.size(); i+=b) {
-		std::reverse(a1.begin()+i, a1.begin()+i+b);	
+		std::reverse(a1.begin()+i, a1.begin()+i+b);
 	}
 	BOOST_CHECK(std::equal(a1.begin(), a1.end(), a2.begin()));
 	device_free(mem);
@@ -197,12 +197,12 @@ BOOST_AUTO_TEST_CASE(invoke_shared)
 
 // invoke_atomic
 // _____________________________________________________________________________
-BOOST_AUTO_TEST_CASE(invoke_atomic) 
+BOOST_AUTO_TEST_CASE(invoke_atomic)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(0 < num);
-	device d(0);  
+	device d(0);
 	feed f(d);
 	std::size_t xdim = 8;
 	std::size_t ydim = 8;
@@ -214,11 +214,11 @@ BOOST_AUTO_TEST_CASE(invoke_atomic)
 	module mod = create_module_from_file(kernel_file, d,
 	AURA_BACKEND_COMPILE_FLAGS);
 	print_module_build_log(mod, d);
-	kernel k = create_kernel(mod, "simple_atomic"); 
+	kernel k = create_kernel(mod, "simple_atomic");
 	device_ptr<float> mem = device_malloc<float>(xdim*ydim, d);
 
-	copy(mem, &a1[0], xdim*ydim, f); 
-	invoke(k, mesh(ydim, xdim), bundle(b), args(mem.get()), f);
+	copy(mem, &a1[0], xdim*ydim, f);
+	invoke(k, mesh(ydim, xdim), bundle(b), args(mem.get_base()), f);
 	copy(&a2[0], mem, xdim*ydim, f);
 	wait_for(f);
 	a1[0] = ydim*xdim;

@@ -19,15 +19,15 @@ device_ptr<T> begin(device_array<T>& da)
 }
 
 template <typename T>
-T* begin_raw(device_array<T>& da)
+T* data(device_array<T>& da)
 {
-	return (T*)da.begin().get();
+	return (T*)da.data();
 }
 
 template <typename T>
-const T* begin_raw(const device_array<T>& da)
+const T* data(const device_array<T>& da)
 {
-	return (T*)da.begin().get();
+	return (T*)da.data();
 }
 
 template <typename T>
@@ -74,15 +74,15 @@ device_ptr<T> begin(device_range<T>& dr)
 }
 
 template <typename T>
-T* begin_raw(device_range<T>& dr)
+T* data(device_range<T>& dr)
 {
-	return (T*)dr.begin().get();
+	return (T*)dr.data();
 }
 
 template <typename T>
-const T* begin_raw(const device_range<T>& dr)
+const T* data(const device_range<T>& dr)
 {
-	return (T*)dr.begin().get();
+	return (T*)dr.data();
 }
 
 template <typename T>

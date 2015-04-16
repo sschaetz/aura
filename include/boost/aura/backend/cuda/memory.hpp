@@ -64,27 +64,27 @@ DEPRECATED(void device_free(memory m, device &));
 template <typename T>
 void device_free(device_ptr<T> & ptr) {
   ptr.get_device().set();
-  AURA_CUDA_SAFE_CALL(cuMemFree(ptr.get()));
+  AURA_CUDA_SAFE_CALL(cuMemFree(ptr.get_base()));
   ptr.get_device().unset();
   ptr.invalidate();
 }
 
 /**
- * map host memory to device memory 
+ * map host memory to device memory
  *
  * @param ptr pointer to host memory
  * @param size number of T's that should be mapped
- * @param tag memory tag of the map 
+ * @param tag memory tag of the map
  * @param d device the memory should be mapped to
  *
  * @return device pointer corresponding to the mapped region
  */
 template <typename T>
-device_ptr<T> device_map_alloc(T* ptr, std::size_t size, 
+device_ptr<T> device_map_alloc(T* ptr, std::size_t size,
 		memory_tag, device& d)
 {
-	d.set();  
-	AURA_CUDA_SAFE_CALL(cuMemHostRegister(ptr, sizeof(T)*size, 
+	d.set();
+	AURA_CUDA_SAFE_CALL(cuMemHostRegister(ptr, sizeof(T)*size,
 		CU_MEMHOSTREGISTER_PORTABLE|CU_MEMHOSTREGISTER_DEVICEMAP));
 	memory m;
 	AURA_CUDA_SAFE_CALL(cuMemHostGetDevicePointer(&m, ptr, 0));
@@ -98,7 +98,7 @@ device_ptr<T> device_map_alloc(T* ptr, std::size_t size,
  * @param ptr pointer to host memory
  * @param dptr pointer to device memory
  * @param size number of T's that should be mapped
- * @param tag memory tag of the map 
+ * @param tag memory tag of the map
  * @param d device the memory should be mapped to
  *
  * @return device pointer corresponding to the mapped region
@@ -106,20 +106,20 @@ device_ptr<T> device_map_alloc(T* ptr, std::size_t size,
 template <typename T>
 device_ptr<T> device_remap(T* ptr, device_ptr<T> dptr, feed&)
 {
-	dptr.get_device().set();  
+	dptr.get_device().set();
 	memory m;
 	AURA_CUDA_SAFE_CALL(cuMemHostGetDevicePointer(&m, ptr, 0));
-	dptr.get_device().unset();  
+	dptr.get_device().unset();
 	return device_ptr<T>(m, dptr.get_device());
 }
 
 /**
- * unmap memory that was previously mapped to to a device 
+ * unmap memory that was previously mapped to to a device
  *
  * @param ptr pointer to host memory that should be unmapped
- * @param dptr device pointer corresponding to mapped region 
+ * @param dptr device pointer corresponding to mapped region
  * @param size size of memory region that should be unmapped (unused)
- * @param tag memory tag of the map 
+ * @param tag memory tag of the map
  * @param f feed that should be used for the data transfer (unused)
  */
 template <typename T>
@@ -131,12 +131,12 @@ void device_unmap(T* ptr, device_ptr<T>& dptr,
 
 
 /**
- * unmap memory that was previously mapped to to a device 
+ * unmap memory that was previously mapped to to a device
  *
  * @param ptr pointer to host memory that should be unmapped
- * @param dptr device pointer corresponding to mapped region 
+ * @param dptr device pointer corresponding to mapped region
  * @param size size of memory region that should be unmapped (unused)
- * @param tag memory tag of the map 
+ * @param tag memory tag of the map
  * @param f feed that should be used for the data transfer (unused)
  */
 template <typename T>
@@ -144,7 +144,7 @@ void device_map_free(T* ptr, device_ptr<T>& dptr)
 {
 	dptr.get_device().set();
 	AURA_CUDA_SAFE_CALL(cuMemHostUnregister(ptr));
-	dptr.get_device().unset();  
+	dptr.get_device().unset();
 	dptr = nullptr;
 	return;
 }
@@ -158,15 +158,15 @@ void device_map_free(T* ptr, device_ptr<T>& dptr)
  * @param s stream the transfer is executed in
  * @param offset offset in bytes of the device memory
  */
-inline void copy(memory dst, const void * src, std::size_t size, 
+inline void copy(memory dst, const void * src, std::size_t size,
   feed & f, std::size_t offset=0) {
-  f.set(); 
-  AURA_CUDA_SAFE_CALL(cuMemcpyHtoDAsync(dst+offset, src, 
+  f.set();
+  AURA_CUDA_SAFE_CALL(cuMemcpyHtoDAsync(dst+offset, src,
     size, f.get_backend_stream()));
   f.unset();
-} 
+}
 
-DEPRECATED(void copy(memory dst, const void * src, std::size_t size, 
+DEPRECATED(void copy(memory dst, const void * src, std::size_t size,
   feed & f, std::size_t offset));
 
 /**
@@ -174,15 +174,15 @@ DEPRECATED(void copy(memory dst, const void * src, std::size_t size,
  *
  * @param dst device memory (destination)
  * @param src host memory (source)
- * @param size size of copy in number of T 
+ * @param size size of copy in number of T
  * @param f feed the transfer is executed in
  */
 template <typename T>
-void copy(device_ptr<T> dst, const T * src, std::size_t size, 
+void copy(device_ptr<T> dst, const T * src, std::size_t size,
   feed & f) {
-  f.set(); 
+  f.set();
   AURA_CUDA_SAFE_CALL(cuMemcpyHtoDAsync(
-    dst.get()+dst.get_offset()*sizeof(T), src, 
+    dst.get_base()+dst.get_offset()*sizeof(T), src,
     size*sizeof(T), f.get_backend_stream()));
   f.unset();
 }
@@ -197,16 +197,16 @@ void copy(device_ptr<T> dst, const T * src, std::size_t size,
  * @param s stream the transfer is executed in
  * @param offset offset in bytes of the device memory
  */
-inline void copy(void * dst, memory src, std::size_t size, 
+inline void copy(void * dst, memory src, std::size_t size,
   feed & f, std::size_t offset=0) {
   f.set();
-  AURA_CUDA_SAFE_CALL(cuMemcpyDtoHAsync(dst, src+offset, 
+  AURA_CUDA_SAFE_CALL(cuMemcpyDtoHAsync(dst, src+offset,
     size, f.get_backend_stream()));
   f.unset();
 }
 
 
-DEPRECATED(inline void copy(void * dst, memory src, std::size_t size, 
+DEPRECATED(inline void copy(void * dst, memory src, std::size_t size,
   feed & f, std::size_t offset));
 
 /**
@@ -220,8 +220,8 @@ DEPRECATED(inline void copy(void * dst, memory src, std::size_t size,
 template <typename T>
 void copy(T * dst, const device_ptr<T> src, std::size_t size, feed & f) {
   f.set();
-  AURA_CUDA_SAFE_CALL(cuMemcpyDtoHAsync(dst, 
-    src.get()+src.get_offset()*sizeof(T), 
+  AURA_CUDA_SAFE_CALL(cuMemcpyDtoHAsync(dst,
+    src.get_base()+src.get_offset()*sizeof(T),
     size*sizeof(T), f.get_backend_stream()));
   f.unset();
 }
@@ -236,15 +236,15 @@ void copy(T * dst, const device_ptr<T> src, std::size_t size, feed & f) {
  * @param s stream the transfer is executed in
  * @param offset offset in bytes of the device memory
  */
-inline void copy(memory dst, memory src, std::size_t size, 
+inline void copy(memory dst, memory src, std::size_t size,
   feed & f, std::size_t dst_offset=0, std::size_t src_offset=0) {
   f.set();
-  AURA_CUDA_SAFE_CALL(cuMemcpyDtoDAsync(dst+dst_offset, 
+  AURA_CUDA_SAFE_CALL(cuMemcpyDtoDAsync(dst+dst_offset,
     src+src_offset, size, f.get_backend_stream()));
   f.unset();
 }
 
-DEPRECATED(void copy(memory dst, memory src, std::size_t size, 
+DEPRECATED(void copy(memory dst, memory src, std::size_t size,
   feed & f, std::size_t dst_offset, std::size_t src_offset));
 
 /**
@@ -256,12 +256,12 @@ DEPRECATED(void copy(memory dst, memory src, std::size_t size,
  * @param f feed the transfer is executed in
  */
 template <typename T>
-inline void copy(device_ptr<T> dst, const device_ptr<T> src, 
+inline void copy(device_ptr<T> dst, const device_ptr<T> src,
   std::size_t size, feed & f) {
   f.set();
   AURA_CUDA_SAFE_CALL(cuMemcpyDtoDAsync(
-    dst.get()+dst.get_offset()*sizeof(T), 
-    src.get()+src.get_offset()*sizeof(T), size*sizeof(T), 
+    dst.get_base()+dst.get_offset()*sizeof(T),
+    src.get_base()+src.get_offset()*sizeof(T), size*sizeof(T),
     f.get_backend_stream()));
   f.unset();
 }
@@ -318,7 +318,7 @@ inline void host_free(T* ptr)
 }
 
 
-} // cuda 
+} // cuda
 } // backend_detail
 } // aura
 } // boost

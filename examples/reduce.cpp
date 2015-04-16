@@ -10,39 +10,39 @@ using namespace boost::aura;
 
 int main(void) {
 	initialize();
-	device d(0);  
+	device d(0);
 	feed f(d);
 	std::size_t xdim = 32;
 	std::size_t ydim = 32;
 	bounds b(xdim, ydim);
-	
+
 	std::vector<float> a1(xdim*ydim);
 	{
 		int cur = 0;
-		std::generate(a1.begin(), a1.end(), 
+		std::generate(a1.begin(), a1.end(),
 				[&]() { return (float)cur++; } );
 	}
-	float r = 0.0;	
+	float r = 0.0;
 
-	module mod = create_module_from_file("reduce.cc", d, 
+	module mod = create_module_from_file("reduce.cc", d,
 		AURA_BACKEND_COMPILE_FLAGS);
 
 	print_module_build_log(mod, d);
 	kernel k = create_kernel(mod, "red1");
-	
+
 	device_array<float> mem(b, d);
 	device_array<float> rd(1, d);
 
 	copy(a1, mem, f);
 	copy(&r, rd, f);
 
-	invoke(k, mesh(xdim, ydim), bundle(16), 
-			args(mem.begin_ptr(), rd.begin_ptr()), f);
-	
+	invoke(k, mesh(xdim, ydim), bundle(16),
+			args(mem.data(), rd.data()), f);
+
 	copy(rd, &r, f);
 	copy(mem, a1, f);
 	wait_for(f);
-	
+
 	for(auto x : a1) {
 		std::cout << x << " ";
 	}

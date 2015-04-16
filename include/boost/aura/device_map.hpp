@@ -12,7 +12,7 @@
 
 namespace boost
 {
-namespace aura 
+namespace aura
 {
 
 
@@ -48,7 +48,7 @@ void unmap(device_map<T>& v, C& c, feed& f)
 #endif
 
 template <typename T>
-class device_map 
+class device_map
 {
 
 public:
@@ -60,13 +60,13 @@ private:
 
 public:
 	/// create an empty device_map
-	device_map() : dptr_(nullptr), hptr_(nullptr), 
+	device_map() : dptr_(nullptr), hptr_(nullptr),
 	size_(0), tag_(memory_tag::rw) {}
 
 	/// construct a device_map on a C
-	template <typename C> 
-	device_map(C& c, memory_tag tag, device& d) : 
-		dptr_(::boost::aura::backend::device_map_alloc(addressof(c), 
+	template <typename C>
+	device_map(C& c, memory_tag tag, device& d) :
+		dptr_(::boost::aura::backend::device_map_alloc(addressof(c),
 					::boost::aura::size(c), tag, d)),
 		hptr_(addressof(c)),
 		size_(::boost::aura::size(c)),
@@ -75,9 +75,9 @@ public:
 	{}
 
 	/// construct a device_map on a range of Cs
-	template <typename C> 
-	device_map(C& start, C& end, memory_tag tag, device& d) : 
-		dptr_(::boost::aura::backend::device_map_alloc(addressof(start), 
+	template <typename C>
+	device_map(C& start, C& end, memory_tag tag, device& d) :
+		dptr_(::boost::aura::backend::device_map_alloc(addressof(start),
 					std::distance(start,end), tag, d)),
 		hptr_(addressof(start)),
 		size_(std::distance(start,end)),
@@ -86,7 +86,7 @@ public:
 	{}
 
 	/// move construct a device_map
-	device_map(BOOST_RV_REF(device_map) v) : 
+	device_map(BOOST_RV_REF(device_map) v) :
 		dptr_(v.dptr_),
 		hptr_(v.hptr_),
 		size_(v.size_),
@@ -97,7 +97,7 @@ public:
 		v.hptr_ = nullptr;
 		v.size_ = 0;
 	}
-	
+
 	/// move assign a device_map
 	device_map<T>& operator= (BOOST_RV_REF(device_map<T>) other)
 	{
@@ -110,11 +110,11 @@ public:
 		other.hptr_ = nullptr;
 		other.size_ = 0;
 	}
-	
+
 	/// destroy (unmap) a device_map
-	~device_map() 
+	~device_map()
 	{
-		::boost::aura::backend::device_map_free(hptr_, dptr_);	
+		::boost::aura::backend::device_map_free(hptr_, dptr_);
 	}
 
 	/// unmap data previously mapped to device memory
@@ -135,41 +135,35 @@ public:
 		moved_from_obj_ = std::move(c);
 	}
 
-	/// return beginning of device_map 
+	/// return beginning of device_map
 	iterator begin() const
 	{
 		return dptr_;
 	}
-	
-	/// return end of device_map 
+
+	/// return end of device_map
 	iterator end() const
 	{
 		return dptr_+size_;
 	}
 
 	/// return beginning of device_map as raw pointer
-	T* begin_ptr() const
+	T* data() const
 	{
-		return (T*)dptr_.get();
-	}
-	
-	/// return end of device_map as raw pointer 
-	T* end_ptr() const
-	{
-		return ((T*)dptr_.get()) + size_;
+		return (T*)dptr_.get_base();
 	}
 
-	/// return size of device_map 
-	std::size_t size() const 
+	/// return size of device_map
+	std::size_t size() const
 	{
 		return size_;
 	}
 
-	void debug() 
+	void debug()
 	{
-		std::cout << "dptr_: " << dptr_.get() << 
-			" hptr_: " << hptr_ << 
-			" size_: " << size_ << 
+		std::cout << "dptr_: " << dptr_.get_base() <<
+			" hptr_: " << hptr_ <<
+			" size_: " << size_ <<
 			std::endl;
 	}
 
@@ -181,7 +175,7 @@ public:
 };
 
 } // namespace aura
-} // namespace boost 
+} // namespace boost
 
 #endif // AURA_DEVICE_MAP_HPP
 

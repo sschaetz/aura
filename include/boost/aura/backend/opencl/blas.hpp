@@ -37,22 +37,22 @@ inline void blas_terminate(void)
 	clblasTeardown();
 }
 
-inline void gemv(const device_ptr<float>& A, const device_ptr<float>& x, 
+inline void gemv(const device_ptr<float>& A, const device_ptr<float>& x,
 		const device_ptr<float>& y, bounds b, feed& f)
 {
 	size_t M = b[0];
 	size_t N = b[1];
 
 	int errorcode =
-	clblasSgemv(clblasRowMajor, clblasNoTrans, 
-				M, N, 
-				1.0, 
-				A.get(), 0, N, x.get(), 0, 1, 
+	clblasSgemv(clblasRowMajor, clblasNoTrans,
+				M, N,
+				1.0,
+				A.get_base(), 0, N, x.get_base(), 0, 1,
 				0.0,
-				y.get(), 0, 1, 1, 
+				y.get_base(), 0, 1, 1,
 				&f.get_backend_stream(), 0, NULL, NULL);
 	AURA_OPENCL_CHECK_ERROR(errorcode);
-	
+
 }
 
 

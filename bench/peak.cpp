@@ -43,15 +43,15 @@ inline void run_device_to_host(feed & f, std::vector<float> & dst,
 	wait_for(f);
 }
 
-inline void run_host_to_device_pinned(feed & f, 
-		device_ptr<float> dst, 
+inline void run_host_to_device_pinned(feed & f,
+		device_ptr<float> dst,
 		std::vector<float, boost::aura::host_allocator<float>> & src)
 {
 	copy(dst, &src[0], src.size(), f);
 	wait_for(f);
 }
 
-inline void run_device_to_host_pinned(feed & f, 
+inline void run_device_to_host_pinned(feed & f,
 		std::vector<float, boost::aura::host_allocator<float>> & dst,
 		device_ptr<float> src)
 {
@@ -64,14 +64,14 @@ template <typename T>
 inline void run_kernel(feed & f, kernel & k,
                        const mesh& m, const bundle& b, device_ptr<T> m1)
 {
-	invoke(k, m, b, args(m1.get()), f);
+	invoke(k, m, b, args(m1.get_base()), f);
 	wait_for(f);
 }
 
 inline void run_kernel(feed & f, kernel & k,
                        const mesh& m, const bundle& b, device_ptr<float> m1, device_ptr<float> m2)
 {
-	invoke(k, m, b, args(m1.get(), m2.get()), f);
+	invoke(k, m, b, args(m1.get_base(), m2.get_base()), f);
 	wait_for(f);
 }
 
@@ -79,7 +79,7 @@ inline void run_kernel(feed & f, kernel & k,
                        const mesh & m, const bundle & b, device_ptr<float> m1,
                        device_ptr<float> m2, float s)
 {
-	invoke(k, m, b, args(m1.get(), m2.get(), s), f);
+	invoke(k, m, b, args(m1.get_base(), m2.get_base(), s), f);
 	wait_for(f);
 }
 
@@ -88,7 +88,7 @@ inline void run_kernel(feed & f, kernel & k,
                        device_ptr<float> m2,
                        device_ptr<float> m3)
 {
-	invoke(k, m, b, args(m1.get(), m2.get(), m3.get()), f);
+	invoke(k, m, b, args(m1.get_base(), m2.get_base(), m3.get_base()), f);
 	wait_for(f);
 }
 
@@ -97,7 +97,7 @@ inline void run_kernel(feed & f, kernel & k,
                        device_ptr<float> m2,
                        device_ptr<float> m3, float s)
 {
-	invoke(k, m, b, args(m1.get(), m2.get(), m3.get(), s), f);
+	invoke(k, m, b, args(m1.get_base(), m2.get_base(), m3.get_base(), s), f);
 	wait_for(f);
 }
 
@@ -491,10 +491,10 @@ inline void run_tests(
 	if(ops[8] || ops[9]) {
 		for(std::size_t s=0; s<sizes.size(); s++) {
 			boost::aura::host_allocator<float> alloc(f);
-			std::vector<float, 
+			std::vector<float,
 				boost::aura::host_allocator<float>> a1(
 						sizes[s][0], 42., alloc);
-			std::vector<float, 
+			std::vector<float,
 				boost::aura::host_allocator<float>> a2(
 						sizes[s][0], alloc);
 			device_ptr<float> m =

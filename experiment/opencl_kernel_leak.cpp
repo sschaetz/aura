@@ -10,19 +10,19 @@
 using namespace boost::aura;
 
 const char* empty_kernel_str = R"kernel_str(
-	
+
 	#include <boost/aura/backend.hpp>
 
 	AURA_KERNEL void empty_kernel(AURA_GLOBAL cfloat* src)
 	{
 	}
-		
+
 		)kernel_str";
 
-void test(void) 
+void test(void)
 {
 	initialize();
-	device d(2);  
+	device d(2);
 	feed f(d);
 	auto empty_kernel = d.load_from_string(
 			"empty_kernel",
@@ -31,7 +31,7 @@ void test(void)
 	std::vector<std::complex<float>> v(1);
 	device_array<std::complex<float>> dv(1, d);
 	copy(v, dv, f);
-	invoke(empty_kernel, bounds(100000), args(dv.begin_ptr()), f);
+	invoke(empty_kernel, bounds(100000), args(dv.data()), f);
 	wait_for(f);
 }
 

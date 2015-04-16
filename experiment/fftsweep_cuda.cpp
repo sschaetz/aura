@@ -13,43 +13,43 @@ using namespace boost::aura::backend;
 // first fft size
 #define start_size 256
 // last fft size
-#define end_size 1025 
+#define end_size 1025
 // step size between sizes
 #define step_size 1
 // runtime per test in seconds
-#define runtime 2 
+#define runtime 2
 
 typedef std::complex<float> cfloat;
 
 void run_test(int size, device & d, feed & f) {
-  // allocate memory 
+  // allocate memory
   device_ptr<cfloat> m1 = device_malloc<cfloat>(size*size*batch_size, d);
   device_ptr<cfloat> m2 = device_malloc<cfloat>(size*size*batch_size, d);
- 
+
   // allocate fft handle
   cufftHandle plan;
   int dims[2] = { size, size };
   int embed[2] = { size * size, size };
-  AURA_CUFFT_SAFE_CALL(cufftPlanMany(&plan, 2, dims, embed, 1, size * size, 
+  AURA_CUFFT_SAFE_CALL(cufftPlanMany(&plan, 2, dims, embed, 1, size * size,
     embed, 1, size * size, CUFFT_C2C, batch_size));
-  
+
   // run test fft (warmup)
-  AURA_CUFFT_SAFE_CALL(cufftExecC2C(plan, (cufftComplex *)m1.get(),
-    (cufftComplex *)m2.get(), CUFFT_FORWARD));
+  AURA_CUFFT_SAFE_CALL(cufftExecC2C(plan, (cufftComplex *)m1.get_base(),
+    (cufftComplex *)m2.get_base(), CUFFT_FORWARD));
 
   // run benchmark
   double min, max, mean, stdev;
   int num;
-  AURA_BENCHMARK_ASYNC(cufftExecC2C(plan, (cufftComplex *)m1.get(),
-    (cufftComplex *)m2.get(), CUFFT_FORWARD), f.synchronize();, 
+  AURA_BENCHMARK_ASYNC(cufftExecC2C(plan, (cufftComplex *)m1.get_base(),
+    (cufftComplex *)m2.get_base(), CUFFT_FORWARD), f.synchronize();,
     runtime, min, max, mean, stdev, num);
- 
+
   // print result
-  printf("%d: [%1.2f %1.2f] %1.2f %1.2f %d\n", 
+  printf("%d: [%1.2f %1.2f] %1.2f %1.2f %d\n",
     size, min, max, mean, stdev, num);
   f.synchronize();
   AURA_CUFFT_SAFE_CALL(cufftDestroy(plan));
-  
+
   device_free(m1);
   device_free(m2);
 }

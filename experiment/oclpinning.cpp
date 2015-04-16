@@ -35,19 +35,19 @@ T * opencl_malloc_pinned(std::size_t num, device & d, cl_mem* mem)
 	printf("v: %p\n", v);
 
 	AURA_OPENCL_SAFE_CALL(clEnqueueUnmapMemObject(
-				f.get_backend_stream(), 
+				f.get_backend_stream(),
 				*mem, (void*)v, 0, NULL, NULL));
 	return (T*)v;
 }
 
-void opencl_copy_pinned(cl_mem dst, cl_mem src, 
+void opencl_copy_pinned(cl_mem dst, cl_mem src,
 		std::size_t num, feed& f)
 {
 	AURA_OPENCL_SAFE_CALL(
 			clEnqueueCopyBuffer(f.get_backend_stream(),
 				src, dst, 0, 0, num, 0, NULL, NULL));
 }
- 
+
 
 // if this is used, is a memory copy from the pointer fast or from
 // the memory object m?
@@ -74,7 +74,7 @@ int main(void)
 {
 	initialize();
 	int num = device_get_count();
-	
+
 	AURA_CHECK_ERROR(0 > num)
 	device d(0);
 	feed f(d);
@@ -82,26 +82,26 @@ int main(void)
 	// theory: if we transfer large amounts of data from this
 	// pointer, it should be faster
 
-	// 32M floats 
+	// 32M floats
 	std::size_t size = 1024*1024*32;
 	cl_mem hostmembuffer;
-	(void)opencl_malloc_pinned<float>(size, 
+	(void)opencl_malloc_pinned<float>(size,
 			d, &hostmembuffer);
 	float* hostmem = (float*)malloc(sizeof(float)*size);
 	device_ptr<float> devmem = device_malloc<float>(size, d);
 
 	// benchmark result variables
 	double min, max, mean, stdev;
-	std::size_t runs;	
+	std::size_t runs;
 
-	AURA_BENCHMARK_ASYNC(copy(devmem, hostmem, size, f), wait_for(f), 
+	AURA_BENCHMARK_ASYNC(copy(devmem, hostmem, size, f), wait_for(f),
 			2*1e6, min, max, mean, stdev, runs);
 	print_benchmark_results("normal", min, max, mean, stdev, runs, 2*1e6);
-	AURA_BENCHMARK_ASYNC(opencl_copy_pinned(devmem.get(), hostmembuffer, 
-		sizeof(float)*size, f), 
+	AURA_BENCHMARK_ASYNC(opencl_copy_pinned(devmem.get_base(),
+				hostmembuffer, sizeof(float)*size, f),
 			wait_for(f), 2*1e6, min, max, mean, stdev, runs);
 	print_benchmark_results("pinned", min, max, mean, stdev, runs, 2*1e6);
-	
+
 	wait_for(f);
 
 }

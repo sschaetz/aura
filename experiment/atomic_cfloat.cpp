@@ -9,7 +9,7 @@
 using namespace boost::aura;
 
 const char* atomic_cfloat_kernel_str = R"kernel_str(
-	
+
 	#include <boost/aura/backend.hpp>
 
 	AURA_KERNEL void atomic_cfloat(AURA_GLOBAL cfloat* src)
@@ -19,19 +19,19 @@ const char* atomic_cfloat_kernel_str = R"kernel_str(
 		// imaginary
 		AURA_GLOBAL float* im = src;
 		im++;
-		
+
 		// atomic add
 		atomic_addf(re, 1.0);
 		atomic_addf(im, 1.0);
 
 	}
-		
+
 		)kernel_str";
 
-int main(void) 
+int main(void)
 {
 	initialize();
-	device d(0);  
+	device d(0);
 	feed f(d);
 	auto atomic_cfloat = d.load_from_string(
 			"atomic_cfloat",
@@ -40,7 +40,7 @@ int main(void)
 	std::vector<std::complex<float>> v(1);
 	device_array<std::complex<float>> dv(1, d);
 	copy(v, dv, f);
-	invoke(atomic_cfloat, bounds(100000), args(dv.begin_ptr()), f);
+	invoke(atomic_cfloat, bounds(100000), args(dv.data()), f);
 	copy(dv, v, f);
 	wait_for(f);
 	std::cout << v[0] << std::endl;

@@ -10,7 +10,7 @@
 
 namespace boost
 {
-namespace aura 
+namespace aura
 {
 
 template <typename T>
@@ -18,29 +18,29 @@ class device_array;
 
 /// a range of device memory
 template <typename T>
-class device_range 
+class device_range
 {
 
 public:
     typedef T value_type;
 	typedef device_ptr<T> iterator;
 	typedef const device_ptr<T> const_iterator;
-	
+
 public:
-	/// create empty range 
+	/// create empty range
 	device_range()  {}
 
 	/// create one-dimensional range of size on device
 	device_range(device_array<T>& da, slice idx)
 	{
 		std::size_t offset;
-		std::tie(offset, bounds_) = 
+		std::tie(offset, bounds_) =
 			get_offset_and_bounds(da.get_bounds(), idx);
 		ptr_ = da.begin() + offset;
 	}
 
 	/// destroy object
-	~device_range() 
+	~device_range()
 	{}
 
 	/// return beginning of buffer
@@ -48,39 +48,39 @@ public:
 	{
 		return ptr_;
 	}
-	
+
 	/// return end of buffer
 	iterator end() const
 	{
 		return ptr_+product(bounds_);
 	}
 
-	/// return pointer to underlying data 
+	/// return pointer to underlying data
 	T* data()
 	{
-		return ptr_.get();
+		return ptr_.get_base();
 	}
 
-	/// return pointer to underlying data 
+	/// return pointer to underlying data
 	const T* data() const
 	{
-		return ptr_.get();
+		return ptr_.get_base();
 	}
-	
-	/// return number of elements in range 
-	std::size_t size() const 
+
+	/// return number of elements in range
+	std::size_t size() const
 	{
 		return product(bounds_);
 	}
 
 	/// return bounds
-	const bounds & get_bounds() const 
+	const bounds & get_bounds() const
 	{
 		return bounds_;
 	}
 
 	/// return copy of bounds
-	bounds get_bounds() 
+	bounds get_bounds()
 	{
 		return bounds_;
 	}
@@ -112,7 +112,7 @@ private:
 			}
 			if (idx[i] != _) {
 				offset += product(take(i+1, idx));
-			} 
+			}
 		}
 
 		if (ret.size() == 0) {
@@ -126,7 +126,7 @@ private:
 private:
 	/// pointer to device memory
 	backend::device_ptr<T> ptr_;
-	
+
 	/// bounds of array
 	bounds bounds_;
 };

@@ -68,7 +68,7 @@ public:
 	                    std::size_t istride = 1, std::size_t idist = 0,
 	                    const fft_embed & oembed = fft_embed(),
 	                    std::size_t ostride = 1, std::size_t odist = 0) :
-		context_(d.get_context()), buffer_(), type_(type), 
+		context_(d.get_context()), buffer_(), type_(type),
 		dim_(dim), batch_(batch)
 	{
 		initialize(d, f, iembed, istride, idist,
@@ -81,14 +81,14 @@ public:
 	 * @param d device to create fft for
 	 */
 	inline explicit fft(device & d, feed & f,
-	                    std::tuple<bounds, bounds> const & dim, 
+	                    std::tuple<bounds, bounds> const & dim,
 			    const fft::type & type,
 	                    const fft_embed & iembed = fft_embed(),
 	                    std::size_t istride = 1, std::size_t idist = 0,
 	                    const fft_embed & oembed = fft_embed(),
 	                    std::size_t ostride = 1, std::size_t odist = 0) :
-		context_(d.get_context()), buffer_(), type_(type), 
-		dim_(std::get<0>(dim)), 
+		context_(d.get_context()), buffer_(), type_(type),
+		dim_(std::get<0>(dim)),
 		batch_(std::max(1, product(std::get<1>(dim))))
 	{
 		initialize(d, f, iembed, istride, idist,
@@ -179,14 +179,14 @@ public:
 			return clfft_type(ENDPRECISION, ENDLAYOUT, ENDLAYOUT);
 		}
 	}
-	
+
 	/**
 	 * check if the handle is a valid handle
 	 */
-	bool valid() 
+	bool valid()
 	{
 		if (context_ == nullptr) {
-			return false;	
+			return false;
 		}
 		return true;
 	}
@@ -207,7 +207,7 @@ private:
 		try {
 
 		assert(dim_.size() <=3);
-		// clFFT needs an array of std::size_t, 
+		// clFFT needs an array of std::size_t,
 		// bounds is an array of ints: typecast and copy
 		svec<fft_size, 3> dim_tmp;
 		for(std::size_t i=0; i<dim_.size(); i++) {
@@ -260,7 +260,7 @@ private:
 					(buffer_size1 > buffer_size2) ?
 					buffer_size1 : buffer_size2, d);
 		}
-		
+
 		} catch (...) {
 			context_ = nullptr;
 		}
@@ -332,15 +332,15 @@ template <typename T1, typename T2>
 void fft_forward(device_ptr<T2> src, device_ptr<T1> dst,
                  fft & plan, const feed & f)
 {
-	typename device_ptr<T1>::backend_type dm = dst.get();
-	typename device_ptr<T1>::backend_type sm = src.get();
+	typename device_ptr<T1>::backend_type dm = dst.get_base();
+	typename device_ptr<T1>::backend_type sm = src.get_base();
 	if(dst == src) {
 		AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_,
 					CLFFT_FORWARD, 1,
 					const_cast<cl_command_queue*>(
 						&f.get_backend_stream()),
 					0, NULL, NULL, &sm, NULL,
-					plan.buffer_.get()));
+					plan.buffer_.get_base()));
 	} else {
 		AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(
 					plan.outofplace_handle_,
@@ -348,7 +348,7 @@ void fft_forward(device_ptr<T2> src, device_ptr<T1> dst,
 					const_cast<cl_command_queue*>(
 						&f.get_backend_stream()),
 					0, NULL, NULL, &sm, &dm,
-					plan.buffer_.get()));
+					plan.buffer_.get_base()));
 	}
 }
 
@@ -365,15 +365,15 @@ template <typename T1, typename T2>
 void fft_inverse(device_ptr<T2> src, device_ptr<T1> dst,
                  fft & plan, const feed & f)
 {
-	typename device_ptr<T1>::backend_type dm = dst.get();
-	typename device_ptr<T1>::backend_type sm = src.get();
+	typename device_ptr<T1>::backend_type dm = dst.get_base();
+	typename device_ptr<T1>::backend_type sm = src.get_base();
 	if(dst == src) {
 		AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(plan.inplace_handle_,
 					CLFFT_BACKWARD, 1,
 					const_cast<cl_command_queue*>(
 						&f.get_backend_stream()),
 					0, NULL, NULL, &sm, NULL,
-					plan.buffer_.get()));
+					plan.buffer_.get_base()));
 	} else {
 		AURA_CLFFT_SAFE_CALL(clfftEnqueueTransform(
 					plan.outofplace_handle_,
@@ -381,7 +381,7 @@ void fft_inverse(device_ptr<T2> src, device_ptr<T1> dst,
 					const_cast<cl_command_queue*>(
 						&f.get_backend_stream()),
 					0, NULL, NULL, &sm, &dm,
-					plan.buffer_.get()));
+					plan.buffer_.get_base()));
 	}
 }
 

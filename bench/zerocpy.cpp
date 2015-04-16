@@ -44,8 +44,8 @@ void bench_compute_only(device_array<float>& src,
                         kernel& k,
                         feed& f)
 {
-	invoke(k, bounds(src.size()), args(dst.begin_ptr(),
-	                                   src.begin_ptr()), f);
+	invoke(k, bounds(src.size()), args(dst.data(),
+	                                   src.data()), f);
 	wait_for(f);
 }
 
@@ -57,8 +57,8 @@ void bench_compute_copy(std::vector<float>& hsrc,
                         feed& f)
 {
 	boost::aura::copy(hsrc, src, f);
-	invoke(k, bounds(src.size()), args(dst.begin_ptr(),
-	                                   src.begin().get()), f);
+	invoke(k, bounds(src.size()), args(dst.data(),
+	                                   src.data()), f);
 	boost::aura::copy(dst, hdst, f);
 	wait_for(f);
 }
@@ -72,8 +72,8 @@ void bench_compute_map(std::vector<float>& hsrc,
 {
 	src.remap(hsrc, f);
 	dst.remap(hdst, f);
-	invoke(k, bounds(src.size()), args(dst.begin_ptr(),
-	                                   src.begin_ptr()), f);
+	invoke(k, bounds(src.size()), args(dst.data(),
+	                                   src.data()), f);
 	src.unmap(hsrc, f);
 	dst.unmap(hdst, f);
 	wait_for(f);
@@ -97,8 +97,8 @@ void bench_compute_only_map(device_map<float>& src,
                             kernel& k,
                             feed& f)
 {
-	invoke(k, bounds(src.size()), args(dst.begin_ptr(),
-	                                   src.begin_ptr()), f);
+	invoke(k, bounds(src.size()), args(dst.data(),
+	                                   src.data()), f);
 	wait_for(f);
 }
 

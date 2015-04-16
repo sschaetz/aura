@@ -60,8 +60,8 @@ public:
 	 *
 	 * @param d device to create fft for
 	 */
-	inline explicit fft(device& d, feed& f, 
-			const bounds& dim, const fft::type& type, 
+	inline explicit fft(device& d, feed& f,
+			const bounds& dim, const fft::type& type,
 			std::size_t batch = 1,
 	                const fft_embed& iembed = fft_embed(),
 	                std::size_t istride = 1, std::size_t idist = 0,
@@ -79,15 +79,15 @@ public:
 	 *
 	 * @param d device to create fft for
 	 */
-	inline explicit fft(device& d, feed& f, 
-			std::tuple<bounds, bounds> const & dim, 
-			const fft::type& type, 
+	inline explicit fft(device& d, feed& f,
+			std::tuple<bounds, bounds> const & dim,
+			const fft::type& type,
 	                const fft_embed& iembed = fft_embed(),
 	                std::size_t istride = 1, std::size_t idist = 0,
 	                const fft_embed& oembed = fft_embed(),
 	                std::size_t ostride = 1, std::size_t odist = 0) :
 		context_(d.get_context()), type_(type),
-		dim_(std::get<0>(dim)), 
+		dim_(std::get<0>(dim)),
 		batch_(std::max(1, product(std::get<1>(dim))))
 	{
 		initialize(iembed, istride, idist,
@@ -99,8 +99,8 @@ public:
 	 *
 	 * @param f fft to move here
 	 */
-	fft(BOOST_RV_REF(fft) f) : 
-		context_(f.context_), handle_(f.handle_), type_(f.type_), 
+	fft(BOOST_RV_REF(fft) f) :
+		context_(f.context_), handle_(f.handle_), type_(f.type_),
 		valid_(f.valid_)
 	{
 		f.context_ = nullptr;
@@ -137,7 +137,7 @@ public:
 	 */
 	void set_feed(const feed& f)
 	{
-		AURA_CUFFT_SAFE_CALL(cufftSetStream(handle_, 
+		AURA_CUFFT_SAFE_CALL(cufftSetStream(handle_,
 					f.get_backend_stream()));
 	}
 
@@ -182,7 +182,7 @@ public:
 	/**
 	 * check if the handle is a valid handle
 	 */
-	bool valid() 
+	bool valid()
 	{
 		return valid_;
 	}
@@ -200,11 +200,11 @@ private:
 					&handle_,
 					dim_.size(),
 					const_cast<int*>(&dim_[0]),
-					0 == iembed.size() ? NULL : 
+					0 == iembed.size() ? NULL :
 						const_cast<int*>(&iembed[0]),
 					istride,
 					0 == idist ? product(dim_) : idist,
-					0 == oembed.size() ? NULL : 
+					0 == oembed.size() ? NULL :
 						const_cast<int*>(&oembed[0]),
 					ostride,
 					0 == odist ? product(dim_) : odist,
@@ -282,8 +282,8 @@ void fft_forward(device_ptr<T2> src, device_ptr<T1> dst,
 		AURA_CUFFT_SAFE_CALL(
 		        cufftExecR2C(
 		                plan.get_handle(),
-		                (cufftReal*)src.get(),
-		                (cufftComplex*)dst.get())
+		                (cufftReal*)src.get_base(),
+		                (cufftComplex*)dst.get_base())
 		);
 		break;
 	}
@@ -295,8 +295,8 @@ void fft_forward(device_ptr<T2> src, device_ptr<T1> dst,
 		AURA_CUFFT_SAFE_CALL(
 		        cufftExecC2C(
 		                plan.get_handle(),
-		                (cufftComplex*)src.get(),
-		                (cufftComplex*)dst.get(),
+		                (cufftComplex*)src.get_base(),
+		                (cufftComplex*)dst.get_base(),
 		                fft::direction::fwd)
 		);
 		break;
@@ -305,8 +305,8 @@ void fft_forward(device_ptr<T2> src, device_ptr<T1> dst,
 		AURA_CUFFT_SAFE_CALL(
 		        cufftExecD2Z(
 		                plan.get_handle(),
-		                (cufftDoubleReal*)src.get(),
-		                (cufftDoubleComplex*)dst.get())
+		                (cufftDoubleReal*)src.get_base(),
+		                (cufftDoubleComplex*)dst.get_base())
 		);
 		break;
 	}
@@ -318,8 +318,8 @@ void fft_forward(device_ptr<T2> src, device_ptr<T1> dst,
 		AURA_CUFFT_SAFE_CALL(
 		        cufftExecZ2Z(
 		                plan.get_handle(),
-		                (cufftDoubleComplex*)src.get(),
-		                (cufftDoubleComplex*)dst.get(),
+		                (cufftDoubleComplex*)src.get_base(),
+		                (cufftDoubleComplex*)dst.get_base(),
 		                fft::direction::fwd)
 		);
 		break;
@@ -352,8 +352,8 @@ void fft_inverse(device_ptr<T2> src, device_ptr<T1> dst,
 		AURA_CUFFT_SAFE_CALL(
 		        cufftExecC2R(
 		                plan.get_handle(),
-		                (cufftComplex*)src.get(),
-		                (cufftReal*)dst.get())
+		                (cufftComplex*)src.get_base(),
+		                (cufftReal*)dst.get_base())
 		);
 		break;
 	}
@@ -361,8 +361,8 @@ void fft_inverse(device_ptr<T2> src, device_ptr<T1> dst,
 		AURA_CUFFT_SAFE_CALL(
 		        cufftExecC2C(
 		                plan.get_handle(),
-		                (cufftComplex*)src.get(),
-		                (cufftComplex*)dst.get(),
+		                (cufftComplex*)src.get_base(),
+		                (cufftComplex*)dst.get_base(),
 		                fft::direction::inv)
 		);
 		break;
@@ -375,8 +375,8 @@ void fft_inverse(device_ptr<T2> src, device_ptr<T1> dst,
 		AURA_CUFFT_SAFE_CALL(
 		        cufftExecZ2D(
 		                plan.get_handle(),
-		                (cufftDoubleComplex*)src.get(),
-		                (cufftDoubleReal*)dst.get())
+		                (cufftDoubleComplex*)src.get_base(),
+		                (cufftDoubleReal*)dst.get_base())
 		);
 		break;
 	}
@@ -384,8 +384,8 @@ void fft_inverse(device_ptr<T2> src, device_ptr<T1> dst,
 		AURA_CUFFT_SAFE_CALL(
 		        cufftExecZ2Z(
 		                plan.get_handle(),
-		                (cufftDoubleComplex*)src.get(),
-		                (cufftDoubleComplex*)dst.get(),
+		                (cufftDoubleComplex*)src.get_base(),
+		                (cufftDoubleComplex*)dst.get_base(),
 		                fft::direction::inv)
 		);
 		break;

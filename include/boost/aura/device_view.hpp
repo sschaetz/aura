@@ -12,7 +12,7 @@
 
 namespace boost
 {
-namespace aura 
+namespace aura
 {
 
 
@@ -46,7 +46,7 @@ void unmap(device_view<T>& v, C& c, feed& f)
 
 
 template <typename T>
-class device_view 
+class device_view
 {
 
 public:
@@ -61,8 +61,8 @@ public:
 	device_view() : ptr_(nullptr), hptr_(nullptr), size_(0) {}
 
 	/// construct a device_view on a C
-	template <typename C> 
-	device_view(C& c, device& d) : 
+	template <typename C>
+	device_view(C& c, device& d) :
 		ptr_(device_map<T>(addressof(c), size(c), d)),
 		hptr_(addressof(c)),
 		size_(size(c)),
@@ -70,9 +70,9 @@ public:
 	{}
 
 	/// construct a device_view on a range of Cs
-	template <typename C> 
-	device_view(C& start, C& end, device& d) : 
-		ptr_(device_map<T>(addressof(start), 
+	template <typename C>
+	device_view(C& start, C& end, device& d) :
+		ptr_(device_map<T>(addressof(start),
 					std::distance(start,end), d)),
 		hptr_(addressof(start)),
 		size_(std::distance(start,end)),
@@ -80,7 +80,7 @@ public:
 	{}
 
 	/// move construct a device_view
-	device_view(BOOST_RV_REF(device_view) v) : 
+	device_view(BOOST_RV_REF(device_view) v) :
 		ptr_(v.ptr_),
 		hptr_(v.hptr_),
 		size_(v.size_),
@@ -90,7 +90,7 @@ public:
 		v.hptr_ = nullptr;
 		v.size_ = 0;
 	}
-	
+
 	/// move assign a device_view
 	device_view<T>& operator= (BOOST_RV_REF(device_view<T>) other)
 	{
@@ -102,19 +102,19 @@ public:
 		other.hptr_ = nullptr;
 		other.size_ = 0;
 	}
-	
+
 	/// destroy (unmap) a device_view
-	~device_view() 
+	~device_view()
 	{
 	}
 
-	/// return beginning of device_view 
+	/// return beginning of device_view
 	iterator begin() const
 	{
 		return ptr_;
 	}
-	
-	/// return end of device_view 
+
+	/// return end of device_view
 	iterator end() const
 	{
 		return ptr_+size_;
@@ -123,26 +123,26 @@ public:
 	/// return beginning of device_view as raw pointer
 	T* begin_ptr() const
 	{
-		return (T*)ptr_.get();
-	}
-	
-	/// return end of device_view as raw pointer 
-	T* end_ptr() const
-	{
-		return ((T*)ptr_.get()) + size_;
+		return (T*)ptr_.get_base();
 	}
 
-	/// return size of device_view 
-	std::size_t size() const 
+	/// return end of device_view as raw pointer
+	T* end_ptr() const
+	{
+		return ((T*)ptr_.get_base()) + size_;
+	}
+
+	/// return size of device_view
+	std::size_t size() const
 	{
 		return size_;
 	}
 
-	void debug() 
+	void debug()
 	{
-		std::cout << "ptr_: " << ptr_.get() << 
-			" hptr_: " << hptr_ << 
-			" size_: " << size_ << 
+		std::cout << "ptr_: " << ptr_.get_base() <<
+			" hptr_: " << hptr_ <<
+			" size_: " << size_ <<
 			std::endl;
 	}
 
@@ -153,7 +153,7 @@ public:
 };
 
 } // namespace aura
-} // namespace boost 
+} // namespace boost
 
 #endif // AURA_DEVICE_VIEW_HPP
 
