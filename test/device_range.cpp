@@ -9,7 +9,7 @@ using namespace boost::aura;
 // basic
 // _____________________________________________________________________________
 
-BOOST_AUTO_TEST_CASE(basic) 
+BOOST_AUTO_TEST_CASE(basic)
 {
 	initialize();
 	int num = device_get_count();
@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(basic)
 		device d(0);
 		device_array<int> array1(40, d);
 		device_range<int> range1(array1, slice(5));
-		auto range2 = array1[slice(5)];
+		auto range2 = array1(slice(5));
 
 		BOOST_CHECK(range1.begin() == range2.begin());
 		BOOST_CHECK(range1.size() == range2.size());
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(basic)
 // basic
 // _____________________________________________________________________________
 
-BOOST_AUTO_TEST_CASE(copy_test) 
+BOOST_AUTO_TEST_CASE(copy_test)
 {
 	initialize();
 	int num = device_get_count();
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(copy_test)
 		std::vector<int> vec1(array1.size(), 0);
 		copy(vec1, array1, f);
 		std::vector<int> vec2(40, 1);
-		auto range1 = array1[slice(_, 1, 1)];
+		auto range1 = array1(slice(_, 1, 1));
 		BOOST_CHECK(range1.size() == vec2.size());
 		copy(vec2, range1, f);
 		copy(array1, vec1, f);

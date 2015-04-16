@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <array>
 #include <type_traits>
+#include <vector>
 #include <boost/preprocessor/arithmetic/inc.hpp>
 #include <boost/preprocessor/repetition/repeat_from_to.hpp>
 #include <boost/type_traits/has_multiplies_assign.hpp>

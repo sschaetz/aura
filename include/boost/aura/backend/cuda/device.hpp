@@ -43,7 +43,7 @@ void print_module_build_log(module & m, const device & d);
  *
  * every interaction with devices starts from this class
  */
-class device 
+class device
 {
 
 private:
@@ -51,17 +51,17 @@ private:
 
 public:
 
-	/// create empty device object 
+	/// create empty device object without device and context
 	inline explicit device() : context_(nullptr) {}
 
 	/**
-	 * create device form ordinal
+	 * create device form ordinal, also creates a context
 	 *
 	 * @param ordinal device number
 	 */
-	inline explicit device(std::size_t ordinal) : 
+	inline explicit device(std::size_t ordinal) :
 		context_(new detail::context(ordinal)),
-		ordinal_(ordinal) 
+		ordinal_(ordinal)
 	{}
 
 	/**
@@ -70,14 +70,14 @@ public:
 	 * @param ordinal device number
 	 * @param device_lock a device lock object
 	 */
-	inline explicit device(std::size_t ordinal, device_lock&& dl) : 
+	inline explicit device(std::size_t ordinal, device_lock& dl) :
 		context_(new detail::context(ordinal)),
 		ordinal_(ordinal),
 		device_lock_(dl)
 	{}
-	
+
 	/// destroy device
-	inline ~device() 
+	inline ~device()
 	{
 		finalize();
 	}
@@ -87,9 +87,9 @@ public:
 	 *
 	 * @param d device to move here
 	 */
-	device(BOOST_RV_REF(device) d) : 
-		context_(d.context_), 
-		ordinal_(d.ordinal_), 
+	device(BOOST_RV_REF(device) d) :
+		context_(d.context_),
+		ordinal_(d.ordinal_),
 		modules_(std::move(d.modules_)),
 		device_lock_(std::move(d.device_lock_))
 	{
@@ -102,7 +102,7 @@ public:
 	 *
 	 * @param d device to move here
 	 */
-	device& operator=(BOOST_RV_REF(device) d) 
+	device& operator=(BOOST_RV_REF(device) d)
 	{
 		finalize();
 		context_ = d.context_;
@@ -115,8 +115,8 @@ public:
 	}
 
 	/// load a kernel from a file
-	kernel load_from_file(const char* kernel_name, 
-			const char* file_name, 
+	kernel load_from_file(const char* kernel_name,
+			const char* file_name,
 			const char* build_options=NULL)
 	{
 		auto it = modules_.find(file_name);
@@ -137,75 +137,75 @@ public:
 		return create_kernel(it->second, kernel_name);
 	}
 
-	/// load a kernel from a string 
-	kernel load_from_string(const char* kernel_name, 
-			const char* kernel_string, 
+	/// load a kernel from a string
+	kernel load_from_string(const char* kernel_name,
+			const char* kernel_string,
 			const char* build_options=NULL)
 	{
 		auto it = modules_.find(kernel_string);
 		if (modules_.end() == it) {
 			auto it2 = modules_.insert(
-					std::make_pair(kernel_string, 
+					std::make_pair(kernel_string,
 						create_module_from_string(
-							kernel_string, *this, 
+							kernel_string, *this,
 							build_options)));
-			it = it2.first;	
+			it = it2.first;
 		}
 		return create_kernel(it->second, kernel_name);
 	}
 
 	/// make device active
-	inline void set() 
+	inline void set()
 	{
 		context_->set();
 	}
 
 	/// undo make device active
-	inline void unset() 
+	inline void unset()
 	{
 		context_->unset();
 	}
 
 	/**
-	 * pin 
+	 * pin
 	 *
 	 * disable unset, device context stays associated with current thread
 	 * usefull for interoperability with other libraries that use a context
 	 * explicitly
 	 */
-	inline void pin() 
+	inline void pin()
 	{
 		context_->pin();
 	}
 
 	/// unpin (reenable unset)
-	inline void unpin() 
+	inline void unpin()
 	{
 		context_->unpin();
-	} 
+	}
 
 	/// access the device handle
-	inline const CUdevice & get_backend_device() const 
+	inline const CUdevice & get_backend_device() const
 	{
-		return context_->get_backend_device(); 
+		return context_->get_backend_device();
 	}
 
 	/// access the context handle
-	inline const CUcontext & get_backend_context() const 
+	inline const CUcontext & get_backend_context() const
 	{
-		return context_->get_backend_context(); 
+		return context_->get_backend_context();
 	}
 
 	/// access the context handle
-	inline detail::context * get_context() 
+	inline detail::context * get_context()
 	{
-		return context_; 
+		return context_;
 	}
 
-	/// access the device ordinal 
-	inline std::size_t get_ordinal() const 
+	/// access the device ordinal
+	inline std::size_t get_ordinal() const
 	{
-		return ordinal_; 
+		return ordinal_;
 	}
 
 	/// compare devices
@@ -222,7 +222,7 @@ public:
 
 private:
 	/// finalize object (called from dtor and move assign)
-	void finalize() 
+	void finalize()
 	{
 		if(nullptr != context_) {
 			delete context_;
@@ -231,7 +231,7 @@ private:
 
 private:
 	/// device context
-	detail::context * context_; 
+	detail::context * context_;
 
 	/// device ordinal
 	std::size_t ordinal_;
@@ -242,13 +242,13 @@ private:
 	/// device_lock
 	device_lock device_lock_;
 };
-  
+
 /**
  * get number of devices available
  *
  * @return number of devices
  */
-inline std::size_t device_get_count() 
+inline std::size_t device_get_count()
 {
 	int num_devices;
 	AURA_CUDA_SAFE_CALL(cuDeviceGetCount(&num_devices));
@@ -256,18 +256,18 @@ inline std::size_t device_get_count()
 }
 
 /// print device info to stdout
-inline void print_system_info() 
+inline void print_system_info()
 {
 	for(std::size_t n=0; n<device_get_count(); n++) {
-		CUdevice device; 
+		CUdevice device;
 		AURA_CUDA_SAFE_CALL(cuDeviceGet(&device, n));
 		char device_name[400];
 		AURA_CUDA_SAFE_CALL(cuDeviceGetName(device_name, 400, device));
-		printf("%lu: %s\n", n, device_name); 
+		printf("%lu: %s\n", n, device_name);
 	}
 }
 
-inline void print_device_info() 
+inline void print_device_info()
 {
 	print_system_info();
 }
@@ -275,9 +275,9 @@ inline void print_device_info()
 DEPRECATED(void print_device_info());
 
 /// return the amount of free memory on the device
-inline std::size_t device_get_free_memory(device &d) 
+inline std::size_t device_get_free_memory(device &d)
 {
-	std::size_t free; 
+	std::size_t free;
 	std::size_t total;
 	d.set();
 	AURA_CUDA_SAFE_CALL(cuMemGetInfo(&free, &total));
@@ -286,9 +286,9 @@ inline std::size_t device_get_free_memory(device &d)
 }
 
 /// return the amount of total memory on the device
-inline std::size_t device_get_total_memory(device &d) 
+inline std::size_t device_get_total_memory(device &d)
 {
-	std::size_t free; 
+	std::size_t free;
 	std::size_t total;
 	d.set();
 	AURA_CUDA_SAFE_CALL(cuMemGetInfo(&free, &total));
@@ -298,43 +298,55 @@ inline std::size_t device_get_total_memory(device &d)
 
 #include <boost/aura/backend/shared/device_info.hpp>
 
-/// return the device info 
-inline device_info device_get_info(device & d) 
+/// return the device info
+inline device_info device_get_info(device & d)
 {
 	device_info di;
 	// name and vendor
 	AURA_CUDA_SAFE_CALL(cuDeviceGetName(di.name, sizeof(di.name)-1,
 	d.get_backend_device()));
-	strncpy(di.vendor, "Nvidia", sizeof(di.vendor)-1); 
+	strncpy(di.vendor, "Nvidia", sizeof(di.vendor)-1);
 
-	// mesh 
+	// mesh
 	int r=0;
-	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, 
+	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r,
 	CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X, d.get_backend_device()));
 	di.max_mesh.push_back(r);
 	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r,
 	CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y, d.get_backend_device()));
 	di.max_mesh.push_back(r);
-	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, 
+	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r,
 	CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Z, d.get_backend_device()));
 	di.max_mesh.push_back(r);
 
-	// bundle 
-	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, 
+	// bundle
+	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r,
 	CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X, d.get_backend_device()));
 	di.max_bundle.push_back(r);
-	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, 
+	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r,
 	CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y, d.get_backend_device()));
 	di.max_bundle.push_back(r);
-	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, 
+	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r,
 	CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z, d.get_backend_device()));
 	di.max_bundle.push_back(r);
 
 	// fibers in bundle
-	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r, 
+	AURA_CUDA_SAFE_CALL(cuDeviceGetAttribute(&r,
 	CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK, d.get_backend_device()));
 	di.max_fibers_per_bundle = r;
 	return di;
+}
+
+inline device create_device_exclusive()
+{
+	int num = device_get_count();
+	for (std::size_t n=0; n<device_get_count(); n++) {
+		auto dl = create_device_lock(num);
+		if (dl) {
+			return device(n, dl);
+		}
+	}
+	throw "no device available!";
 }
 
 } // cuda

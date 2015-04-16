@@ -11,22 +11,28 @@
 #include <boost/aura/backend/cuda/bundle.hpp>
 #include <boost/aura/backend/cuda/args.hpp>
 #include <boost/aura/backend/shared/calc_mesh_bundle.hpp>
+#include <boost/config.hpp>
 
-namespace boost
-{
+namespace boost {
 namespace aura {
 namespace backend_detail {
 namespace cuda {
-
 namespace detail {
 
-inline void invoke_impl(kernel & k, const mesh & m, const bundle & b, 
-		const args_t & a, feed & f) 
+
+#ifndef BOOST_NO_CXX11_VARIADIC_TEMPLATES
+template<unsigned long N>
+inline void invoke_impl(kernel & k, const mesh & m, const bundle & b,
+		const args_t<N>&& a, feed & f)
+#else
+inline void invoke_impl(kernel & k, const mesh & m, const bundle & b,
+		const args_t & a, feed & f)
+#endif
 {
 	// handling for non 3-dimensional mesh and bundle sizes
 	std::size_t meshx = m[0], meshy = 1, meshz = 1;
 	std::size_t bundlex = b[0], bundley = 1, bundlez = 1;
-	
+
 	if (m.size() > 1) {
 		meshy = m[1];
 	}
@@ -48,66 +54,108 @@ inline void invoke_impl(kernel & k, const mesh & m, const bundle & b,
 
 	f.set();
 
-	AURA_CUDA_SAFE_CALL(cuLaunchKernel(k, meshx, meshy, meshz, 
-		bundlex, bundley, bundlez, 0, f.get_backend_stream(), 
-		const_cast<void**>(&a.second[0]), NULL)); 
+	AURA_CUDA_SAFE_CALL(cuLaunchKernel(k, meshx, meshy, meshz,
+		bundlex, bundley, bundlez, 0, f.get_backend_stream(),
+		const_cast<void**>(&a.second[0]), NULL));
 	f.unset();
 	free(a.first);
 }
 
-inline void invoke_impl(kernel & k, const ::boost::aura::bounds& b, 
-		const args_t & a, feed & f) 
+#ifndef BOOST_NO_CXX11_VARIADIC_TEMPLATES
+template<unsigned long N>
+inline void invoke_impl(kernel & k, const ::boost::aura::bounds& b,
+		const args_t<N>&& a, feed & f)
+#else
+inline void invoke_impl(kernel & k, const ::boost::aura::bounds& b,
+		const args_t & a, feed & f)
+#endif
+
 {
 	std::array<std::size_t, 4> mb = {{1, 1, 1, 1}};
 	const std::array<std::size_t, 4> max_mb = {{
-		AURA_CUDA_MAX_BUNDLE, 
-		AURA_CUDA_MAX_MESH0, 
-		AURA_CUDA_MAX_MESH1, 
-		AURA_CUDA_MAX_MESH2 
+		AURA_CUDA_MAX_BUNDLE,
+		AURA_CUDA_MAX_MESH0,
+		AURA_CUDA_MAX_MESH1,
+		AURA_CUDA_MAX_MESH2
 	}};
-	
+
 	std::array<bool, 4> mask = {{false, false, false, false}};
-	
-	boost::aura::detail::calc_mesh_bundle(product(b), 2, 
+
+	boost::aura::detail::calc_mesh_bundle(product(b), 2,
 			mb.begin(), max_mb.begin(), mask.begin());
 	f.set();
-	AURA_CUDA_SAFE_CALL(cuLaunchKernel(k, mb[1], mb[2], mb[3], 
-		mb[0], 1, 1, 0, f.get_backend_stream(), 
-		const_cast<void**>(&a.second[0]), NULL)); 
+	AURA_CUDA_SAFE_CALL(cuLaunchKernel(k, mb[1], mb[2], mb[3],
+		mb[0], 1, 1, 0, f.get_backend_stream(),
+		const_cast<void**>(&a.second[0]), NULL));
 	f.unset();
 	free(a.first);
 }
 
 } // namespace detail
 
+
+
+#ifndef BOOST_NO_CXX11_VARIADIC_TEMPLATES
 /// invoke kernel without args
-inline void invoke(kernel& k, const mesh& m, const bundle& b, feed& f) 
+inline void invoke(kernel& k, const mesh& m, const bundle& b, feed& f)
+{
+	detail::invoke_impl(k, m, b, args_t<0>(), f);
+}
+
+/// invoke kernel with args
+template<unsigned long N>
+inline void invoke(kernel& k, const mesh& m, const bundle& b,
+		const args_t<N>&& a, feed& f)
+{
+	detail::invoke_impl(k, m, b, std::move(a), f);
+}
+
+/// invoke kernel with bounds and args
+template<unsigned long N>
+inline void invoke(kernel& k, const bounds& b, const args_t<N>&& a, feed& f)
+{
+	detail::invoke_impl(k, b, std::move(a), f);
+}
+
+/// invoke kernel with size and args
+template<unsigned long N>
+inline void invoke(kernel& k, const std::size_t s, const args_t<N>&& a, feed& f)
+{
+	detail::invoke_impl(k, bounds(s), std::move(a), f);
+}
+
+#else
+
+/// invoke kernel without args
+inline void invoke(kernel& k, const mesh& m, const bundle& b, feed& f)
 {
 	detail::invoke_impl(k, m, b, args_t(), f);
 }
 
 /// invoke kernel with args
-inline void invoke(kernel& k, const mesh& m, const bundle& b, 
-		const args_t& a, feed& f) 
+inline void invoke(kernel& k, const mesh& m, const bundle& b,
+		const args_t& a, feed& f)
 {
 	detail::invoke_impl(k, m, b, a, f);
 }
 
 /// invoke kernel with bounds and args
-inline void invoke(kernel& k, const bounds& b, const args_t& a, feed& f) 
+inline void invoke(kernel& k, const bounds& b, const args_t& a, feed& f)
 {
 	detail::invoke_impl(k, b, a, f);
 }
 
 /// invoke kernel with size and args
-inline void invoke(kernel& k, const std::size_t s, const args_t& a, feed& f) 
+inline void invoke(kernel& k, const std::size_t s, const args_t& a, feed& f)
 {
 	detail::invoke_impl(k, bounds(s), a, f);
 }
 
-} // namespace cuda 
+#endif
+
+} // namespace cuda
 } // namespace backend_detail
-} // namespace aura 
+} // namespace aura
 } // namespace boost
 
 #endif // AURA_BACKEND_CUDA_INVOKE_HPP

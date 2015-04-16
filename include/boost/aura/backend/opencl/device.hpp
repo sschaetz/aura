@@ -70,11 +70,17 @@ public:
 	 * @param ordinal device number
 	 * @param device_lock a device lock object
 	 */
-	inline explicit device(std::size_t ordinal, device_lock dl) : 
+	inline explicit device(std::size_t ordinal, device_lock&& dl) : 
 		context_(new detail::context(ordinal)),
 		ordinal_(ordinal),
 		device_lock_(dl)
 	{}
+	
+	/// destroy device
+	inline ~device() 
+	{
+		finalize();
+	}
 
 	/**
 	 * move constructor, move device information here, invalidate other
@@ -138,14 +144,6 @@ public:
 		}
 		
 		return it->second.get_kernel(kernel_name);
-	}
-
-	/**
-	 * destroy device (context)
-	 */
-	inline ~device() 
-	{
-		finalize();
 	}
 
 	/// make device active
