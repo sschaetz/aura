@@ -24,10 +24,10 @@ namespace detail {
 template<unsigned long N>
 inline void invoke_impl(kernel & k, const mesh & m, const bundle & b,
 		const args_t<N>&& a, feed & f)
-#else
-inline void invoke_impl(kernel & k, const mesh & m, const bundle & b,
-		const args_t & a, feed & f)
-#endif
+#else // BOOST_NO_CXX11_VARIADIC_TEMPLATES
+inline void invoke_impl(kernel& k, const mesh& m, const bundle& b,
+		const args_t& a, feed& f)
+#endif // BOOST_NO_CXX11_VARIADIC_TEMPLATES
 {
 	// handling for non 3-dimensional mesh and bundle sizes
 	std::size_t meshx = m[0], meshy = 1, meshz = 1;
@@ -65,11 +65,10 @@ inline void invoke_impl(kernel & k, const mesh & m, const bundle & b,
 template<unsigned long N>
 inline void invoke_impl(kernel & k, const ::boost::aura::bounds& b,
 		const args_t<N>&& a, feed & f)
-#else
+#else // BOOST_NO_CXX11_VARIADIC_TEMPLATES
 inline void invoke_impl(kernel & k, const ::boost::aura::bounds& b,
 		const args_t & a, feed & f)
-#endif
-
+#endif // BOOST_NO_CXX11_VARIADIC_TEMPLATES
 {
 	std::array<std::size_t, 4> mb = {{1, 1, 1, 1}};
 	const std::array<std::size_t, 4> max_mb = {{
@@ -93,9 +92,8 @@ inline void invoke_impl(kernel & k, const ::boost::aura::bounds& b,
 
 } // namespace detail
 
-
-
 #ifndef BOOST_NO_CXX11_VARIADIC_TEMPLATES
+
 /// invoke kernel without args
 inline void invoke(kernel& k, const mesh& m, const bundle& b, feed& f)
 {
@@ -124,7 +122,7 @@ inline void invoke(kernel& k, const std::size_t s, const args_t<N>&& a, feed& f)
 	detail::invoke_impl(k, bounds(s), std::move(a), f);
 }
 
-#else
+#else // BOOST_NO_CXX11_VARIADIC_TEMPLATES
 
 /// invoke kernel without args
 inline void invoke(kernel& k, const mesh& m, const bundle& b, feed& f)
@@ -151,7 +149,8 @@ inline void invoke(kernel& k, const std::size_t s, const args_t& a, feed& f)
 	detail::invoke_impl(k, bounds(s), a, f);
 }
 
-#endif
+#endif // BOOST_NO_CXX11_VARIADIC_TEMPLATES
+
 
 } // namespace cuda
 } // namespace backend_detail

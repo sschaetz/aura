@@ -52,7 +52,7 @@ args_t<sizeof...(Targs)> args(const Targs... ar)
 	return std::make_pair(ptr, pa);
 }
 
-#else
+#else // BOOST_NO_CXX11_VARIADIC_TEMPLATES
 
 typedef void * arg_t;
 typedef svec<arg_t, AURA_MAX_KERNEL_ARGS> args_tt;
@@ -601,7 +601,7 @@ args_t args(const T0 & a0, const T1 & a1, const T2 & a2, const T3 & a3,
   );
 }
 
-#endif
+#endif // BOOST_NO_CXX11_VARIADIC_TEMPLATES
 
 } // cuda
 } // backend_detail

@@ -27,8 +27,8 @@ class feed;
 namespace detail
 {
 
-void set_feed(feed& f); 
-void unset_feed(feed& f); 
+void set_feed(feed& f);
+void unset_feed(feed& f);
 const cl_command_queue& get_backend_stream(feed& f);
 cl_event get_event(mark& m);
 
@@ -61,7 +61,7 @@ public:
 	inline feed(device & d) : context_(d.get_context())
 	{
 		int errorcode = 0;
-		stream_ = clCreateCommandQueue(context_->get_backend_context(), 
+		stream_ = clCreateCommandQueue(context_->get_backend_context(),
 				context_->get_backend_device(), 0, &errorcode);
 		AURA_OPENCL_CHECK_ERROR(errorcode);
 	}
@@ -152,7 +152,7 @@ public:
 	{
 		return stream_;
 	}
-	
+
 	inline const cl_command_queue & get_backend_stream() const
 	{
 		return stream_;
@@ -170,7 +170,7 @@ protected:
 		                      )
 		                     );
 	}
-#endif // CL_VERSION_1_2 
+#endif // CL_VERSION_1_2
 
 private:
 	/// finalize object (called from dtor and move assign)

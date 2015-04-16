@@ -28,8 +28,8 @@ class feed;
 namespace detail
 {
 
-void set_feed(feed& f); 
-void unset_feed(feed& f); 
+void set_feed(feed& f);
+void unset_feed(feed& f);
 const cl_command_queue& get_backend_stream(feed& f);
 cl_event get_event(mark& m);
 
@@ -37,8 +37,8 @@ cl_event get_event(mark& m);
 
 
 /// callback used to free event asynchronously
-inline void CL_CALLBACK delete_event_callback__(cl_event event, 
-		cl_int event_command_exec_status, void* event_ptr) 
+inline void CL_CALLBACK delete_event_callback__(cl_event event,
+		cl_int event_command_exec_status, void* event_ptr)
 {
 	AURA_OPENCL_SAFE_CALL(clReleaseEvent(event));
 	delete (cl_event*)event_ptr;
@@ -47,7 +47,7 @@ inline void CL_CALLBACK delete_event_callback__(cl_event event,
 /**
  * mark class
  */
-class mark 
+class mark
 {
 
 private:
@@ -62,9 +62,9 @@ public:
 	}
 
 	/**
-	 * create mark 
+	 * create mark
 	 *
-	 * @param f feed to create mark in 
+	 * @param f feed to create mark in
 	 */
 	inline explicit mark(feed & f) : event_(new cl_event)
 	{
@@ -73,7 +73,7 @@ public:
 #ifdef CL_VERSION_1_2
 		AURA_OPENCL_SAFE_CALL(
 			clEnqueueMarkerWithWaitList(
-				detail::get_backend_stream(f), 
+				detail::get_backend_stream(f),
 				0, NULL, event_
 			)
 		);
@@ -106,7 +106,7 @@ public:
 	}
 
 	/**
-	 * destroy mark 
+	 * destroy mark
 	 */
 	inline ~mark()
 	{
@@ -129,7 +129,7 @@ private:
 			cl_int result;
 			AURA_OPENCL_SAFE_CALL(
 				clGetEventInfo(
-					*event_, 
+					*event_,
 					CL_EVENT_COMMAND_EXECUTION_STATUS,
 					sizeof(result),
 					&result,
@@ -162,7 +162,7 @@ friend void wait_for(mark & m);
 };
 
 /// insert marker into feed
-inline void insert(feed & f, mark & m) 
+inline void insert(feed & f, mark & m)
 {
 	m.finalize();
 	m.event_ = new cl_event;
@@ -170,7 +170,7 @@ inline void insert(feed & f, mark & m)
 #ifdef CL_VERSION_1_2
 	AURA_OPENCL_SAFE_CALL(
 		clEnqueueMarkerWithWaitList(
-			detail::get_backend_stream(f), 
+			detail::get_backend_stream(f),
 			0, NULL, m.event_
 		)
 	);
@@ -180,7 +180,7 @@ inline void insert(feed & f, mark & m)
 }
 
 
-inline void wait_for(mark & m) 
+inline void wait_for(mark & m)
 {
 	AURA_OPENCL_SAFE_CALL(clWaitForEvents(1, m.event_));
 }
