@@ -54,10 +54,10 @@ inline void calc_mesh_bundle(std::size_t v, std::size_t f,
 					++m;
 					calc_mesh_bundle(v,f,i,b,m);
 				} else {
-				f *= *(i-1);
-				*i *= f;
-				f /= *(i-1);
-				calc_mesh_bundle(v/f, f, i, b, m);
+					f *= *(i-1);
+					*i *= f;
+					f /= *(i-1);
+					calc_mesh_bundle(v/f, f, i, b, m);
 				}
 				return;
 			}

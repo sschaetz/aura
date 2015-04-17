@@ -14,6 +14,18 @@ inline float cimagf(cfloat x)
 	return x.y; 
 }
 
+
+__global float *crealfp( __global cfloat * x)
+{
+	return ( __global float *) x;
+}
+
+__global float *cimagfp(__global cfloat *x)
+{
+	return ( (__global float *) x + 1);
+}
+
+
 inline cfloat make_cfloat(float r, float i)
 {
 	return (cfloat)(r, i);
@@ -41,10 +53,31 @@ inline cfloat cmulf(cfloat x, cfloat y)
 }
 
 inline cfloat cdivf(cfloat x, cfloat y)
-{
-	float n = 1.0f / (y.x*y.x + y.y*y.y);
-	float r = (x.x*y.x + x.y*y.y) * n;
-	float i = (x.y*y.x - x.x*y.y) * n;
+{	
+	// This implementation doesn't function well for large numbers
+	// float n = 1.0f / (y.x*y.x + y.y*y.y);
+	// float r = (x.x*y.x + x.y*y.y) * n;
+	// float i = (x.y*y.x - x.x*y.y) * n;
+	
+	// The following implementation is taken from the LLVM Compiler Infrastructure, licensed under 
+	// the MIT and the University of Illinois Open Source Licenses.
+	// https://code.openhub.net/file?fid=XBgmMXzw1oxpd_pKEX4Olpef3gM&cid=DwH1iTUyTao&s=__divsc3&fp=406477&mp&projSelected=true#L0
+	
+	float a = x.x;
+	float b = x.y;
+	float c = y.x;
+	float d = y.y;
+	
+	int ilogbw = 0;
+    float logbw = logb(fmax(fabs(c), fabs(d)));    
+    ilogbw = (int)logbw;
+    c = ldexp(c, -ilogbw);
+    d = ldexp(d, -ilogbw);
+    
+    float denom = 1.0f / (c * c + d * d);
+    float r = ldexp((a * c + b * d) * denom, -ilogbw);
+    float i = ldexp((b * c - a * d) * denom, -ilogbw);		
+	
 	return make_cfloat(r, i);
 }
 
@@ -77,6 +110,16 @@ inline double creal(cdouble x)
 inline double cimag(cdouble x) 
 { 
 	return x.y; 
+}
+
+__global double *crealp( __global cdouble * x)
+{
+	return ( __global double *) x;
+}
+
+__global double*cimagp(__global cdouble *x)
+{
+	return ( (__global double *) x + 1);
 }
 
 inline cdouble make_cdouble(double r, double i)

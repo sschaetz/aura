@@ -35,4 +35,5 @@ doc/html
 
 # boost.build
 bin/
+generated/
 

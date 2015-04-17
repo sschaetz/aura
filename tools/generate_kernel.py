@@ -10,16 +10,9 @@
 
 # list of kernel files
 kernels = [
-    "lib/aura/include/boost/aura/math/split_interleaved_i2s.cc",
-    "lib/aura/include/boost/aura/math/split_interleaved_s2i.cc",
-    "lib/aura/include/boost/aura/filters/nlm_filter/nlm_filter_core.cc",
-    "lib/aura/include/boost/aura/filters/nlm_filter/nlm_filter_aux.cc",
-    "lib/aura/include/boost/aura/math/memset_zero_float.cc",
-    "lib/aura/include/boost/aura/misc/pad_array.cc",
-    "lib/aura/include/boost/aura/filters/wavelet_filter2D/wavelet_filter2D_core.cc",
-    "lib/aura/include/boost/aura/filters/wavelet_filter2D/wavelet_filter2D_aux.cc",
-    "lib/aura/include/boost/aura/misc/bitonic_sort.cc",
-    "lib/aura/include/boost/aura/misc/quantile.cc"
+    "include/boost/aura/math/split_interleaved_i2s.cc",
+    "include/boost/aura/math/split_interleaved_s2i.cc",
+    "include/boost/aura/math/memset_zero_float.cc",
     ];
 
 import sys
@@ -41,7 +34,7 @@ if len(sys.argv) > 2:
     mode = mode.lower()
 
 
-includedir = bdir + "/lib/aura/include/"
+includedir = bdir + "/include/"
 generateddir= bdir + "/generated/"
 
 from shutil import copyfile

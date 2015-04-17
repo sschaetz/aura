@@ -47,6 +47,17 @@ device_ptr<T> device_malloc(std::size_t size, device & d) {
   return device_ptr<T>(m, d);
 }
 
+template <typename T>
+device_ptr<T> device_malloc_dependent(device_ptr<T> ptr,
+		std::size_t size, std::size_t offset) 
+{
+	//return device_ptr<T>(ptr+offset, ptr.get_device());
+	// This line confuses me. What is it trying to do? Call a
+	// constructor of device_ptr? Sorry, there is no constructor with
+	// that signature. Is it jus trying to do this:
+	return ptr+offset;
+	// I am just going to assume it is for now...
+}
 
 /**
  * free device memory
@@ -67,6 +78,12 @@ void device_free(device_ptr<T> & ptr) {
   AURA_CUDA_SAFE_CALL(cuMemFree(ptr.get()));
   ptr.get_device().unset();
   ptr.invalidate();
+}
+
+template <typename T>
+void device_free_dependent(device_ptr<T> & ptr) 
+{
+	ptr.invalidate();
 }
 
 /**

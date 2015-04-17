@@ -44,7 +44,7 @@ public:
 	 * @param db device_buffer to move here
 	 */
 	device_buffer(BOOST_RV_REF(device_buffer) db) :
-		ptr_(db.ptr_), size_(db.size_) 
+        ptr_(std::move(db.ptr_)), size_(std::move(db.size_))
 	{
 		db.ptr_.invalidate();
 		db.size_ = 0;
@@ -57,8 +57,8 @@ public:
 	 */
 	device_buffer& operator=(BOOST_RV_REF(device_buffer) db)
 	{
-		finalize();
-		ptr_ = db.ptr_;
+        finalize();
+        ptr_ = std::move(db.ptr_);
 		size_ = db.size_;
 		db.ptr_.invalidate();
 		db.size_ = 0;

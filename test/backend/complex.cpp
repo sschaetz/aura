@@ -8,10 +8,13 @@
 #include <numeric>
 #include <boost/test/unit_test.hpp>
 #include <boost/aura/backend.hpp>
+#include <boost/aura/copy.hpp>
 #include <boost/aura/config.hpp>
 #include <boost/aura/device_array.hpp>
+#include <boost/aura/math/complex.hpp>
 
 using namespace boost::aura;
+using namespace boost::aura::math;
 
 const char * kernel_file = AURA_UNIT_TEST_LOCATION"complex.cc";
 
@@ -54,6 +57,45 @@ BOOST_AUTO_TEST_CASE(complex_single)
 	float err = std::abs(hsum - dsum);
 	BOOST_CHECK(err < std::numeric_limits<float>::epsilon());
 	device_free(mem);
+}
+
+BOOST_AUTO_TEST_CASE(complex_single_pointer_arithmetic)
+{
+	initialize();
+	int num = device_get_count();
+	BOOST_REQUIRE(0 < num);
+	device d(0);  
+	feed f(d);
+ 	std::size_t xdim = 64;
+	std::size_t ydim = 64;
+
+	std::vector<cfloat> input(xdim*ydim, cfloat(42., 26));
+	std::vector<cfloat> output(xdim*ydim);
+	device_array<cfloat> dinput(xdim*ydim, d);
+	device_array<cfloat> doutput(xdim*ydim, d);
+
+	module mod = create_module_from_file(kernel_file, d, 
+	AURA_BACKEND_COMPILE_FLAGS);
+	print_module_build_log(mod, d);
+	kernel k = create_kernel(mod, "complex_single_pointer_arithm");
+
+	copy(input, dinput, f);
+	invoke(k, mesh(ydim, xdim), bundle(xdim), 
+		args(	dinput.begin_ptr(),
+			doutput.begin_ptr())
+		, f);
+	copy(doutput, output, f);
+	wait_for(f);
+
+	std::transform(input.begin(), input.end(), input.begin(),
+		       [](cfloat x)
+		       { return cfloat(std::imag(x), std::real(x));});
+
+
+
+	BOOST_CHECK( std::equal(output.begin(), output.end(),
+				input.begin())
+		   );
 }
 
 // TODO: test double precision

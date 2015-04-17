@@ -74,6 +74,20 @@ device_ptr<T> device_malloc(std::size_t size, device & d) {
   return device_ptr<T>(m, d);
 }
 
+template <typename T>
+device_ptr<T> device_malloc_dependent(device_ptr<T> ptr,
+		std::size_t size, std::size_t offset) {
+	int errorcode = 0;
+        cl_buffer_region region = { offset * sizeof(T), size * sizeof(T) };
+
+	typename device_ptr<T>::backend_type m = 
+		clCreateSubBuffer(ptr.get(), CL_MEM_READ_WRITE,
+				CL_BUFFER_CREATE_TYPE_REGION,
+				&region, &errorcode);
+	AURA_OPENCL_CHECK_ERROR(errorcode);
+	return device_ptr<T>(m, ptr.get_device());
+}
+
 /**
  * free device memory
  *
@@ -87,6 +101,12 @@ DEPRECATED(void device_free(memory m, device &));
 
 template <typename T>
 void device_free(device_ptr<T> & ptr) {
+  AURA_OPENCL_SAFE_CALL(clReleaseMemObject(ptr.get()));
+  ptr.invalidate();
+}
+
+template <typename T>
+void device_free_dependent(device_ptr<T> & ptr) {
   AURA_OPENCL_SAFE_CALL(clReleaseMemObject(ptr.get()));
   ptr.invalidate();
 }

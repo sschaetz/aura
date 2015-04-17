@@ -49,7 +49,6 @@
 		#include <boost/aura/backend/opencl/mesh.hpp>
 		#include <boost/aura/backend/opencl/init.hpp>
 		#include <boost/aura/backend/opencl/invoke.hpp>
-		#include <boost/aura/backend/opencl/kernel.hpp>
 		#include <boost/aura/backend/opencl/mark.hpp>
 		#include <boost/aura/backend/opencl/memory.hpp>
 		#include <boost/aura/backend/opencl/module.hpp>

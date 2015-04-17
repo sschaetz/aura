@@ -36,12 +36,51 @@ public:
 		std::size_t offset;
 		std::tie(offset, bounds_) = 
 			get_offset_and_bounds(da.get_bounds(), idx);
-		ptr_ = da.begin() + offset;
+		ptr_ = backend::device_malloc_dependent<T>(da.begin(),
+				(std::size_t)product(bounds_), offset);
 	}
+
+	/// create one-dimensional range of size on device
+	device_range(device_array<T>& da, slice idx, bounds b)
+	{
+		std::size_t offset;
+		std::tie(offset, bounds_) = 
+			get_offset_and_bounds(da.get_bounds(), idx);
+		bounds_ = b;
+		ptr_ = backend::device_malloc_dependent<T>(da.begin(),
+				product(bounds_), offset);
+	}
+
+    // TILWARNING: FIXME: THIS DOESNT AUTOMATICALLY CONSTRUCT A CONST DEVICE_RANGE :(
+    device_range(const device_array<T>& da, slice idx, bounds b)
+    {
+        std::size_t offset;
+        std::tie(offset, bounds_) =
+            get_offset_and_bounds(da.get_bounds(), idx);
+        bounds_ = b;
+        ptr_ = backend::device_malloc_dependent<T>(da.begin(),
+                product(bounds_), offset);
+    }
+
+
+    // TILWARNING: not really sure, if this is correct, but it works so far
+    device_range<T>& operator=( const device_range<T> &dr)
+    {
+        bounds_ = dr.bounds_;
+        ptr_ = backend::device_malloc_dependent<T>(dr.ptr_,
+                        product(bounds_), 0);
+        return *this;
+    }
+
 
 	/// destroy object
 	~device_range() 
-	{}
+	{
+		if (ptr_ != nullptr)
+		{
+			backend::device_free_dependent(ptr_);
+		}
+	}
 
 	/// return beginning of buffer
 	iterator begin() const
