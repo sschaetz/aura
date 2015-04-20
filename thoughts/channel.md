@@ -1,6 +1,11 @@
 Channel 
 =======
 
+A channel gives access to one specific block of memory, not a set of
+blocks. For each block of memory a special channel has to be created.
+Channels can also be constructed without a block of memory - in this 
+case the channel takes care of the allocation.
+
 * CUDA, seldom access, buffer provided, register host possible:
   register host, do DMA, no separate buffer on device
 * CUDA, frequent access, buffer provided, register host possible:
