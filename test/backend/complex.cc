@@ -10,3 +10,13 @@ AURA_KERNEL void complex_single(AURA_GLOBAL float * A)
 	A[id] = cabsf(c3);
 }
 
+AURA_KERNEL void complex_single_pointer_arithm(AURA_GLOBAL cfloat * input,
+					       AURA_GLOBAL cfloat * output)
+{
+    int id = get_mesh_id();
+
+    *crealfp(&output[id]) = cimagf(input[id]);
+    *cimagfp(&output[id]) = crealf(input[id]);
+
+}
+

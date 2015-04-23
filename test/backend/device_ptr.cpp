@@ -22,6 +22,7 @@ BOOST_AUTO_TEST_CASE(basic)
 	BOOST_CHECK(ptr1 == ptr2);
 	ptr1 = ptr1+1;
 	BOOST_CHECK(ptr1 != ptr2);
+	BOOST_CHECK(ptr1 == ptr2 + 1);
 	++ptr2;
 	BOOST_CHECK(ptr1 == ptr2);
 	device_free(ptr1);
@@ -32,6 +33,9 @@ BOOST_AUTO_TEST_CASE(basic)
 
 	device_ptr<float> ptr3(ptr2);
 	BOOST_CHECK(ptr3 == ptr2);
+
+	std::cout << (ptr2 + 1).get() << " " << (ptr2 + 1).get_offset() << std::endl;
+	std::cout << (ptr2).get() << " " << (ptr2).get_offset() << std::endl;
 }
 
 // allocation_free 

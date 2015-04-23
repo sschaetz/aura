@@ -16,12 +16,21 @@ __device__ static __forceinline__ float cimagf(cfloat x)
 	return x.y; 
 }
 
+
+__device__ static __forceinline__ float *crealfp( cfloat * x)
+{
+	return ( float *) x;
+}
+
+__device__ static __forceinline__ float *cimagfp( cfloat *x)
+{
+	return ( ( float *) x + 1);
+}
+
+
 __device__ static __forceinline__ cfloat make_cfloat(float r, float i)
 {
-	cfloat c;
-	c.x = r;
-	c.y = i;
-	return c;
+	return make_cuFloatComplex(r, i);
 }
 
 __device__ static __forceinline__ cfloat conjf(cfloat x)
@@ -84,12 +93,19 @@ __device__ static __forceinline__ double cimag(cdouble x)
 	return x.y; 
 }
 
+__device__ static __forceinline__ double *crealp( cdouble* x)
+{
+	return ( double *) x;
+}
+
+__device__ static __forceinline__ double *cimagp( cdouble*x)
+{
+	return ( ( double *) x + 1);
+}
+
 __device__ static __forceinline__ cdouble make_cdouble(double r, double i)
 {
-	cdouble c;
-	c.x = r;
-	c.y = i;
-	return c;
+	return make_cuDoubleComplex(r, i);
 }
 
 __device__ static __forceinline__ cdouble conj(cdouble x)

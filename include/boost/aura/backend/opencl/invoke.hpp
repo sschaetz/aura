@@ -10,7 +10,6 @@
 #endif
 #include <boost/aura/bounds.hpp>
 #include <boost/aura/detail/svec.hpp>
-#include <boost/aura/backend/opencl/kernel.hpp>
 #include <boost/aura/backend/opencl/call.hpp>
 #include <boost/aura/backend/opencl/feed.hpp>
 #include <boost/aura/backend/opencl/mesh.hpp>

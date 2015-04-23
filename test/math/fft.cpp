@@ -17,7 +17,7 @@ using namespace boost::aura::backend;
 // small data sizes witch batch=1 and batch=16
 
 // _____________________________________________________________________________
-
+#if 0
 BOOST_AUTO_TEST_CASE(basic) 
 {
 	initialize();
@@ -297,6 +297,65 @@ BOOST_AUTO_TEST_CASE(batched)
 		}
 	}
 	
+	fft_terminate();
+}
+#endif
+// _____________________________________________________________________________
+
+BOOST_AUTO_TEST_CASE(range) 
+{
+	initialize();
+	fft_initialize(); 
+	int num = device_get_count();
+	BOOST_REQUIRE(0 < num);
+
+	device d(0);
+	feed f(d); 
+
+	// 1d
+	{
+		bounds b(std::extent<decltype(signal_1d_4)>::value, 10);
+		bounds bsub(std::extent<decltype(signal_1d_4)>::value);
+
+		int N = product(b);
+		std::vector<cfloat> o(N, cfloat(0., 0.));
+
+		device_array<cfloat> id(b, d);
+		device_array<cfloat> od(b, d);
+
+		// ranges
+		auto idr = id(slice(_, 4));
+		auto odr = od(slice(_, 4));
+
+		fft fh(d, f, bsub, fft::type::c2c);
+		copy(idr.begin(), &signal_1d_4[0], product(bsub), f);
+		fft_forward(idr, odr, fh, f);
+		copy(&o[0], od.begin(), product(b), f);
+		wait_for(f);
+		for (auto x : o) {
+			std::cout << x << std::endl;
+		}
+		/*
+		BOOST_CHECK(std::equal(o.begin(), o.end(), spectrum_1d_4));
+	
+		copy(id.begin(), &spectrum_1d_4[0], product(b), f);
+		fft_inverse(id, od, fh, f);
+		copy(&o[0], od.begin(), product(b), f);
+		wait_for(f);
+
+		std::vector<cfloat> scaled(signal_1d_4, signal_1d_4+N);
+#ifdef AURA_BACKEND_CUDA
+		std::transform(scaled.begin(), scaled.end(), scaled.begin(),
+				[&](const cfloat& a) {
+					return cfloat(a.real()*(float)N, 
+						a.imag()*(float)N);
+				});
+#endif
+		BOOST_CHECK(std::equal(o.begin(), o.end(), scaled.begin()));
+		*/
+
+	}
+
 	fft_terminate();
 }
 

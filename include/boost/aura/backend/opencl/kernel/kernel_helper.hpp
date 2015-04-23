@@ -97,6 +97,10 @@ inline unsigned int get_bundle_size_2() {
 	return get_local_size(2);
 }
 
+// for compatibility with CUDA
+inline float fmaf (float a, float b, float c) {
+	return fma(a,b,c);
+}
 
 
 #define AURA_KERNEL __kernel

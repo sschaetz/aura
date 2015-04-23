@@ -5,10 +5,6 @@
 #include <string>
 #include <cstring>
 #include <boost/move/move.hpp>
-// #include <boost/aura/backend/shared/call.hpp>
-// #include <boost/aura/backend/opencl/call.hpp>
-// #include <boost/aura/backend/opencl/device.hpp>
-// #include <boost/aura/backend/opencl/kernel.hpp>
 
 namespace boost {
 namespace aura {

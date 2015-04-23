@@ -60,7 +60,7 @@ inline std::array<char, 4096> coo_build_header(const std::vector<coo_index>& dat
 inline bounds coo_parse_header(const std::array<char, 4096>& header)
 {
 	bounds b;
-	unsigned int dims;
+	unsigned int dims = 0;
 	char name[10];
 	int pos = 0;
 	int c = 0;
@@ -71,10 +71,10 @@ inline bounds coo_parse_header(const std::array<char, 4096>& header)
 	pos += c;
 	for(unsigned int i = 0; i < dims; i++)
 	{
-		unsigned long size;
-		long stride;
-		unsigned long start;
-		unsigned long end;
+		unsigned long size = 0;
+		long stride = 0;
+		unsigned long start = 0;
+		unsigned long end = 0;
 		sscanf(&header[pos], "[%ld %ld %ld %ld]\n%n",
 			&start, &end, &size, &stride, &c);
 		if (i>0) {
@@ -124,6 +124,8 @@ void coo_write(const InputIt first, const Bounds& b, const char* filename)
 
 	// open the file
 	std::ofstream stream(filename, std::ios::out|std::ios::binary);
+	// tell the stream to throw on problems, like a non-existing file.
+	stream.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
 	
 	// write the header
 	stream.write(&header[0], header.size());
@@ -137,11 +139,50 @@ void coo_write(const InputIt first, const Bounds& b, const char* filename)
 			product(b));
 }
 
+// coo_write for standard aura device_arrays
+template <typename T>
+void coo_write(const boost::aura::device_array<T> &gpuData, const char* filename, feed &f)
+{
+    // get data dimension
+    aura::bounds b = gpuData.get_bounds();
+
+    // create temporary cpu array
+    std::vector<T> cpuData(b);
+
+    // copy data to cpu
+    boost::aura::copy(gpuData, cpuData, f);
+    boost::aura::wait_for(f);
+
+    // call standard coo_write
+    coo_write(cpuData.begin(), b, filename);
+}
+
+// more generic coo_write, accepting device ranges
+template <typename DeviceRangeType>
+void coo_write(const DeviceRangeType &gpuData, const char* filename, feed &f)
+{
+    // get data dimension
+    aura::bounds b = gpuData.get_bounds();
+
+    // create temporary cpu array
+    std::vector<typename DeviceRangeType::value_type> cpuData(b);
+
+    // copy data to cpu
+    boost::aura::copy(gpuData, cpuData, f);
+    boost::aura::wait_for(f);
+
+    // call standard coo_write
+    coo_write(cpuData.begin(), b, filename);
+}
+
+
 template <typename T>
 std::tuple<std::vector<T>, bounds> coo_read(const char* filename)
 {
 	// open file
 	std::ifstream stream(filename, std::ios::in|std::ios::binary);
+	// tell the stream to throw on problems, like a non-existing file.
+	stream.exceptions ( std::ifstream::failbit | std::ifstream::badbit );
 
 	// create output
 	std::tuple<std::vector<T>, bounds> r;
@@ -157,8 +198,30 @@ std::tuple<std::vector<T>, bounds> coo_read(const char* filename)
 	// read data
 	stream.read((char*)(std::get<0>(r).data()), 
 			std::get<0>(r).size()*sizeof(T));
-	return r;
+    return r;
 }
+
+// coo read into device array
+template <typename T>
+std::tuple<boost::aura::device_array<T>, bounds> coo_read(const char* filename, aura::device &d, feed &f)
+{
+    // load coo to host memory
+    boost::aura::bounds b;
+    std::vector<T> data;
+    std::tie(data, b) = coo_read<T>(filename);
+
+    // create output
+    std::tuple<aura::device_array<T>, bounds> r;
+    std::get<0>(r) = aura::device_array<T>(b,d);
+    std::get<1>(r) = b;
+
+    //copy data to device
+    aura::copy(data, std::get<0>(r),f);
+    wait_for(f);
+
+    return(r);
+}
+
 
 } // namespace aura
 } // boost
