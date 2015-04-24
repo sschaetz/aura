@@ -7,6 +7,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/aura/bounds.hpp>
 #include <boost/aura/misc/coo.hpp>
+#include <boost/aura/device_array.hpp>
 
 
 // basic
