@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(drop_test)
 	BOOST_CHECK(b == a_drop_1);
 	
 	b = drop(0, a);
-	svec<int, 16> a_drop_0;
+	svec<int, 16> a_drop_0(a);
 	BOOST_CHECK(b == a_drop_0);
 
 	b = drop(17, a);
