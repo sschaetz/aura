@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(frontend)
 
 	feed f(d);
 	invoke(k, mesh(1024), bundle(1024/16),
-			args(dst_map.begin_ptr(), src_map.begin_ptr()), f);
+			args(dst_map.data(), src_map.data()), f);
 
 	src_map.unmap(src, f);
 	dst_map.unmap(dst, f);

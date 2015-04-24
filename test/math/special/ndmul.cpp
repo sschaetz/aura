@@ -23,6 +23,10 @@ std::uniform_real_distribution<float> distribution(-1e5,1e5);
 auto random_float = [&](){ return distribution(generator);};
 auto random_cfloat = [&](){ return cfloat(random_float(),random_float());};
 
+std::vector<int> sizes = {1,2,3,4,5,128, 512};//,256,512,1024, 1024*1024,1024*1024*16};
+int maxdims = 16;
+
+
 BOOST_AUTO_TEST_CASE(ndmul_float)
 {
     initialize();
@@ -30,10 +34,9 @@ BOOST_AUTO_TEST_CASE(ndmul_float)
     BOOST_REQUIRE(num > 0);
     device d(0);
 
-    std::vector<int> sizes = {1,2,3,4,5,128,256,512,1024}; //1024*1024,1024*1024*16};
 
     for (auto x : sizes) {
-        for (int j = 1; j < 128; j++) {
+        for (int j = 1; j < maxdims; j++) {
             int y = x*x*j;
             std::vector<float> input1(x);
             std::vector<float> input2(y);
@@ -83,10 +86,8 @@ BOOST_AUTO_TEST_CASE(ndmul_cfloat)
     BOOST_REQUIRE(num > 0);
     device d(0);
 
-    std::vector<int> sizes = {1,2,3,4,5,64,128,256,512,1024}; //1024*1024,1024*1024*16};
-
     for (auto x : sizes) {
-        for (int j = 1; j < 128; j++) {
+        for (int j = 1; j < maxdims; j++) {
             int y = x*x*j;
             std::vector<cfloat> input1(x);
             std::vector<cfloat> input2(y);
@@ -149,10 +150,8 @@ BOOST_AUTO_TEST_CASE(ndmul_mixedfloat)
     BOOST_REQUIRE(num > 0);
     device d(0);
 
-    std::vector<int> sizes = {1,2,3,4,5,64,128,256,512,1024}; //1024*1024,1024*1024*16};
-
     for (auto x : sizes) {
-        for (int j = 1; j < 128; j++) {
+        for (int j = 1; j < maxdims; j++) {
 
             int y = x*x*j;
             std::vector<float> input1(x);

@@ -69,16 +69,16 @@ module m = create_module_from_file("k.cl", d);
 kernel k = create_kernel(m, "simple_add");
 device_array<int> v(bounds(xdim, dimy), d);
 feed f(d);
-invoke(k, mesh(dimy, dimx), bundle(dimx), args(vec.begin_raw()), f); 
+invoke(k, mesh(dimy, dimx), bundle(dimx), args(vec.data()), f);
 wait_for(f);
 ~~~
 
 If the space of `fibers` can be partitioned arbitrarily, that is, if the kernel contains no synchronization points, kernel invocation can be simplified. The `invoke` function can determine how to best partition the `fiber`-space based on platform properties and heuristics.
 
 ~~~{.cpp}
-invoke(k, bounds(dimx, dimy), args(v.begin_raw()), f);
+invoke(k, bounds(dimx, dimy), args(v.data()), f);
 /* or: */
-invoke(k, v.get_bounds(), args(v.begin_raw()), f);
+invoke(k, v.get_bounds(), args(v.data()), f);
 ~~~
 
 A `mark` allows orchestrating and synchronizing multiple `feeds`. A `mark` is inserted into a `feed`. It can either be waited for from the calling thread or another `feed` can be instructed to wait for a mark through its `continue_when` member.

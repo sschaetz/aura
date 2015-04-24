@@ -87,8 +87,8 @@ void exp(const DeviceRangeType& input_range,
         aura::mesh me = aura::mesh(N);                    // allocate the mesh
 
         // run kernel
-        invoke(k, me, args(aura::traits::begin_raw(input_range),
-			aura::traits::begin_raw(output_range)),f);
+        invoke(k, me, args(aura::traits::data(input_range),
+			aura::traits::data(output_range)),f);
 	return;
 }
 

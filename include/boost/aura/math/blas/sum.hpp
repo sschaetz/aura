@@ -206,8 +206,8 @@ void sum(const DeviceRangeType1& input_range,
         aura::bundle bun = bundle(BUNDLE_SIZE);     // set the bundle size
 
         // run kernel
-        invoke(k, me, bun, args(aura::traits::begin_raw(input_range),
-                        aura::traits::begin_raw(output_range), trueN),f);
+        invoke(k, me, bun, args(aura::traits::data(input_range),
+                        aura::traits::data(output_range), trueN),f);
 
 
         return;

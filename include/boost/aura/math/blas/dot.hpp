@@ -193,9 +193,9 @@ void dot(const DeviceRangeType& input_range1,
     aura::math::memset_zero(output_range, f);
 
 	invoke(k, mesh(mesh_size[0], mesh_size[1], mesh_size[2]), bundle(bs),
-			args(aura::traits::begin_raw(input_range1),
-				aura::traits::begin_raw(input_range2),
-				aura::traits::begin_raw(output_range),
+			args(aura::traits::data(input_range1),
+				aura::traits::data(input_range2),
+				aura::traits::data(output_range),
 				aura::traits::size(input_range1)), f);
 	return;
 }

@@ -69,8 +69,8 @@ void reduced_sum(const DeviceRangeType1& input_range,
 				AURA_BACKEND_COMPILE_FLAGS, true);
 
 	invoke(k, aura::traits::bounds(input_range), 
-			args(aura::traits::begin_raw(input_range), 
-				aura::traits::begin_raw(output_range),
+			args(aura::traits::data(input_range),
+				aura::traits::data(output_range),
 				aura::traits::size(input_range), 
 				aura::traits::size(output_range)), f);
 	return;
