@@ -51,7 +51,7 @@ public:
 				product(bounds_), offset);
 	}
 
-    // TILWARNING: FIXME: THIS DOESNT AUTOMATICALLY CONSTRUCT A CONST DEVICE_RANGE :(
+    // FIXME: This does not automatically construct a range.
     device_range(const device_array<T>& da, slice idx, bounds b)
     {
         std::size_t offset;

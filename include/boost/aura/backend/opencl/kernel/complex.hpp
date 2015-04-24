@@ -59,9 +59,11 @@ inline cfloat cdivf(cfloat x, cfloat y)
 	// float r = (x.x*y.x + x.y*y.y) * n;
 	// float i = (x.y*y.x - x.x*y.y) * n;
 	
-	// The following implementation is taken from the LLVM Compiler Infrastructure, licensed under 
+	// The following implementation is taken from the 
+	// LLVM Compiler Infrastructure, licensed under 
 	// the MIT and the University of Illinois Open Source Licenses.
-	// https://code.openhub.net/file?fid=XBgmMXzw1oxpd_pKEX4Olpef3gM&cid=DwH1iTUyTao&s=__divsc3&fp=406477&mp&projSelected=true#L0
+	// https://code.openhub.net/file?fid=XBgmMXzw1oxpd_pKEX4Olpef3gM
+	//   &cid=DwH1iTUyTao&s=__divsc3&fp=406477&mp&projSelected=true#L0
 	
 	float a = x.x;
 	float b = x.y;

@@ -155,7 +155,7 @@ public:
     }
 
     // squeezes the bounds
-    void squeeze(void)
+    void squeeze()
     {
         size_t j = 0;
         for (size_t i = 0; i < bounds_.size(); i++)
