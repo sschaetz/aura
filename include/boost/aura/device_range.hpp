@@ -94,17 +94,17 @@ public:
 		return ptr_+product(bounds_);
 	}
 
-	/// return pointer to underlying data
-	T* data()
-	{
-		return ptr_.get_base();
-	}
+    /// return pointer to underlying data
+    typename backend::device_ptr<T>::backend_type data()
+    {
+        return ptr_.get_base();
+    }
 
-	/// return pointer to underlying data
-	const T* data() const
-	{
-		return ptr_.get_base();
-	}
+    /// return pointer to underlying data
+    typename backend::device_ptr<T>::const_backend_type data() const
+    {
+        return ptr_.get_base();
+    }
 
 	/// return number of elements in range
 	std::size_t size() const
