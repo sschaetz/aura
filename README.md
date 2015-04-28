@@ -1,7 +1,6 @@
-# Aura
+![Aura](https://raw.githubusercontent.com/sschaetz/aura/develop/doc/logo.png)
 
 Copyright (C) 2011-2015 Biomedizinische NMR Forschungs GmbH
-
 
 Aura is a modern, header-only C++ library for accelerator development. Aura 
 works with both OpenCL and CUDA backends. The Aura API is not stable yet (alpha
@@ -137,7 +136,12 @@ fftw::fft_terminate();
 
 ----------------------------
 
-Author: Sebastian Schaetz <seb.schaetz@gmail.com>
+Authors: 
+Sebastian Schaetz <seb.schaetz@gmail.com>, Christian Holme and Tilman Sumpf.
+
+Contributors:
+Andreas Merrem, Dirk Voit, Jakob Klosowski, Maaike van Zalk, Markus Untenberger, Oleksandr Kalentev, Volkert Roeloffs, Xiaoqing Wang, Zhengguo Tan, Zhongshuai Zhang
+
 
 Distributed under the Boost Software License, Version 1.0.
 (See accompanying file LICENSE.md or copy at 
