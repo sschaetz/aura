@@ -147,29 +147,30 @@ public:
 		bounds_ = b;
 	}
 
-    // reshape the bounds
-    void reshape(const bounds b)
-    {
-        assert(product(b) == product(bounds_));
-        bounds_ = b;
-    }
+	// reshape the bounds
+	void reshape(const bounds b)
+	{
+		assert(product(b) == product(bounds_));
+		bounds_ = b;
+	}
 
-    // squeezes the bounds
-    void squeeze()
-    {
-        size_t j = 0;
-        for (size_t i = 0; i < bounds_.size(); i++)
-        {
-            if (bounds_[i] > 1)
-            {
-                bounds_[j] = bounds_[i];
-                if (i > j)
-                    bounds_[i] = 1;
-                j++;
-            }
-        }
-
-    }
+	// squeezes the bounds
+	void squeeze()
+	{
+		size_t j = 0;
+		for (size_t i = 0; i < bounds_.size(); i++)
+		{
+			if (bounds_[i] > 1)
+			{
+				bounds_[j] = bounds_[i];
+				if (i > j)
+				{
+					bounds_[i] = 1;
+				}
+				j++;
+			}
+		}
+	}
 
 	// get a single value in the vector (synchronous!)
 	T get_value (std::size_t index, backend::feed& f) const
@@ -180,15 +181,15 @@ public:
 		return value;
 	}
 
-    // get the value in a vector representing a scalar (synchronous!)
-    T get_value (backend::feed& f) const
-    {
-        assert(1 == data_.size());
-        T value;
-        boost::aura::backend::copy<T>(&value,data_.begin(),1, f);
-        wait_for(f);
-        return value;
-    }
+	// get the value in a vector representing a scalar (synchronous!)
+	T get_value (backend::feed& f) const
+	{
+		assert(1 == data_.size());
+		T value;
+		boost::aura::backend::copy<T>(&value,data_.begin(),1, f);
+		wait_for(f);
+		return value;
+	}
 
 	// set a single value in the vector (synchronous!)
 	void set_value(std::size_t index, T value, backend::feed& f)
@@ -197,22 +198,22 @@ public:
 		wait_for(f);
 	}
 
-    // set the value in a vector representing a scalar (synchronous!)
-    void set_value(T value, backend::feed& f)
-    {
-        assert(1 == data_.size());
-        boost::aura::backend::copy<T>(data_.begin(),&value,1, f);
-        wait_for(f);
-    }
+	// set the value in a vector representing a scalar (synchronous!)
+	void set_value(T value, backend::feed& f)
+	{
+		assert(1 == data_.size());
+		boost::aura::backend::copy<T>(data_.begin(),&value,1, f);
+		wait_for(f);
+	}
 
-    // copy the full vector to the host and return it (synchronous!)
-    std::vector<T> get_host_vector (backend::feed& f) const
-    {
-        std::vector<T> host_vector(data_.size());
-        copy(*this, host_vector, f);
-        wait_for(f);
-        return host_vector;
-    }
+	// copy the full vector to the host and return it (synchronous!)
+	std::vector<T> get_host_vector(backend::feed& f) const
+	{
+		std::vector<T> host_vector(data_.size());
+		copy(*this, host_vector, f);
+		wait_for(f);
+		return host_vector;
+	}
 
 
 	/// return beginning of buffer

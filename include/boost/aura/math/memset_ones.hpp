@@ -70,7 +70,7 @@ void memset_ones(DeviceRangeType& output_range, feed& f)
         aura::mesh me = aura::mesh(N);                  // allocate the mesh
 
         // run kernel
-        invoke(k, me, args(aura::traits::begin_raw(output_range)),f);
+        invoke(k, me, args(aura::traits::data(output_range)),f);
 	return;
 }
 

@@ -232,8 +232,8 @@ void norm2(const DeviceRangeType1& input_range,
         aura::bundle bun = bundle(AURA_MATH_BLAS_NORM2_BUNDLE_SIZE);     
 
         // run kernel
-        invoke(k, me, bun, args(aura::traits::begin_raw(input_range),
-                        aura::traits::begin_raw(output_range), trueN),f);
+        invoke(k, me, bun, args(aura::traits::data(input_range),
+                        aura::traits::data(output_range), trueN),f);
 
 
 

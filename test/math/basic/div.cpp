@@ -69,19 +69,18 @@ BOOST_AUTO_TEST_CASE(div_float)
 				);
 				
 		std::transform(output.begin(), output.end(),
-					input2.begin(), check.begin(),
-					[](const float& a, const float& b) {
-						return abs(a-b) <= std::numeric_limits<float>::epsilon() * abs(a+b) ;   //see c++ documentation about epsilon (numeric limits)
-					}
+				input2.begin(), check.begin(),
+				[](const float& a, const float& b) 
+				{
+					// See c++ documentation about epsilon
+					return abs(a-b) <= 
+						std::numeric_limits<float>::
+							epsilon() * abs(a+b);   					}
 				);
 				
-		BOOST_CHECK(
-			std::equal(check.begin(), check.end(),
-				check1.begin())
-			);
-			
+		BOOST_CHECK(std::equal(check.begin(), check.end(), 
+					check1.begin()));
 	}
-	
 }
 	
 BOOST_AUTO_TEST_CASE(div_cfloat) 
@@ -89,7 +88,7 @@ BOOST_AUTO_TEST_CASE(div_cfloat)
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(1);  
+	device d(0);  
 
 	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
 	
@@ -150,7 +149,7 @@ BOOST_AUTO_TEST_CASE(div_float_cfloat)
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(1);  
+	device d(0);  
 
 	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
 	for (auto z : sizes) {
@@ -217,7 +216,7 @@ BOOST_AUTO_TEST_CASE(div_cfloat_float)
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(1);  
+	device d(0);  
 
 	//std::vector<int> sizes = {1,2,3};
 	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};	
@@ -285,7 +284,7 @@ BOOST_AUTO_TEST_CASE(scal_div_float)
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(1);  
+	device d(0);  
 
 	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
 
@@ -343,7 +342,7 @@ BOOST_AUTO_TEST_CASE(scal_div_cfloat)
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(1);  
+	device d(0);  
 
 	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
 
@@ -400,7 +399,7 @@ BOOST_AUTO_TEST_CASE(scal_div_cfloat_float)
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(1);  
+	device d(0);  
 
 	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
 
@@ -457,7 +456,7 @@ BOOST_AUTO_TEST_CASE(scal_div_float_cfloat)
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(1);  
+	device d(0);  
 
 	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
 

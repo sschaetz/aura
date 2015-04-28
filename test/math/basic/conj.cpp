@@ -25,9 +25,9 @@ BOOST_AUTO_TEST_CASE(conj_float)
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(1);  
+	device d(0);  
 
-    std::default_random_engine generator(1);
+	std::default_random_engine generator(1);
 	std::uniform_real_distribution<float> distribution(-1e5,1e5);
 	auto random_float = [&]() -> float { return distribution(generator);};
 	

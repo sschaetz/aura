@@ -8,8 +8,8 @@
 #include <boost/aura/backend.hpp>
 #include <boost/aura/math/complex.hpp>
 
-#include "split_interleaved_s2i_kernels.hpp"
-#include "split_interleaved_i2s_kernels.hpp"
+// #include "split_interleaved_s2i_kernels.hpp"
+// #include "split_interleaved_i2s_kernels.hpp"
 
 namespace boost
 {
@@ -62,9 +62,9 @@ void s2i(const DeviceRangeType& input_range1,
 				AURA_BACKEND_COMPILE_FLAGS);
 
 	invoke(k, aura::traits::bounds(input_range1), 
-			args(aura::traits::begin_raw(input_range1), 
-				aura::traits::begin_raw(input_range2),
-				aura::traits::begin_raw(output_range),
+			args(aura::traits::data(input_range1), 
+				aura::traits::data(input_range2),
+				aura::traits::data(output_range),
 				aura::traits::size(input_range1)), f);
 	return;
 }
@@ -97,9 +97,9 @@ void i2s(const DeviceRangeTypeComplex& input_range,
 				AURA_BACKEND_COMPILE_FLAGS);
 
 	invoke(k, aura::traits::bounds(input_range),
-			args(aura::traits::begin_raw(input_range),
-				aura::traits::begin_raw(output_range1),
-				aura::traits::begin_raw(output_range2),
+			args(aura::traits::data(input_range),
+				aura::traits::data(output_range1),
+				aura::traits::data(output_range2),
 				aura::traits::size(input_range)), f);
 	return;
 }
