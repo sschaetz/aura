@@ -81,7 +81,7 @@ device_ptr<T> device_malloc_dependent(device_ptr<T> ptr,
         cl_buffer_region region = { offset * sizeof(T), size * sizeof(T) };
 
 	typename device_ptr<T>::backend_type m = 
-		clCreateSubBuffer(ptr.get(), CL_MEM_READ_WRITE,
+        clCreateSubBuffer(ptr.get_base(), CL_MEM_READ_WRITE,
 				CL_BUFFER_CREATE_TYPE_REGION,
 				&region, &errorcode);
 	AURA_OPENCL_CHECK_ERROR(errorcode);
@@ -107,7 +107,7 @@ void device_free(device_ptr<T> & ptr) {
 
 template <typename T>
 void device_free_dependent(device_ptr<T> & ptr) {
-  AURA_OPENCL_SAFE_CALL(clReleaseMemObject(ptr.get()));
+  AURA_OPENCL_SAFE_CALL(clReleaseMemObject(ptr.get_base()));
   ptr.invalidate();
 }
 

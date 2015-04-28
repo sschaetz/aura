@@ -21,20 +21,16 @@
 // special
 #include <boost/aura/math/special/reduced_sum.hpp>
 #include <boost/aura/math/special/ndmul.hpp>
-//#include <boost/aura/math/special/nlinv_operators_1.hpp>
-#include <boost/aura/math/special/nlinv_operators.hpp>
-
 
 // basic linear algebra
 #include <boost/aura/math/complex.hpp>
 #include <boost/aura/math/memset_zero.hpp>
 #include <boost/aura/math/memset_ones.hpp>
 #include <boost/aura/math/split_interleaved.hpp>
-#include <boost/aura/math/support_functions.hpp>
 
 // numerical optimization
-#include <boost/aura/math/conjgrad.hpp>
-#include <boost/aura/math/gauss_newton.hpp>
+#include <boost/aura/math/solver/conjgrad.hpp>
+#include <boost/aura/math/solver/gauss_newton.hpp>
 
 #endif // BOOST_AURA_MATH_MATH_HPP
 

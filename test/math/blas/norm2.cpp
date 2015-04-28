@@ -53,7 +53,7 @@ float cpu_recu_norm2(std::vector<T>& vec){
 
     // calculate the squared magnitude of each vector element
     for(auto &it : vec){
-        it = pow( abs( it ), 2);
+        it = pow( fabs( it ), 2);
     }
 
     // calculate the vector sum
@@ -82,6 +82,12 @@ float cpu_norm2(std::vector<T> vec){
 }
 
 
+std::default_random_engine generator(1);
+std::uniform_real_distribution<float> distribution(-1e3,1e3);
+auto random_float = [&](){ return distribution(generator);};
+auto random_cfloat = [&](){ return cfloat(random_float(),random_float());};
+
+
 
 
 // norm2_float
@@ -90,8 +96,7 @@ float cpu_norm2(std::vector<T> vec){
 BOOST_AUTO_TEST_CASE(norm2_float)
 {
     // size and value of the testvector
-    int numel = 256;
-    float val = 1;
+    int numel = 16*1024;
 
     // initialize
     initialize();
@@ -101,7 +106,9 @@ BOOST_AUTO_TEST_CASE(norm2_float)
     feed f(d);
 
     // allocate testvectors on cpu and gpu
-    std::vector<float> input(numel, val);
+    std::vector<float> input(numel);
+    std::generate(input.begin(), input.end(), random_float);
+
     std::vector<float> output(1, 0.0);
     device_array<float> device_input(numel, d);
     device_array<float> device_output(1, d);
@@ -122,7 +129,7 @@ BOOST_AUTO_TEST_CASE(norm2_float)
     std::cout << "gpu_res = " << output[0] << std::endl;
     std::cout << "cpu_res = " << cpu_res << std::endl;
 
-    BOOST_CHECK(fabs( cpu_res - output[0]) < std::numeric_limits<float>::epsilon());
+    BOOST_CHECK(fabs( cpu_res - output[0]) < std::numeric_limits<float>::epsilon() * fabs( cpu_res + output[0]));
     // BOOST_CHECK(fabs( cpu_res - output[0]) < std::numeric_limits<float>::min());
 
 
@@ -136,18 +143,9 @@ BOOST_AUTO_TEST_CASE(norm2_float)
 
 BOOST_AUTO_TEST_CASE(norm2_cfloat)
 {
-    // size and value of the testvector
-    // int numel = 2*128;
+    int numel = 16*1024;
 
-    int numel = (6*128 * 4 )*1092;	// passes tests with val = 1 + 2*1i but fails with val = 2 + 3*1i or 0.5 + 1.33 * 1i
-    // int numel = (6*128 * 4 )*1093;	// fails tests and results are obviously different with val = 1 + 2*1i, passes with 1 + 1i
-	
-    // cfloat val = 1. + 2. *1i;
-    //cfloat val = 2. + 3. *1i;
-    //cfloat val = cfloat(2,3);
-    cfloat val(2,3);
-    // cfloat val = 0.5 + 1.33 *1i;
-	
+
     // initialize
     initialize();
     int num = device_get_count();
@@ -156,7 +154,9 @@ BOOST_AUTO_TEST_CASE(norm2_cfloat)
     feed f(d);
 
     // allocate testvectors on cpu and gpu
-    std::vector<cfloat> input(numel, val);
+    std::vector<cfloat> input(numel);
+    std::generate(input.begin(), input.end(), random_cfloat);
+
     std::vector<float> output(1, 0.0);
     device_array<cfloat> device_input(numel, d);
     device_array<float> device_output(1, d);
@@ -179,13 +179,12 @@ BOOST_AUTO_TEST_CASE(norm2_cfloat)
 
     // calculate the norm on the cpu
     float cpu_res = cpu_recu_norm2(input);  // calculate with bundle simulation
-    //float cpu_res = cpu_norm2(input);
 
     // show result
     std::cout << "gpu_res = " << output[0] << std::endl;
     std::cout << "cpu_res = " << cpu_res << std::endl;
     // std::cout << "val = " << val << std::endl;
 
-    BOOST_CHECK(fabs( cpu_res - output[0]) < std::numeric_limits<float>::epsilon());
+    BOOST_CHECK(fabs( cpu_res - output[0]) < std::numeric_limits<float>::epsilon() * fabs( cpu_res + output[0]));
 	// BOOST_CHECK(fabs( cpu_res - output[0]) < std::numeric_limits<float>::min());
 }
