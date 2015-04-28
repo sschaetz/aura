@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(complex_single_pointer_arithmetic)
 
 	copy(input, dinput, f);
 	invoke(k, mesh(ydim, xdim), bundle(xdim), 
-		args(dinput.data(), doutput.data()), f);
+	args(dinput.data(), doutput.data()), f);
 	copy(doutput, output, f);
 	wait_for(f);
 

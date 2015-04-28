@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(reduce_sum)
 	std::uniform_real_distribution<float> distribution(-1e5,1e5);
 	auto random_float = [&]() -> float { return distribution(generator);};
 
-    std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
+    std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024*16};
     std::vector<int> channels = {1,10,12};
 
     // for complex variable:

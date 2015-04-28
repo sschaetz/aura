@@ -237,7 +237,7 @@ void mul(const DeviceRangeType1& input_range1,
 				AURA_BACKEND_COMPILE_FLAGS, true);
 
 	invoke(k, aura::traits::bounds(input_range1), 
-			args(aura::traits::data(input_range1), 
+			args(aura::traits::data(input_range1),
 				aura::traits::data(input_range2),
 				aura::traits::data(output_range),
 				aura::traits::size(input_range1)), f);

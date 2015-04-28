@@ -22,6 +22,11 @@ a.out
 *.files
 *.includes
 
+# don't know, where these files come from, but they are annoying
+*.excludes
+*aura.json
+*manifest.json
+
 # vim files
 *.swp
 

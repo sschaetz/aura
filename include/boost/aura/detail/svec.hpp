@@ -200,7 +200,7 @@ public:
 		if (n >= size_) {
 
 			std::cout << "drop arg nothin " << n << std::endl;
-			return ret;
+			return *this;
 		}
 		std::size_t n2 = n;
 		if (n > size_) {

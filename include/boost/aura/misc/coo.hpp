@@ -17,6 +17,7 @@
 #include <fstream>
 #include <boost/aura/bounds.hpp>
 #include <boost/aura/device_array.hpp>
+#include <boost/aura/backend.hpp>
 
 namespace boost
 {
