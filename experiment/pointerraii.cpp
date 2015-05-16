@@ -1,52 +1,30 @@
 #include <memory>
+#include <iostream>
+#include <tuple>
 
-namespace aura
+#include <boost/aura/backend.hpp>
+
+template <typename T>
+using device_ptr = std::tuple<T*, std::ptrdiff_t, boost::aura::backend::device*>;
+
+
+template <typename T>
+device_ptr<T> operator +(const device_ptr<T>& a, const std::size_t inc)
+{	
+	auto tmp = a;
+	std::get<1>(tmp) = std::get<1>(tmp) + inc;
+	return tmp;
+}
+
+
+int main(void)
 {
+	device_ptr<float> p1;
+	std::vector<float> x = {1.0f, 2.0f, 3.0f, 4.0f};
+	std::get<0>(p1) = &x[0];
+	p1 = p1 + 2;
 
-template<typename BasePointer> 
-struct pointer_rebind
-{
-	using type = BasePointer;
-};
- 
-template<typename T> 
-struct pointer_rebind<std::unique_ptr<T>>
-{
-	using type = std::unique_ptr<T, aura::backend::device_free<T>>;
-};
-
-template<typename T> 
-struct pointer_rebind<std::shared_ptr<T>>
-{
-	using type = std::shared_ptr<T, aura::backend::device_free<T>>;
-};
-
-
-template<typename BasePointer> 
-struct device_ptr_adaptor
-{
-	pointer_rebind<BasePointer>::type ptr_;
-	// Put code from device_ptr here.
-};
- 
-device_ptr_adaptor<int*> p = device_malloc(...);
-device_free(p);
- 
-device_ptr_adaptor< unique_ptr<int> > p = make_unique(...);
-device_ptr_adaptor< shared_ptr<int> > p = make_shared(...);
- 
- 
-template<typename T>
-using shared_device_ptr = device_ptr_adaptor< shared_ptr<T> >;
- 
-template<typename T>
-using unique_device_ptr = device_ptr_adaptor< unique_ptr<T> >;
- 
-template<typename T>
-using device_ptr = device_ptr_adaptor< T* >;
- 
-device_ptr<int> p = .... ;
-shared_device_ptr<int> p = .... ; 
-
-} // namespace aura
+	std::cout << *(std::get<0>(p1) + std::get<1>(p1)) << std::endl;
+	// std::cout << "hi!" << static_cast<std::size_t>(std::get<0>(p2)) << std::endl;
+}
 
