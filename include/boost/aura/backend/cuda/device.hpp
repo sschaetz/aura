@@ -20,9 +20,7 @@ namespace backend_detail {
 namespace cuda {
 
 class device;
-
-/// module handle
-typedef CUmodule module;
+class module;
 
 /// kernel handle
 typedef CUfunction kernel;
@@ -121,20 +119,12 @@ public:
 	{
 		auto it = modules_.find(file_name);
 		if (modules_.end() == it) {
-			std::ifstream in(file_name, std::ios::in);
-			AURA_CHECK_ERROR(in);
-			in.seekg(0, std::ios::end);
-			std::string fcontent;
-			fcontent.resize(in.tellg());
-			in.seekg(0, std::ios::beg);
-			in.read(&fcontent[0], fcontent.size());
-			in.close();
 			auto it2 = modules_.insert(std::make_pair(file_name,
-				create_module_from_string(fcontent.c_str(),
+				create_module_from_file(file_name,
 						*this, build_options)));
 			it = it2.first;
 		}
-		return create_kernel(it->second, kernel_name);
+		return it->second.get_kernel(kernel_name);
 	}
 
 	/// load a kernel from a string
@@ -143,15 +133,17 @@ public:
 			const char* build_options=NULL)
 	{
 		auto it = modules_.find(kernel_string);
-		if (modules_.end() == it) {
+		if (modules_.end() == it)
+		{
 			auto it2 = modules_.insert(
-					std::make_pair(kernel_string,
+					std::move(std::make_pair(kernel_string,
 						create_module_from_string(
 							kernel_string, *this,
-							build_options)));
+							build_options))));
 			it = it2.first;
 		}
-		return create_kernel(it->second, kernel_name);
+
+		return it->second.get_kernel(kernel_name);
 	}
 
 	/// make device active
@@ -230,7 +222,7 @@ private:
 	}
 
 private:
-	/// device context
+	/// context handle
 	detail::context * context_;
 
 	/// device ordinal
@@ -242,6 +234,7 @@ private:
 	/// device_lock
 	device_lock device_lock_;
 };
+
 
 /**
  * get number of devices available
@@ -347,6 +340,21 @@ inline device create_device_exclusive()
 		}
 	}
 	throw "no device available!";
+}
+
+
+inline kernel create_kernel(module& m, const char * kernel_name)
+{
+	return m.get_kernel(kernel_name);
+}
+
+inline const cl_device_id & get_backend_device(const device & d)
+{
+	return d.get_backend_device();
+}
+inline const cl_context & get_backend_context(const device & d)
+{
+	return d.get_backend_context();
 }
 
 } // cuda

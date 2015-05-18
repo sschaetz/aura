@@ -35,7 +35,7 @@ public:
 
 	inline explicit module(const char * str, device & d,
 			 const char * build_options=NULL)
-			: device_(&d)
+		: device_(&d)
 	{
 		int errorcode = 0;
 		std::size_t len = strlen(str);
@@ -146,9 +146,9 @@ private:
 };
 
 /**
- * @brief build a kernel module from a source file 
+ * @brief build a kernel module from a source file
  *
- * @param filename name of .cl or .ptx of .fatbin or .cubin 
+ * @param filename name of .cl or .ptx of .fatbin or .cubin
  * @param device device the module is built for
  * @param build_options options for the compiler (optional)
  *

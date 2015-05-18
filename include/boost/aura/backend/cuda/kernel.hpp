@@ -6,6 +6,8 @@
 #include <boost/aura/backend/cuda/device.hpp>
 #include <boost/aura/backend/cuda/module.hpp>
 
+#if 0
+
 namespace boost
 {
 namespace aura {
@@ -42,6 +44,8 @@ inline void print_module_build_log(module & m, const device & d) {
 } // backend_detail
 } // aura
 } // boost
+
+#endif
 
 #endif // AURA_BACKEND_CUDA_KERNEL_HPP
 

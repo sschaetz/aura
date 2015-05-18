@@ -122,7 +122,7 @@ public:
 		auto it = modules_.find(file_name);
 		if (modules_.end() == it) {
 			auto it2 = modules_.insert(std::make_pair(file_name,
-				create_module_from_file(file_name,
+				create_module_from_string(fcontent.c_str(),
 						*this, build_options)));
 			it = it2.first;
 		}
