@@ -2,6 +2,7 @@
 #define BOOST_TEST_MODULE math.reduced_sum
 
 #include <vector>
+#include <random>
 #include <stdio.h>
 #include <algorithm>
 #include <boost/test/unit_test.hpp>

@@ -1,5 +1,6 @@
 #define BOOST_TEST_MODULE math.dot
 
+#include <random>
 #include <vector>
 #include <stdio.h>
 #include <algorithm>

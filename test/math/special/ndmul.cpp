@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <stdio.h>
+#include <random>
 #include <algorithm>
 #include <boost/test/unit_test.hpp>
 #include <boost/aura/backend.hpp>

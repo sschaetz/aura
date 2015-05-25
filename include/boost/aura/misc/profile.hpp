@@ -3,12 +3,9 @@
 
 #include <vector>
 #include <stdio.h>
-#include <sys/types.h>
 #include <stdlib.h>
 #include <thread>
 #include <mutex>
-#include <sys/types.h>
-#include <sys/syscall.h>
 
 #include <boost/aura/misc/now.hpp>
 #include <boost/aura/error.hpp>
@@ -31,16 +28,17 @@ namespace profile
  * thread id timestamp and start/stop flag
  */
 struct entry { 
-  entry(const char * name, std::thread::id thread_id, 
-    double timestamp, bool start) : 
-    name(name), thread_id(syscall(SYS_gettid)/*std::hash<std::thread::id>()(thread_id)*/), 
-    timestamp(timestamp/1e6), start(start) 
-  {}
+	entry(const char * name, std::thread::id thread_id, 
+			double timestamp, bool start) 
+		: name(name)
+		, thread_id(std::hash<std::thread::id>(std::this_thread::get_id()))
+		, timestamp(timestamp/1e6), start(start) 
+	{}
 
-  const char * name;
-  std::size_t thread_id;
-  double timestamp;
-  bool start;
+	const char * name;
+	std::size_t thread_id;
+	double timestamp;
+	bool start;
 };
 
 /**

@@ -1,5 +1,6 @@
 #define BOOST_TEST_MODULE math.norm2 
 
+#include <random>
 #include <vector>
 #include <stdio.h>
 #include <boost/test/unit_test.hpp>

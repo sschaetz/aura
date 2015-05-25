@@ -325,9 +325,10 @@ inline device_info device_get_info(device & d)
 	cl_uint dims;
 	AURA_OPENCL_SAFE_CALL(clGetDeviceInfo(d.get_backend_device(),
 	CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(dims), &dims, NULL));
-	size_t sizes[dims];
+	std::vector<std::size_t> sizes(dims);
 	AURA_OPENCL_SAFE_CALL(clGetDeviceInfo(d.get_backend_device(),
-	CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(size_t)*dims, sizes, NULL));
+	CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(size_t)*dims, 
+		sizes.data(), NULL));
 	assert(dims <= AURA_MAX_BUNDLE_DIMS);
 	for(cl_uint i=0; i<dims; i++) {
 		di.max_mesh.push_back(sizes[i]);
