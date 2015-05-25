@@ -10,6 +10,7 @@
 #include <cuda.h>
 #include <boost/aura/backend/cuda/call.hpp>
 #include <boost/aura/backend/shared/call.hpp>
+#include <boost/aura/backend/cuda/module.hpp>
 #include <boost/aura/backend/cuda/context.hpp>
 #include <boost/aura/misc/deprecate.hpp>
 #include <boost/aura/device_lock.hpp>
@@ -189,7 +190,7 @@ public:
 	}
 
 	/// access the context handle
-	inline detail::context * get_context()
+	inline detail::context* get_context()
 	{
 		return context_;
 	}
@@ -348,13 +349,28 @@ inline kernel create_kernel(module& m, const char * kernel_name)
 	return m.get_kernel(kernel_name);
 }
 
-inline const cl_device_id & get_backend_device(const device & d)
+inline const CUdevice& get_backend_device(const device & d)
 {
 	return d.get_backend_device();
 }
-inline const cl_context & get_backend_context(const device & d)
+inline const CUdevice& get_backend_context(device & d)
 {
-	return d.get_backend_context();
+	return d.get_context()->get_backend_device();
+}
+
+inline context* get_contex(device& d)
+{
+	return d.context;
+}
+
+inline void set(device& d)
+{
+	d.set();
+}
+
+inline void unset(device& d)
+{
+	d.unset();
 }
 
 } // cuda

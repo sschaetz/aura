@@ -5,8 +5,7 @@
 #include <cuda.h>
 #include <boost/aura/backend/cuda/call.hpp>
 
-namespace boost
-{
+namespace boost {
 namespace aura {
 namespace backend_detail {
 namespace cuda {
@@ -77,7 +76,13 @@ public:
   inline const CUcontext & get_backend_context() const {
     return context_; 
   }
-  
+
+  /// access the context handle
+  inline CUcontext & get_backend_context() {
+    return context_; 
+  }
+
+
   /// access the device ordinal
   inline std::size_t get_ordinal() const {
     return ordinal_;

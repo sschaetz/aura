@@ -7,7 +7,7 @@
 #include <nvrtc.h>
 #include <boost/aura/backend/shared/call.hpp>
 #include <boost/aura/backend/cuda/call.hpp>
-#include <boost/aura/backend/cuda/device.hpp>
+#include <boost/aura/backend/cuda/context.hpp>
 
 namespace boost {
 namespace aura {
@@ -17,8 +17,6 @@ namespace cuda {
 
 class module;
 class device;
-const CUcontext & get_backend_context();
-const CUdevice & get_backend_device();
 
 typedef CUfunction kernel;
 
@@ -27,6 +25,10 @@ module create_module_from_file(const char * filename, device & d,
 
 void print_module_build_log(const module & m, const device & d);
 
+void set(device& d);
+void unset(device& d);
+
+inline context* get_contex();
 
 class module
 {
@@ -37,17 +39,17 @@ private:
 
 public:
 	inline explicit module()
-		: device_(nullptr)
+		: context_(nullptr)
 		, program_(nullptr)
 		, log_(nullptr)
 	{}
 
 	inline explicit module(const char * str, device & d,
 			 const char * build_options=NULL)
-		: device_(&d)
+		: context_(get_context(d)
 		, log_(nullptr)
 	{
-		d.set();
+		set(d);
 
 		// Create and compile.
 		nvrtcProgram program;
@@ -56,15 +58,15 @@ public:
 
 		// Optain PTX.
 		size_t ptx_size;
-		nvrtcGetPTXSize(program_, &ptx_size);
-		char* ptx = new char[ptxSize];
-		nvrtcGetPTX(prog, ptx);
+		nvrtcGetPTXSize(program, &ptx_size);
+		char* ptx = new char[ptx_size];
+		nvrtcGetPTX(program, ptx);
 
 		// Store the log.
 		size_t logSize;
-		nvrtcGetProgramLogSize(prog, &logSize);
-		log__ = new char[logSize];
-		nvrtcGetProgramLog(prog, log_);
+		nvrtcGetProgramLogSize(program, &logSize);
+		log_ = new char[logSize];
+		nvrtcGetProgramLog(program, log_);
 
 		// Program not needed any more.
 		nvrtcDestroyProgram(&program);
@@ -78,9 +80,9 @@ public:
 		options[0] = CU_JIT_TARGET_FROM_CUCONTEXT;
 		values[0] = NULL;
 
-		AURA_CUDA_SAFE_CALL(cuModuleLoadDataEx(&module_, ptx, num_options,
+		AURA_CUDA_SAFE_CALL(cuModuleLoadDataEx(&program_, ptx, num_options,
 					options, values));
-		d.unset();
+		unset(d);
 	}
 
 	/**
@@ -97,26 +99,26 @@ public:
 	* @param m module to move here
 	*/
 	module(BOOST_RV_REF(module) m)
-		: device_(m.device_)
+		: context_(m.context_)
 		, program_(m.program_)
 		, kernels_(std::move(m.kernels_))
-		, log_(m.log)
+		, log_(m.log_)
 	{
-		m.device_ = nullptr;
+		m.context_= nullptr;
 		m.program_ = nullptr;
 		m.kernels_.clear();
 		m.log_ = nullptr;
 	}
 
 	/**
-	* move assignment, move device information here, invalidate other
+	* move assignment, move module information here, invalidate other
 	*
-	* @param d device to move here
+	* @param m module to move here
 	*/
 	module& operator=(BOOST_RV_REF(module) m)
 	{
 		finalize();
-		device_ = m.device_;
+		context_ = m.context_;
 		program_ = m.program_;
 		kernels_ = std::move(m.kernels_);
 		log_ = m.log_;
@@ -131,7 +133,7 @@ public:
 		if (kernels_.end() == it)
 		{
 			kernel k;
-			AURA_CUDA_SAFE_CALL(cuModuleGetFunction(&k, module_,
+			AURA_CUDA_SAFE_CALL(cuModuleGetFunction(&k, program_,
 						kernel_name));
 			auto it2 = kernels_.insert(
 				std::make_pair(kernel_name, k));
@@ -144,13 +146,13 @@ public:
 
 
 	// access the device
-	const device& get_device() const
+	const detail::context& get_context() const
 	{
-		return *device_;
+		return *context_;
 	}
-	device& get_device()
+	detail::context& get_context()
 	{
-		return *device_;
+		return *context_;
 	}
 
 	// access the program
@@ -163,6 +165,10 @@ public:
 		return program_;
 	}
 
+	char* get_build_log() const
+	{
+		return log_;
+	}
 
 private:
 	/// finalize object (called from dtor and move assign)
@@ -170,9 +176,9 @@ private:
 	{
 		if (nullptr != program_)
 		{
-			device_->set();
+			context_->set();
 			cuModuleUnload(program_);
-			device_->unset();
+			context_->unset();
 		}
 		if (nullptr != log_)
 		{
@@ -181,7 +187,7 @@ private:
 	}
 
 private:
-	device * device_;
+	detail::context* context_;
 	CUmodule program_;
 	char* log_;
 	std::unordered_map<std::string, kernel> kernels_;
