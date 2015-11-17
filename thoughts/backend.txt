@@ -1,5 +1,19 @@
 Backend CUDA
 ============
+
+I don't like the name 'backend' any more, it should be called something else:
+
+* platform
+* api
+* framework
+* system
+* primitives
+* foundation
+* service
+* service provider
+
+
+
 1) device is created from id (or whatever)
 2) context is created from device (context is associated with calling thread 
 right away)
