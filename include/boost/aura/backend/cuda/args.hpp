@@ -17,23 +17,23 @@ namespace cuda {
 #ifndef BOOST_NO_CXX11_VARIADIC_TEMPLATES
 
 typedef void * arg_t;
-template<unsigned long N>
+template<std::size_t N>
 using args_tt = std::array<arg_t, N>;
 
 // alias for returned packed arguments
-template<unsigned long N>
+template<std::size_t N>
 using args_t = std::pair<char*, args_tt<N>>;
 
 /// Copy arguments to memory block recursively
-template <typename T0>
-void fill_args_(char* p, args_tt<0>::iterator it, const T0 a0)
+template <typename ArgsItr, typename T0>
+void fill_args_(char* p, ArgsItr it, const T0 a0)
 {
 	std::memcpy(p, &a0, sizeof(T0));
 	*it=p;
 }
 
-template <typename T0, typename... Targs>
-void fill_args_(char* p, args_tt<0>::iterator it,
+template <typename ArgsItr, typename T0, typename... Targs>
+void fill_args_(char* p, ArgsItr it,
 		const T0 a0, const Targs... ar)
 {
 	std::memcpy(p, &a0, sizeof(T0));
