@@ -21,15 +21,15 @@ typedef std::complex<float> cfloat;
 
 std::default_random_engine generator(1);
 std::uniform_real_distribution<float> distribution(-1e5,1e5);
-auto random_float = [&](){ return distribution(generator);};
-auto random_cfloat = [&](){ return cfloat(random_float(),random_float());};
+auto random_float = [](){ return distribution(generator);};
+auto random_cfloat = [](){ return cfloat(random_float(),random_float());};
 
-BOOST_AUTO_TEST_CASE(mul_float) 
+BOOST_AUTO_TEST_CASE(mul_float)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(0);  
+	device d(0);
 
 	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
 
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(mul_float)
 		std::vector<float> input1(x);
 		std::vector<float> input2(x);
 		std::vector<float> output(x, 0.0);
-		
+
 		std::generate(input1.begin(), input1.end(), random_float);
 		std::generate(input2.begin(), input2.end(), random_float);
 
@@ -70,26 +70,26 @@ BOOST_AUTO_TEST_CASE(mul_float)
 }
 
 
-BOOST_AUTO_TEST_CASE(mul_cfloat) 
+BOOST_AUTO_TEST_CASE(mul_cfloat)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(0);  
+	device d(0);
 
-	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};	
+	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
 
 	for (auto y : sizes) {
 		std::vector<cfloat> input1(y);
 		std::vector<cfloat> input2(y);
-		std::vector<cfloat> output(y, cfloat(0.0,0.0));			
+		std::vector<cfloat> output(y, cfloat(0.0,0.0));
 
 		std::vector<bool> check(y,true);
 		std::vector<bool> check1(y,true);
-		
+
 		std::generate(input1.begin(), input1.end(), random_cfloat);
-		std::generate(input2.begin(), input2.end(), random_cfloat);		
-		
+		std::generate(input2.begin(), input2.end(), random_cfloat);
+
 		device_array<cfloat> device_input1(y, d);
 		device_array<cfloat> device_input2(y, d);
 		device_array<cfloat> device_output(y, d);
@@ -111,29 +111,29 @@ BOOST_AUTO_TEST_CASE(mul_cfloat)
 						return a*b;
 					}
 				);
-			
+
 		std::transform(output.begin(), output.end(),
 					input2.begin(), check.begin(),
 					[](const cfloat& a, const cfloat& b) {
-						return abs(a-b) <= std::numeric_limits<float>::epsilon() * abs(a+b);   //see c++ documentation about epsilon (numeric limits) 
+						return abs(a-b) <= std::numeric_limits<float>::epsilon() * abs(a+b);   //see c++ documentation about epsilon (numeric limits)
 					}
 				);
-						
+
 		BOOST_CHECK(
 			std::equal(check.begin(), check.end(),
 				check1.begin())
 			);
-			
+
 	}
-	
+
 }
 
-BOOST_AUTO_TEST_CASE(mul_float_cfloat) 
+BOOST_AUTO_TEST_CASE(mul_float_cfloat)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(0);  
+	device d(0);
 
 	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
 	for (auto z : sizes) {
@@ -141,10 +141,10 @@ BOOST_AUTO_TEST_CASE(mul_float_cfloat)
 		std::vector<cfloat> input1h(z);   // used for checking on the host
 		std::vector<cfloat> input2(z);
 		std::vector<cfloat> output(z);
-		
+
 		std::generate(input1.begin(), input1.end(), random_float);
 		std::generate(input2.begin(), input2.end(), random_cfloat);
-		
+
 		std::transform(input1.begin(), input1.end(),
 					input1h.begin(), input1h.begin(),
 					[](const float& a, const cfloat& b) {
@@ -173,36 +173,36 @@ BOOST_AUTO_TEST_CASE(mul_float_cfloat)
 						return a*b;
 					}
 				);
-		
+
 		BOOST_CHECK(
 			std::equal(output.begin(), output.end(),
 				input2.begin())
 			);
 	}
-	
-	
+
+
 }
 
 
-BOOST_AUTO_TEST_CASE(mul_cfloat_float) 
+BOOST_AUTO_TEST_CASE(mul_cfloat_float)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(0);  
+	device d(0);
 
-	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};	
-	
+	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
+
 
 	for (auto m : sizes) {
 		std::vector<cfloat> input1(m);
 		std::vector<float> input2(m);
 		std::vector<cfloat> input2h(m);  // used for checking on the host
 		std::vector<cfloat> output(m, cfloat(0.0,0.0));
-		
+
 		std::generate(input1.begin(), input1.end(), random_cfloat);
 		std::generate(input2.begin(), input2.end(), random_float);
-		
+
 		std::transform(input2.begin(), input2.end(),
 					input2h.begin(), input2h.begin(),
 					[](const float& a, const cfloat& b) {
@@ -231,12 +231,12 @@ BOOST_AUTO_TEST_CASE(mul_cfloat_float)
 						return a*b;
 					}
 				);
-		
+
 		BOOST_CHECK(
 			std::equal(output.begin(), output.end(),
 				input2h.begin())
 			);
 	}
-	
-	
+
+
 }

@@ -496,7 +496,7 @@ inline void run_tests(
 						sizes[s][0], 42., alloc);
 			std::vector<float,
 				boost::aura::host_allocator<float>> a2(
-						sizes[s][0], alloc);
+						sizes[s][0], 0.0, alloc);
 			device_ptr<float> m =
 			        device_malloc<float>(sizes[s][0], d);
 

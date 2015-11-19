@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE math.norm2 
+#define BOOST_TEST_MODULE math.norm2
 
 #include <random>
 #include <vector>
@@ -9,7 +9,8 @@
 #include <boost/aura/math/blas/norm2.hpp>
 #include <boost/aura/device_array.hpp>
 #include <boost/aura/math/complex.hpp>
-#include <fpu_control.h>
+
+#include <boost/math/complex/fabs.hpp>
 
 using namespace boost::aura;
 using namespace boost::aura::math;
@@ -54,7 +55,7 @@ float cpu_recu_norm2(std::vector<T>& vec){
 
     // calculate the squared magnitude of each vector element
     for(auto &it : vec){
-        it = pow( fabs( it ), 2);
+        it = pow( std::abs(it), 2);
     }
 
     // calculate the vector sum
@@ -85,8 +86,8 @@ float cpu_norm2(std::vector<T> vec){
 
 std::default_random_engine generator(1);
 std::uniform_real_distribution<float> distribution(-1e3,1e3);
-auto random_float = [&](){ return distribution(generator);};
-auto random_cfloat = [&](){ return cfloat(random_float(),random_float());};
+auto random_float = [](){ return distribution(generator);};
+auto random_cfloat = [](){ return cfloat(random_float(),random_float());};
 
 
 
@@ -130,7 +131,7 @@ BOOST_AUTO_TEST_CASE(norm2_float)
     std::cout << "gpu_res = " << output[0] << std::endl;
     std::cout << "cpu_res = " << cpu_res << std::endl;
 
-    BOOST_CHECK(fabs( cpu_res - output[0]) < std::numeric_limits<float>::epsilon() * fabs( cpu_res + output[0]));
+    BOOST_CHECK(boost::math::fabs<float>(cpu_res - output[0]) < std::numeric_limits<float>::epsilon() * boost::math::fabs<float>(cpu_res + output[0]));
     // BOOST_CHECK(fabs( cpu_res - output[0]) < std::numeric_limits<float>::min());
 
 

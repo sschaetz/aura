@@ -18,21 +18,21 @@
 
 namespace boost
 {
-namespace aura 
+namespace aura
 {
-namespace profile 
+namespace profile
 {
 
 /**
- * entry in a profile holding function name, 
+ * entry in a profile holding function name,
  * thread id timestamp and start/stop flag
  */
-struct entry { 
-	entry(const char * name, std::thread::id thread_id, 
-			double timestamp, bool start) 
+struct entry {
+	entry(const char * name, std::thread::id thread_id,
+			double timestamp, bool start)
 		: name(name)
-		, thread_id(std::hash<std::thread::id>(std::this_thread::get_id()))
-		, timestamp(timestamp/1e6), start(start) 
+		, thread_id(std::hash<std::thread::id>()(std::this_thread::get_id()))
+		, timestamp(timestamp/1e6), start(start)
 	{}
 
 	const char * name;
@@ -49,7 +49,7 @@ struct file_sink {
   void record(const entry & e) {}
 };
 
-/** 
+/**
  * memory sink to store profile in memory
  */
 struct memory_sink {
@@ -59,13 +59,13 @@ struct memory_sink {
     data_.reserve(initial_size);
   }
 
-  
+
   /// record profile data
-  void record(const entry & e) { 
+  void record(const entry & e) {
     std::lock_guard<std::mutex> guard(mtx_);
-    data_.push_back(e); 
+    data_.push_back(e);
   }
-  
+
   /// dump profile data to file
   void dump(const char * filename) {
     std::lock_guard<std::mutex> guard(mtx_);
@@ -74,15 +74,15 @@ struct memory_sink {
       AURA_ERROR("Unable to open file.");
     }
     for(std::size_t i=0; i<data_.size(); i++) {
-      fprintf(f, "%s, %ld, %.17g %d\n", 
-        data_[i].name, data_[i].thread_id, 
+      fprintf(f, "%s, %ld, %.17g %d\n",
+        data_[i].name, data_[i].thread_id,
         data_[i].timestamp, data_[i].start);
     }
     if(0 != fclose(f)) {
       AURA_ERROR("Unable to close file.");
     }
   }
-  
+
   /// vector to store profile
   std::vector<entry> data_;
 
@@ -97,7 +97,7 @@ struct memory_sink {
 template <typename sink>
 void start(sink & s, const char * name) {
 #ifndef AURA_NO_PROFILE
-  s.record(entry(name, std::this_thread::get_id(), 
+  s.record(entry(name, std::this_thread::get_id(),
     boost::aura::now(), true));
 #endif
 }
@@ -108,7 +108,7 @@ void start(sink & s, const char * name) {
 template <typename sink>
 void stop(sink & s, const char * name) {
 #ifndef AURA_NO_PROFILE
-  s.record(entry(name, std::this_thread::get_id(), 
+  s.record(entry(name, std::this_thread::get_id(),
     boost::aura::now(), false));
 #endif
 }
@@ -119,10 +119,10 @@ void stop(sink & s, const char * name) {
 template <typename sink>
 struct scope {
   scope(sink & s, const char * name) : name_(name), sink_(s) {
-    start(sink_, name_);  
+    start(sink_, name_);
   }
   ~scope() {
-    stop(sink_, name_);  
+    stop(sink_, name_);
   }
   const char * name_;
   sink & sink_;
@@ -131,7 +131,7 @@ struct scope {
 
 } // namespace profile
 } // namespace aura
-} // namespace boost 
+} // namespace boost
 
 #endif // AURA_MISC_PROFILE_HPP
 

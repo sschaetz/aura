@@ -21,8 +21,8 @@ typedef std::complex<float> cfloat;
 
 std::default_random_engine generator(1);
 std::uniform_real_distribution<float> distribution(-1e5,1e5);
-auto random_float = [&](){ return distribution(generator);};
-auto random_cfloat = [&](){ return cfloat(random_float(),random_float());};
+auto random_float = [](){ return distribution(generator);};
+auto random_cfloat = [](){ return cfloat(random_float(),random_float());};
 
 std::vector<int> sizes = {1,2,3,4,5,128, 512};//,256,512,1024, 1024*1024,1024*1024*16};
 int maxdims = 16;
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(ndmul_float)
             std::vector<float> input1(x);
             std::vector<float> input2(y);
             std::vector<float> output(y, 0.0);
-			
+
             std::generate(input1.begin(), input1.end(), random_float);
             std::generate(input2.begin(), input2.end(), random_float);
 
@@ -96,10 +96,10 @@ BOOST_AUTO_TEST_CASE(ndmul_cfloat)
 
             std::vector<bool> check(y,true);
             std::vector<bool> check1(y,true);
-			
+
             std::generate(input1.begin(), input1.end(), random_cfloat);
             std::generate(input2.begin(), input2.end(), random_cfloat);
-			
+
             device_array<cfloat> device_input1(x, d);
             device_array<cfloat> device_input2(y, d);
             device_array<cfloat> device_output(y, d);
@@ -125,22 +125,22 @@ BOOST_AUTO_TEST_CASE(ndmul_cfloat)
                             return a*b;
                         }
                     ); */
-				
+
             std::transform(output.begin(), output.end(),
                         result.begin(), check.begin(),
                         [](const cfloat& a, const cfloat& b) {
                             return abs(a-b) <= std::numeric_limits<float>::epsilon() * abs(a+b);   //see c++ documentation about epsilon (numeric limits)
                         }
                     );
-							
+
             BOOST_CHECK(
                 std::equal(check.begin(), check.end(),
                     check1.begin())
                 );
         }
-			
+
     }
-	
+
 }
 
 // float and cfloat

@@ -1,5 +1,6 @@
 
-IF(${AURA_BACKEND} STREQUAL OPENCL)
+IF(${AURA_BACKEND} STREQUAL OPENCL AND 
+   NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   AURA_ADD_TARGET(exp.atomic_cfloat atomic_cfloat.cpp 
     ${AURA_BACKEND_LIBRARIES} ${Boost_SYSTEM_LIBRARY} 
     ${Boost_THREAD_LIBRARY} pthread rt)

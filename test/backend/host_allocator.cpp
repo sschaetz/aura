@@ -8,10 +8,10 @@
 
 using namespace boost::aura::backend;
 
-// basic 
+// basic
 // _____________________________________________________________________________
 
-BOOST_AUTO_TEST_CASE(basic) 
+BOOST_AUTO_TEST_CASE(basic)
 {
 	initialize();
 	int num = device_get_count();
@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(basic)
 	device d0(0);
 	feed f0(d0);
 	boost::aura::host_allocator<float> a0(f0);
-	
+
 	float* ptr0 = a0.allocate(100);
 	memory m0 = a0.unmap(ptr0);
 	float* ptr1 = a0.map(m0);
@@ -29,10 +29,10 @@ BOOST_AUTO_TEST_CASE(basic)
 	a0.deallocate(ptr0, 100);
 }
 
-// stdvector 
+// stdvector
 // _____________________________________________________________________________
 
-BOOST_AUTO_TEST_CASE(stdvector) 
+BOOST_AUTO_TEST_CASE(stdvector)
 {
 	initialize();
 	int num = device_get_count();
@@ -40,36 +40,36 @@ BOOST_AUTO_TEST_CASE(stdvector)
 	device d0(0);
 	feed f0(d0);
 	boost::aura::host_allocator<float> a0(f0);
-	std::vector<float, boost::aura::host_allocator<float>> v0(100, a0);
+	std::vector<float, boost::aura::host_allocator<float>> v0(100, 1.0, a0);
 	memory m0 = v0.get_allocator().unmap(&v0[0]);
 	float* ptr0 = v0.get_allocator().map(m0);
 	BOOST_CHECK(ptr0 == &v0[0]);
 }
 
-// nasty 
+// nasty
 // _____________________________________________________________________________
 
-BOOST_AUTO_TEST_CASE(nasty) 
+BOOST_AUTO_TEST_CASE(nasty)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
 	device d0(0);
 	feed f0(d0);
-	
+
 	boost::aura::host_allocator<float> a0(f0);
 	boost::aura::host_allocator<float> a1(f0);
-	std::vector<float, boost::aura::host_allocator<float>> v0(100, a0);
-	std::vector<float, boost::aura::host_allocator<float>> v1(100, a1);
-	
+	std::vector<float, boost::aura::host_allocator<float>> v0(100, 1.0, a0);
+	std::vector<float, boost::aura::host_allocator<float>> v1(100, 1.0, a1);
+
 	float* p0 = &v0[0];
 	float* p1 = &v1[0];
-	
+
 	std::swap(v0, v1);
-	
+
 	memory m0 = v0.get_allocator().unmap(p1);
 	memory m1 = v1.get_allocator().unmap(p0);
-	
+
 	float* p2 = v0.get_allocator().map(m0);
 	float* p3 = v1.get_allocator().map(m1);
 

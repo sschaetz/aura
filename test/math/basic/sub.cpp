@@ -19,15 +19,15 @@ typedef std::complex<float> cfloat;
 
 std::default_random_engine generator(1);
 std::uniform_real_distribution<float> distribution(-1e5,1e5);
-auto random_float = [&](){ return distribution(generator);};
-auto random_cfloat = [&](){ return cfloat(random_float(),random_float());};
+auto random_float = [](){ return distribution(generator);};
+auto random_cfloat = [](){ return cfloat(random_float(),random_float());};
 
-BOOST_AUTO_TEST_CASE(sub_float) 
+BOOST_AUTO_TEST_CASE(sub_float)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(0);  
+	device d(0);
 
 	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
 
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(sub_float)
 		std::vector<float> input1(x);
 		std::vector<float> input2(x);
 		std::vector<float> output(x, 0.0);
-		
+
 		std::generate(input1.begin(), input1.end(), random_float);
 		std::generate(input2.begin(), input2.end(), random_float);
 
@@ -68,24 +68,24 @@ BOOST_AUTO_TEST_CASE(sub_float)
 }
 
 
-BOOST_AUTO_TEST_CASE(sub_cfloat) 
+BOOST_AUTO_TEST_CASE(sub_cfloat)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(0);  
+	device d(0);
 
-	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};	
+	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
 
 	for (auto y : sizes) {
 		std::vector<cfloat> input1(y);
 		std::vector<cfloat> input2(y);
 		std::vector<cfloat> output(y, cfloat(0.0,0.0));
-		
+
 		std::generate(input1.begin(), input1.end(), random_cfloat);
 		std::generate(input2.begin(), input2.end(), random_cfloat);
-		
-		
+
+
 		device_array<cfloat> device_input1(y, d);
 		device_array<cfloat> device_input2(y, d);
 		device_array<cfloat> device_output(y, d);
@@ -108,34 +108,34 @@ BOOST_AUTO_TEST_CASE(sub_cfloat)
 					}
 				);
 
-			
+
 		BOOST_CHECK(
 			std::equal(output.begin(), output.end(),
 				input2.begin())
 			);
 	}
-	
-	
+
+
 }
 
-BOOST_AUTO_TEST_CASE(sub_float_cfloat) 
+BOOST_AUTO_TEST_CASE(sub_float_cfloat)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(0);  
+	device d(0);
 
-	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};		
+	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
 
 	for (auto y : sizes) {
-		std::vector<float> input1(y);		
+		std::vector<float> input1(y);
 		std::vector<cfloat> input2(y);
 		std::vector<cfloat> input1h(y);   // used for checking on the host
 		std::vector<cfloat> output(y, cfloat(0.0,0.0));
-		
+
 		std::generate(input1.begin(), input1.end(), random_float);
 		std::generate(input2.begin(), input2.end(), random_cfloat);
-		
+
 		std::transform(input1.begin(), input1.end(),
 					input1h.begin(), input1h.begin(),
 					[](const float& a, const cfloat& b) {
@@ -164,37 +164,37 @@ BOOST_AUTO_TEST_CASE(sub_float_cfloat)
 						return a-b;
 					}
 				);
-		
-			
+
+
 		BOOST_CHECK(
 			std::equal(output.begin(), output.end(),
 				input2.begin())
 			);
 	}
-	
-	
+
+
 }
 
 
-BOOST_AUTO_TEST_CASE(sub_cfloat_float) 
+BOOST_AUTO_TEST_CASE(sub_cfloat_float)
 {
 	initialize();
 	int num = device_get_count();
 	BOOST_REQUIRE(num > 0);
-	device d(0);  
+	device d(0);
 
-	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};	
-	
+	std::vector<int> sizes = {1,2,3,4,5,128,1024,1024*1024,1024*1024*16};
+
 
 	for (auto y : sizes) {
 		std::vector<cfloat> input1(y);
 		std::vector<float> input2(y);
 		std::vector<cfloat> input2h(y);  // used for checking on the host
 		std::vector<cfloat> output(y, cfloat(0.0,0.0));
-		
+
 		std::generate(input1.begin(), input1.end(), random_cfloat);
 		std::generate(input2.begin(), input2.end(), random_float);
-		
+
 		std::transform(input2.begin(), input2.end(),
 					input2h.begin(), input2h.begin(),
 					[](const float& a, const cfloat& b) {
@@ -223,13 +223,13 @@ BOOST_AUTO_TEST_CASE(sub_cfloat_float)
 						return a-b;
 					}
 				);
-		
-			
+
+
 		BOOST_CHECK(
 			std::equal(output.begin(), output.end(),
 				input2h.begin())
 			);
 	}
-	
-	
+
+
 }

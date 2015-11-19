@@ -22,8 +22,8 @@ std::vector<int> sizes = {1,2,3,4,5}; // FIXME: larger tests fail due to float r
 
 std::default_random_engine generator(1);
 std::uniform_real_distribution<float> distribution(-1e3,1e3);
-auto random_float = [&](){ return distribution(generator);};
-auto random_cfloat = [&](){ return math::cfloat(random_float(),random_float());};
+auto random_float = [](){ return distribution(generator);};
+auto random_cfloat = [](){ return math::cfloat(random_float(),random_float());};
 
 
 
