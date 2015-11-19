@@ -140,7 +140,7 @@ Authors:
 Sebastian Schaetz <seb.schaetz@gmail.com>, Christian Holme and Tilman Sumpf.
 
 Contributors:
-Andreas Merrem, Dirk Voit, Jakob Klosowski, Maaike van Zalk, Markus Untenberger, Oleksandr Kalentev, Volkert Roeloffs, Xiaoqing Wang, Zhengguo Tan, Zhongshuai Zhang
+Andreas Merrem, Dirk Voit, Jakob Klosowski, Krishna Ersson, Maaike van Zalk, Markus Untenberger, Oleksandr Kalentev, Volkert Roeloffs, Xiaoqing Wang, Zhengguo Tan, Zhongshuai Zhang
 
 
 Distributed under the Boost Software License, Version 1.0.
