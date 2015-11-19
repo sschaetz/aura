@@ -66,7 +66,7 @@ inline device_lock create_device_lock(std::size_t ordinal)
 
 	// lock the file
 	auto flock = std::make_shared<boost::interprocess::file_lock>(
-			fname.c_str());
+			fname.string().c_str());
 	try {
 		if (!flock->try_lock()) {
 			return boost::none;
