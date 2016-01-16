@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Alang Web Interface</title>
+        <style type="text/css" media="screen">
+            #editor { 
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 800px;
+                height: 600px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div id="editor">
+        </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/keybinding-vim.js" type="text/javascript" charset="utf-8"></script>
+        <script>
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/monokai");
+            editor.getSession().setMode("ace/mode/c_cpp");
+            editor.setKeyboardHandler("ace/keyboard/vim");
+
+            ace.config.loadModule("ace/keyboard/vim", function(m) {
+            })
+        </script>
+    </body>
+</html>
