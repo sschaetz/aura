@@ -19,14 +19,30 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.2/keybinding-vim.js" type="text/javascript" charset="utf-8"></script>
-        <script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script>
             var editor = ace.edit("editor");
             editor.setTheme("ace/theme/monokai");
             editor.getSession().setMode("ace/mode/c_cpp");
-            editor.setKeyboardHandler("ace/keyboard/vim");
+
 
             ace.config.loadModule("ace/keyboard/vim", function(m) {
+                var VimApi = require("ace/keyboard/vim").CodeMirror.Vim
+                VimApi.defineEx("compile", "c", function(cm, input) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/compile",
+                        data: {
+                            code: "asdf"
+                        },
+                        success: function(data) {
+                            console.log("That worked?", data)
+                        }
+                    });
+                })
             })
+
+            editor.setKeyboardHandler("ace/keyboard/vim");
         </script>
     </body>
 </html>
