@@ -52,7 +52,7 @@ public:
         stream.seekg(0, std::ios::beg);
         stream.read(&str[0], str.size());
         stream.close();
-        compile(str.c_str());
+        compile(str.c_str(), build_options);
     }
 
 	/**
@@ -193,6 +193,17 @@ private:
 	std::unordered_map<std::string, kernel> kernels_;
 };
 
+/// compile file to library
+/// @param kernel_file path to kernel file to be compiled
+/// @param d device kernel file is compiled for
+/// @param build_options build options
+library make_library_from_file(const char* kernel_file,
+        device& d, const char* build_options = NULL)
+{
+    std::ifstream s;
+    s.open(kernel_file);
+    return library(s, d, build_options);
+}
 
 } // opencl
 } // backend_detail
