@@ -18,8 +18,8 @@ BOOST_AUTO_TEST_CASE(basic)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_REQUIRE(0 < num);
-	device d(0);
+	BOOST_REQUIRE(AURA_UNIT_TEST_DEVICE < num);
+	device d(AURA_UNIT_TEST_DEVICE);
 	module m = create_module_from_file(kernel_file, d,
 	AURA_BACKEND_COMPILE_FLAGS);
 	kernel k = create_kernel(m, "donothing");
@@ -33,8 +33,8 @@ BOOST_AUTO_TEST_CASE(basic2)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_REQUIRE(0 < num);
-	device d(0);
+	BOOST_REQUIRE(AURA_UNIT_TEST_DEVICE < num);
+	device d(AURA_UNIT_TEST_DEVICE);
 	kernel k = d.load_from_file("donothing", kernel_file,
 			AURA_BACKEND_COMPILE_FLAGS);
 	(void)k;
@@ -47,8 +47,8 @@ BOOST_AUTO_TEST_CASE(invoke_simple)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_REQUIRE(0 < num);
-	device d(0);
+	BOOST_REQUIRE(AURA_UNIT_TEST_DEVICE < num);
+	device d(AURA_UNIT_TEST_DEVICE);
 	feed f(d);
 	std::size_t xdim = 16;
 	std::size_t ydim = 16;
@@ -80,8 +80,8 @@ BOOST_AUTO_TEST_CASE(invoke_simple2)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_REQUIRE(0 < num);
-	device d(0);
+	BOOST_REQUIRE(AURA_UNIT_TEST_DEVICE < num);
+	device d(AURA_UNIT_TEST_DEVICE);
 	feed f(d);
 	std::size_t xdim = 16;
 	std::size_t ydim = 16;
@@ -111,8 +111,8 @@ BOOST_AUTO_TEST_CASE(invoke_donothing)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_REQUIRE(0 < num);
-	device d(0);
+	BOOST_REQUIRE(AURA_UNIT_TEST_DEVICE < num);
+	device d(AURA_UNIT_TEST_DEVICE);
 	feed f(d);
 	std::size_t xdim = 16;
 	std::size_t ydim = 16;
@@ -131,9 +131,9 @@ BOOST_AUTO_TEST_CASE(invoke_nomesh)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_REQUIRE(0 < num);
+	BOOST_REQUIRE(AURA_UNIT_TEST_DEVICE < num);
 
-	device d(0);
+	device d(AURA_UNIT_TEST_DEVICE);
 	feed f(d);
 	bounds b(64, 64, 32);
 	std::vector<float> a1(product(b), 41.);
@@ -164,8 +164,8 @@ BOOST_AUTO_TEST_CASE(invoke_shared)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_REQUIRE(0 < num);
-	device d(0);
+	BOOST_REQUIRE(AURA_UNIT_TEST_DEVICE < num);
+	device d(AURA_UNIT_TEST_DEVICE);
 	feed f(d);
 	std::size_t xdim = 8;
 	std::size_t ydim = 8;
@@ -201,8 +201,8 @@ BOOST_AUTO_TEST_CASE(invoke_atomic)
 {
 	initialize();
 	int num = device_get_count();
-	BOOST_REQUIRE(0 < num);
-	device d(0);
+	BOOST_REQUIRE(AURA_UNIT_TEST_DEVICE < num);
+	device d(AURA_UNIT_TEST_DEVICE);
 	feed f(d);
 	std::size_t xdim = 8;
 	std::size_t ydim = 8;

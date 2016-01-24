@@ -8,6 +8,12 @@ IF(NOT AURA_BACKEND)
   SET(AURA_BACKEND OPENCL)
 ENDIF()
 
+# set unit test device id 
+IF(NOT AURA_UNIT_TEST_DEVICE)
+  SET(AURA_UNIT_TEST_DEVICE 0)
+ENDIF()
+ADD_DEFINITIONS(-DAURA_UNIT_TEST_DEVICE=${AURA_UNIT_TEST_DEVICE})
+
 # make additional modules available and source custom functions 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 INCLUDE(cmake/functions.cmake)

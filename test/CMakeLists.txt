@@ -10,6 +10,8 @@ AURA_ADD_TEST(backend/complex.cpp backend/complex.cc
 	${AURA_BACKEND_LIBRARIES})
 AURA_ADD_TEST(backend/kernel.cpp backend/kernel.cc 
 	${AURA_BACKEND_LIBRARIES})
+AURA_ADD_TEST(backend/library.cpp backend/kernel.cc 
+	${AURA_BACKEND_LIBRARIES})
 
 # TODO this test is broken because the code is broken, remove me
 #AURA_ADD_TEST(backend/map.cpp backend/map.cc 
@@ -26,7 +28,6 @@ ENDIF()
 
 # this comparison is intentionally written like this because it is a list
 IF(NOT "${AURA_FFT_HOST_LIBRARIES}" STREQUAL " ")
-	MESSAGE("${AURA_FFT_HOST_LIBRARIES}")
 	AURA_ADD_TEST(math/fft_host.cpp pthread 
 		${AURA_BACKEND_LIBRARIES} ${AURA_FFT_HOST_LIBRARIES})
 ENDIF()

@@ -49,6 +49,7 @@
 		#include <boost/aura/backend/opencl/mesh.hpp>
 		#include <boost/aura/backend/opencl/init.hpp>
 		#include <boost/aura/backend/opencl/invoke.hpp>
+		#include <boost/aura/backend/opencl/library.hpp>
 		#include <boost/aura/backend/opencl/mark.hpp>
 		#include <boost/aura/backend/opencl/memory.hpp>
 		#include <boost/aura/backend/opencl/module.hpp>
@@ -61,7 +62,7 @@
 
 namespace boost
 {
-namespace aura 
+namespace aura
 {
 
 #if defined AURA_BACKEND_CUDA
@@ -92,9 +93,10 @@ using backend::args;
 
 using backend::device_malloc;
 using backend::invoke;
+using backend::library;
 
 } // namespace aura
-} // namespace boost 
+} // namespace boost
 
 #endif // !defined __OPENCL_VERSION__ && !defined __CUDACC__
 
