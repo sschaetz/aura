@@ -1,12 +1,22 @@
+branches:
+        only:
+                - v2 
+
+shallow_clone: true 
+
 environment:
     BOOST_ROOT: C:\Libraries\boost_1_59_0
     BOOST_LIBRARYDIR: C:\Libraries\boost_1_59_0\lib64-msvc-14.0
+
 clone_folder: C:\aura
+
 platform:
     - x64
+
 build_script:
     - mkdir build && cd build
     - cmake -G"Visual Studio 14 Win64" ..
     - cmake --build . --config Release
+
 test_script:
     - ctest --output-on-failure
