@@ -16,8 +16,18 @@ branches:
 
 
 before_install:
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install cmake libboost-all-dev; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; 
+          then sudo apt-get -qq install 
+          cmake 
+          libboost-chrono-dev 
+          libboost-date-time-dev 
+          libboost-filesystem-dev
+          libboost-system-dev 
+          libboost-thread-dev 
+          libboost-program-options-dev
+          libboost-test-dev
+          ; fi
 
 script:
         - mkdir -p build && cd build
