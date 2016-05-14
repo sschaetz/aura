@@ -1,11 +1,11 @@
 #pragma once
 
 #if defined AURA_BASE_CUDA
-        #include <boost/aura/base/cuda/device.hpp>
+        #include <boost/aura/base/cuda/environment.hpp>
 #elif defined AURA_BASE_OPENCL
-        #include <boost/aura/base/opencl/device.hpp>
+        #include <boost/aura/base/opencl/environment.hpp>
 #elif defined AURA_BASE_METAL
-        #include <boost/aura/base/metal/device.hpp>
+        #include <boost/aura/base/metal/environment.hpp>
 #endif
 
 namespace boost {
@@ -19,7 +19,8 @@ namespace aura {
         namespace base = base_detail::metal;
 #endif
 
-using base::device;
+using base::initialize;
+using base::finalize;
 
 } // namespace aura
 } // namespace boost

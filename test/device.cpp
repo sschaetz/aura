@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE device
-
 #include <boost/test/unit_test.hpp>
 
+#include <boost/aura/environment.hpp>
 #include <boost/aura/device.hpp>
 
 // basic
@@ -9,6 +9,7 @@
 
 BOOST_AUTO_TEST_CASE(basic)
 {
-        device d;
+        boost::aura::initialize();
+        boost::aura::device d(AURA_UNIT_TEST_DEVICE);
 }
 

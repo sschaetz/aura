@@ -2,8 +2,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 
 
 # If no backend is selected, choose OpenCL as default. 
-IF(NOT AURA_BACKEND)
-        SET(AURA_BACKEND OPENCL)
+IF(NOT AURA_BASE)
+        SET(AURA_BASE OPENCL)
 ENDIF()
 
 
@@ -30,23 +30,52 @@ ELSE ()
 ENDIF()
 FIND_PACKAGE(Boost COMPONENTS system thread filesystem unit_test_framework)
 
-# Dummy include dir used until backed include libs work.
-SET(AURA_BACKEND_INCLUDE_DIRS ".")
+
+# Find GPU libraries.
+FIND_PACKAGE(CUDA) 
+FIND_PACKAGE(OpenCL)
+
+
+# Set correct defines for GPU libraries. 
+IF(${AURA_BASE} STREQUAL CUDA)
+        SET(AURA_BASE_LIBRARIES ${CUDA_LIBRARIES})
+        SET(AURA_BASE_INCLUDE_DIRS ${CUDA_INCLUDE_DIRS})
+        IF(APPLE)
+                SET(AURA_BASE_LINK_DIRS "/usr/local/cuda/lib")
+                SET(AURA_BASE_LIBRARIES ${AURA_BASE_LIBRARIES} 
+                                        "cuda")
+        ENDIF()
+        SET(AURA_BASE_DEFINE "-DAURA_BASE_CUDA")
+ELSEIF(${AURA_BASE} STREQUAL METAL)
+        IF(NOT APPLE)
+                MESSAGE(FATAL_ERROR "Metal only supported on Apple platform.")
+        ENDIF()
+        SET(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS}
+                                   "-framework Metal -w")
+        SET(AURA_BASE_INCLUDE_DIRS ".")
+        SET(AURA_BASE_DEFINE "-DAURA_BASE_METAL")
+ENDIF()
+
+ADD_DEFINITIONS(${AURA_BASE_DEFINE})
 
 
 # Compiler and linker flags
 SET(CMAKE_CXX_FLAGS "-Wall -std=c++0x -g -O3")
 IF(APPLE)
         # Treat everything as Objective-C++.
-        ADD_DEFINITIONS("-x objective-c++")
-        SET(CMAKE_EXE_LINKER_FLAGS "-framework Foundation -w")
+        #SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}
+        #                            -framework Foundation -w")
 ENDIF()
 
 
 # Set global include directories for project.
-INCLUDE_DIRECTORIES("${AURA_BACKEND_INCLUDE_DIRS}")
+INCLUDE_DIRECTORIES("${AURA_BASE_INCLUDE_DIRS}")
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/include/")
 INCLUDE_DIRECTORIES("${Boost_INCLUDE_DIRS}/")
+
+
+# Set global link directories for project.
+LINK_DIRECTORIES(${LINK_DIRECTORIES} ${AURA_BASE_LINK_DIRS})
 
 
 # Enable testing.
@@ -55,3 +84,4 @@ ENABLE_TESTING()
 
 # Add subdirectories.
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/test/)
+
