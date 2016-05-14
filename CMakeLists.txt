@@ -15,7 +15,7 @@ ADD_DEFINITIONS(-DAURA_UNIT_TEST_DEVICE=${AURA_UNIT_TEST_DEVICE})
 
 
 # Make additional modules available and source custom functions.
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/buildprocess/")
 
 
 # Find Boost libraries.
