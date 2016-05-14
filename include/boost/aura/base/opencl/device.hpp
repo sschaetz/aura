@@ -16,11 +16,7 @@ namespace opencl {
 class device
 {
 public:
-        /**
-         * Create device form ordinal.
-         *
-         * @param ordinal Device number
-         */
+        /// @copydoc boost::aura::base::cuda::device::device()
         inline explicit device(std::size_t ordinal)
                 : ordinal_(ordinal)
         {
@@ -64,15 +60,15 @@ public:
 #endif // CL_VERSION_1_2
         }
 
-        /**
-         * Destroy dontext.
-         */
+
+        /// @copydoc boost::aura::base::cuda::device::~device()
         inline ~device() {
 #ifndef CL_VERSION_1_2
                 AURA_OPENCL_SAFE_CALL(clReleaseMemObject(dummy_mem_));
 #endif // CL_VERSION_1_2
                 AURA_OPENCL_SAFE_CALL(clReleaseContext(context_));
         }
+
 
 private:
         /// Device ordinal

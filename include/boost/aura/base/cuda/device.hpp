@@ -24,6 +24,14 @@ public:
                 AURA_CUDA_SAFE_CALL(cuCtxCreate(&context_, 0, device_));
         }
 
+        /**
+         * Destroy device.
+         */
+        inline ~device()
+        {
+                AURA_CUDA_SAFE_CALL(cuCtxDestroy(context_));
+        }
+
 private:
         /// Device ordinal
         std::size_t ordinal_;

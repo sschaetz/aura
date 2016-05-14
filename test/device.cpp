@@ -10,6 +10,9 @@
 BOOST_AUTO_TEST_CASE(basic)
 {
         boost::aura::initialize();
-        boost::aura::device d(AURA_UNIT_TEST_DEVICE);
+        {
+                boost::aura::device d(AURA_UNIT_TEST_DEVICE);
+        }
+        boost::aura::finalize();
 }
 

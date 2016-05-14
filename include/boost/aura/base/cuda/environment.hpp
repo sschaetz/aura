@@ -9,17 +9,20 @@ namespace aura {
 namespace base_detail {
 namespace cuda {
 
-/// Initialize backend.
+
+/// Initialize base.
 inline void initialize()
 {
         AURA_CUDA_SAFE_CALL(cuInit(0));
 }
 
-/// Finalize backend.
+
+/// Finalize base.
 inline void finalize()
 {
         // Pass
 }
+
 
 } // cuda
 } // base_detail

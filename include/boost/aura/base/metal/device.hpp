@@ -10,16 +10,20 @@ namespace metal {
 class device
 {
 public:
-        /**
-         * Create device form ordinal.
-         *
-         * @param ordinal Device number
-         */
+        /// @copydoc boost::aura::base::cuda::device::device()
         inline explicit device(std::size_t ordinal)
                 : ordinal_(ordinal)
         {
                 device_ = MTLCreateSystemDefaultDevice();
         }
+
+
+        /// @copydoc boost::aura::base::cuda::device::~device()
+        ~device()
+        {
+                device_ = nil;
+        }
+
 
 private:
         /// Device ordinal

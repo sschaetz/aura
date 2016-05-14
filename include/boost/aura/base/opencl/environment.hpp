@@ -5,17 +5,20 @@ namespace aura {
 namespace base_detail {
 namespace opencl {
 
-/// Initialize backend.
+
+/// @copydoc boost::aura::base::cuda::initialize()
 inline void initialize()
 {
         // Pass
 }
 
-/// Finalize backend.
+
+/// @copydoc boost::aura::base::cuda::finalize()
 inline void finalize()
 {
         // Pass
 }
+
 
 } // opencl
 } // base_detail

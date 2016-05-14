@@ -7,7 +7,7 @@ shallow_clone: true
 environment:
         BOOST_ROOT: C:\Libraries\boost_1_59_0
         BOOST_LIBRARYDIR: C:\Libraries\boost_1_59_0\lib64-msvc-14.0
-        INTELOCLSDKROOT: C:\Program Files (x86)\Intel\OpenCL SDK\5.3
+        INTELOCSDKROOT: C:\Program Files (x86)\Intel\OpenCL SDK\5.3
 
 clone_folder: C:\aura
 

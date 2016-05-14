@@ -5,17 +5,20 @@ namespace aura {
 namespace base_detail {
 namespace metal {
 
-/// Initialize backend.
+
+/// @copydoc boost::aura::base::cuda::initialize()
 inline void initialize()
 {
         // Pass
 }
 
-/// Finalize backend.
+
+/// @copydoc boost::aura::base::cuda::finalize()
 inline void finalize()
 {
         // Pass
 }
+
 
 } // metal
 } // base_detail
