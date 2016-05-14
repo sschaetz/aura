@@ -1,3 +1,6 @@
+# CI integration is largely adopted from Denis Demidov's VexCL. 
+# URL: https://github.com/ddemidov/vexcl
+
 sudo: required
 language: cpp
 dist: trusty
@@ -41,11 +44,16 @@ before_install:
         - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; ${AMDAPPSDKROOT}/bin/x86_64/clinfo;
 
 matrix:
+        exclude:
+                - os: linux
+                - os: osx
         include:
                 - os: linux
                   env: AURA_BASE=OPENCL
+                  compiler: gcc
                 - os: osx 
                   env: AURA_BASE=METAL
+                  compiler: clang 
 
 
 

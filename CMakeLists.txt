@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 
 # If no backend is selected, choose OpenCL as default. 
@@ -54,18 +54,16 @@ ELSEIF(${AURA_BASE} STREQUAL METAL)
                                    "-framework Metal -w")
         SET(AURA_BASE_INCLUDE_DIRS ".")
         SET(AURA_BASE_DEFINE "-DAURA_BASE_METAL")
+ELSEIF(${AURA_BASE} STREQUAL OPENCL)
+        SET(AURA_BASE_LIBRARIES ${OPENCL_LIBRARIES})
+        SET(AURA_BASE_INCLUDE_DIRS ${OPENCL_INCLUDE_DIRS})
+        SET(AURA_BASE_DEFINE "-DAURA_BASE_OPENCL")
 ENDIF()
-
 ADD_DEFINITIONS(${AURA_BASE_DEFINE})
 
 
 # Compiler and linker flags
 SET(CMAKE_CXX_FLAGS "-Wall -std=c++0x -g -O3")
-IF(APPLE)
-        # Treat everything as Objective-C++.
-        #SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}
-        #                            -framework Foundation -w")
-ENDIF()
 
 
 # Set global include directories for project.

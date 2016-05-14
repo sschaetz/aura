@@ -9,7 +9,7 @@
                 const char* errstr; \
                 cuGetErrorName(err, &errstr); \
 		std::ostringstream os; \
-		os << "CUDA error " << err << " " << errstr <<" file " << \
+		os << "CUDA error " << err << " " << errstr << " file " << \
 			__FILE__ << " line " << __LINE__; \
 		throw os.str(); \
         } \
@@ -23,7 +23,7 @@
                 const char* errstr; \
                 cuGetErrorName(err, &errstr); \
 		std::ostringstream os; \
-		os << "CUDA error " << err << " " << errstr <<" file " << \
+		os << "CUDA error " << err << " " << errstr << " file " << \
 			__FILE__ << " line " << __LINE__; \
 		throw os.str(); \
         } \
