@@ -31,17 +31,17 @@ before_install:
           libboost-test-dev
           opencl-headers
           ; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; bash buildprocess/amd_sdk.sh; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; tar -xjf AMD-SDK.tar.bz2; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; AMDAPPSDKROOT=${HOME}/AMDAPPSDK; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; export OPENCL_VENDOR_PATH=${AMDAPPSDKROOT}/etc/OpenCL/vendors; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; mkdir -p ${OPENCL_VENDOR_PATH}; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; sh AMD-APP-SDK*.sh --tar -xf -C ${AMDAPPSDKROOT}; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; echo libamdocl64.so > ${OPENCL_VENDOR_PATH}/amdocl64.icd; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; export LD_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64:${LD_LIBRARY_PATH}; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; export CMAKE_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; chmod +x ${AMDAPPSDKROOT}/bin/x86_64/clinfo; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; ${AMDAPPSDKROOT}/bin/x86_64/clinfo; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash buildprocess/amd_sdk.sh; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then tar -xjf AMD-SDK.tar.bz2; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then AMDAPPSDKROOT=${HOME}/AMDAPPSDK; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export OPENCL_VENDOR_PATH=${AMDAPPSDKROOT}/etc/OpenCL/vendors; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then mkdir -p ${OPENCL_VENDOR_PATH}; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh AMD-APP-SDK*.sh --tar -xf -C ${AMDAPPSDKROOT}; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo libamdocl64.so > ${OPENCL_VENDOR_PATH}/amdocl64.icd; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export LD_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64:${LD_LIBRARY_PATH}; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CMAKE_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then chmod +x ${AMDAPPSDKROOT}/bin/x86_64/clinfo; fi
+        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ${AMDAPPSDKROOT}/bin/x86_64/clinfo; fi
 
 matrix:
         exclude:
