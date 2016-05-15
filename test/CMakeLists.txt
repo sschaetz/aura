@@ -6,11 +6,13 @@ FUNCTION(ADD_AURA_TEST TEST_NAME TEST_SOURCE)
                               ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
 	                      ${Boost_SYSTEM_LIBRARY})
         ADD_TEST(${TEST_NAME} ${TEST_NAME})
-        IF(APPLE)
+        IF (APPLE)
                 SET_SOURCE_FILES_PROPERTIES(${TEST_SOURCE}
                         PROPERTIES COMPILE_FLAGS "-x objective-c++")
+                TARGET_LINK_LIBRARIES(${TEST_NAME}
+                                      ${FOUNDATION_LIB})
         ENDIF()
 ENDFUNCTION()
 
-ADD_AURA_TEST(test.device device.cpp)
+ADD_AURA_TEST(test.basic basic.cpp)
 

@@ -70,6 +70,41 @@ public:
         }
 
 
+        /// @copydoc boost::aura::base::cuda::device::get_base_device()
+        inline const cl_device_id& get_base_device() const
+        {
+                return device_;
+        }
+
+
+        /// @copydoc boost::aura::base::cuda::device::get_base_conext()
+        inline const cl_context& get_base_context() const
+        {
+                return context_;
+        }
+
+
+        /// @copydoc boost::aura::base::cuda::device::get_ordinal()
+        inline std::size_t get_ordinal() const
+        {
+                return ordinal_;
+        }
+
+
+        /// Make context active.
+        inline void activate() const
+        {
+                // Pass
+        }
+
+
+        /// Make context not active.
+        inline void deactivate() const
+        {
+                // Pass
+        }
+
+
 private:
         /// Device ordinal
         std::size_t ordinal_;
