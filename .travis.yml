@@ -50,15 +50,18 @@ matrix:
         include:
                 - os: linux
                   env: AURA_BASE=OPENCL
+                       AURA_UNIT_TEST_DEVICE=1
                   compiler: gcc
                 - os: osx 
                   env: AURA_BASE=METAL
+                       AURA_UNIT_TEST_DEVICE=0
                   compiler: clang 
 
 
 
 script:
         - mkdir -p build && cd build
-        - cmake -DAURA_BASE="$AURA_BASE" ..
+        - cmake -DAURA_BASE="$AURA_BASE" -DAURA_UNIT_TEST_DEVICE="$AURA_UNIT_TEST_DEVICE" ..
         - make all
+        - test/test.basic
         - ctest
