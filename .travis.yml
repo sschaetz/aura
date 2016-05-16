@@ -50,7 +50,7 @@ matrix:
         include:
                 - os: linux
                   env: AURA_BASE=OPENCL
-                       AURA_UNIT_TEST_DEVICE=1
+                       AURA_UNIT_TEST_DEVICE=0
                   compiler: gcc
                 - os: osx 
                   env: AURA_BASE=METAL
