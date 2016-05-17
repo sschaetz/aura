@@ -1,8 +1,9 @@
 #pragma once
 
-#include <cuda.h>
 #include <boost/aura/base/cuda/device.hpp>
 #include <boost/aura/base/cuda/safecall.hpp>
+
+#include <cuda.h>
 
 namespace boost
 {
@@ -22,11 +23,9 @@ public:
                 : device_(nullptr) {}
 
 	/**
-	 * create device feed for device
+	 * Create device feed for device.
 	 *
 	 * @param d device to create feed for
-	 *
-	 * const device & is not allowed since an actual instance is needed
 	 */
 	inline explicit feed(device& d)
                 : device_(&d)
@@ -70,7 +69,7 @@ public:
 	}
 
 	/// Wait until all commands in the feed have finished.
-	inline void synchronize() const
+	inline void synchronize()
 	{
 		device_->activate();
 		AURA_CUDA_SAFE_CALL(cuStreamSynchronize(feed_));
@@ -90,7 +89,7 @@ public:
 	}
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-	inline const CUdevice & get_base_device() const
+	inline const CUdevice& get_base_device() const
 	{
 		return device_->get_base_device();
 	}
@@ -137,7 +136,7 @@ private:
  *
  * @param f the feed to wait for
  */
-inline void wait_for(feed & f)
+inline void wait_for(feed& f)
 {
 	f.synchronize();
 }

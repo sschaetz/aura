@@ -24,13 +24,11 @@ public:
                 AURA_CUDA_SAFE_CALL(cuCtxCreate(&context_, 0, device_));
         }
 
-
         /// Destroy device.
         inline ~device()
         {
                 AURA_CUDA_SAFE_CALL(cuCtxDestroy(context_));
         }
-
 
         /// Access the device handle.
         inline const CUdevice & get_base_device() const
@@ -38,13 +36,11 @@ public:
                 return device_;
         }
 
-
         /// Access the context handle.
         inline const CUcontext & get_base_context() const
         {
                 return context_;
         }
-
 
         /// Access the device ordinal.
         inline std::size_t get_ordinal() const
@@ -52,20 +48,17 @@ public:
                 return ordinal_;
         }
 
-
-        /// @copydoc boost::aura::base::cuda::device::activate()
+        /// Make device activate device.
         inline void activate() const
         {
                 AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(context_));
         }
 
-
-        /// @copydoc boost::aura::base::cuda::device::deactivate()
+        /// Undo make device active device.
         inline void deactivate() const
         {
                 AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
         }
-
 
 private:
         /// Device ordinal

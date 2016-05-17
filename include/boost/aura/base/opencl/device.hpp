@@ -60,7 +60,6 @@ public:
 #endif // CL_VERSION_1_2
         }
 
-
         /// @copydoc boost::aura::base::cuda::device::~device()
         inline ~device() {
 #ifndef CL_VERSION_1_2
@@ -69,13 +68,11 @@ public:
                 AURA_OPENCL_SAFE_CALL(clReleaseContext(context_));
         }
 
-
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
         inline const cl_device_id& get_base_device() const
         {
                 return device_;
         }
-
 
         /// @copydoc boost::aura::base::cuda::device::get_base_conext()
         inline const cl_context& get_base_context() const
@@ -83,13 +80,11 @@ public:
                 return context_;
         }
 
-
         /// @copydoc boost::aura::base::cuda::device::get_ordinal()
         inline std::size_t get_ordinal() const
         {
                 return ordinal_;
         }
-
 
         /// @copydoc boost::aura::base::cuda::device::activate()
         inline void activate() const
@@ -97,13 +92,11 @@ public:
                 // Pass
         }
 
-
         /// @copydoc boost::aura::base::cuda::device::deactivate()
         inline void deactivate() const
         {
                 // Pass
         }
-
 
 private:
         /// Device ordinal

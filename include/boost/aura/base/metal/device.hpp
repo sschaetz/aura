@@ -20,13 +20,11 @@ public:
                 AURA_METAL_CHECK_ERROR(device_);
         }
 
-
         /// @copydoc boost::aura::base::cuda::device::~device()
         inline ~device()
         {
                 device_ = nil;
         }
-
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
         inline __strong id<MTLDevice>& get_base_device()
@@ -34,27 +32,17 @@ public:
                 return device_;
         }
 
-
-        /// @copydoc boost::aura::base::cuda::device::get_base_conext()
-        inline const void* get_base_context() const
-        {
-                return nullptr;
-        }
-
-
         /// @copydoc boost::aura::base::cuda::device::get_ordinal()
         inline std::size_t get_ordinal() const
         {
                 return ordinal_;
         }
 
-
         /// @copydoc boost::aura::base::cuda::device::activate()
         inline void activate() const
         {
                 // Pass
         }
-
 
         /// @copydoc boost::aura::base::cuda::device::deactivate()
         inline void deactivate() const

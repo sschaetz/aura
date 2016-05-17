@@ -6,6 +6,8 @@
 #include <boost/aura/feed.hpp>
 
 
+#include <iostream>
+
 // _____________________________________________________________________________
 
 BOOST_AUTO_TEST_CASE(basic_device)
@@ -25,7 +27,9 @@ BOOST_AUTO_TEST_CASE(basic_device_getters)
         {
                 boost::aura::device d(AURA_UNIT_TEST_DEVICE);
                 auto base_device_handle = d.get_base_device();
+#ifndef AURA_BASE_METAL
                 auto base_context_handle = d.get_base_context();
+#endif
 		BOOST_CHECK(d.get_ordinal() == AURA_UNIT_TEST_DEVICE);
         }
         boost::aura::finalize();
@@ -33,6 +37,7 @@ BOOST_AUTO_TEST_CASE(basic_device_getters)
 
 
 // _____________________________________________________________________________
+
 BOOST_AUTO_TEST_CASE(basic_feed)
 {
         boost::aura::initialize();
@@ -43,12 +48,18 @@ BOOST_AUTO_TEST_CASE(basic_feed)
                 f.synchronize();
                 wait_for(f);
                 auto base_device_handle = f.get_base_device();
+#ifndef AURA_BASE_METAL
                 auto base_context_handle = f.get_base_context();
+#endif
                 auto base_feed_handle = f.get_base_feed();
-		BOOST_CHECK(f.get_device().get_ordinal() == AURA_UNIT_TEST_DEVICE);
+		BOOST_CHECK(f.get_device().get_ordinal() ==
+                        AURA_UNIT_TEST_DEVICE);
                 boost::aura::feed f2(std::move(f));
                 f = std::move(f2);
 
+#ifdef AURA_BASE_METAL
+                auto command_buffer = f.get_command_buffer();
+#endif
         }
         boost::aura::finalize();
 }
