@@ -52,10 +52,10 @@ matrix:
                   env: AURA_BASE=OPENCL
                        AURA_UNIT_TEST_DEVICE=0
                   compiler: gcc
-                - os: osx 
-                  env: AURA_BASE=METAL
-                       AURA_UNIT_TEST_DEVICE=0
-                  compiler: clang 
+                #- os: osx 
+                  #env: AURA_BASE=METAL
+                  #     AURA_UNIT_TEST_DEVICE=0
+                  #compiler: clang 
 
 
 

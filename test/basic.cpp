@@ -24,9 +24,9 @@ BOOST_AUTO_TEST_CASE(basic_device_getters)
         boost::aura::initialize();
         {
                 boost::aura::device d(AURA_UNIT_TEST_DEVICE);
-                //auto base_device_handle = d.get_base_device();
-                //auto base_context_handle = d.get_base_context();
-		//BOOST_CHECK(d.get_ordinal() == AURA_UNIT_TEST_DEVICE);
+                auto base_device_handle = d.get_base_device();
+                auto base_context_handle = d.get_base_context();
+		BOOST_CHECK(d.get_ordinal() == AURA_UNIT_TEST_DEVICE);
         }
         boost::aura::finalize();
 }
