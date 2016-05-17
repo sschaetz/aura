@@ -20,7 +20,16 @@ namespace aura {
 #endif
 
 using base::feed;
-using base::wait_for;
+
+/**
+ * @brief wait for a feed to finish all operations
+ *
+ * @param f the feed to wait for
+ */
+inline void wait_for(feed& f)
+{
+	f.synchronize();
+}
 
 } // namespace aura
 } // namespace boost

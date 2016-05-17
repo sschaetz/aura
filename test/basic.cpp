@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(basic_feed)
                 boost::aura::device d(AURA_UNIT_TEST_DEVICE);
                 boost::aura::feed f(d);
                 f.synchronize();
-                wait_for(f);
+                boost::aura::wait_for(f);
                 auto base_device_handle = f.get_base_device();
 #ifndef AURA_BASE_METAL
                 auto base_context_handle = f.get_base_context();

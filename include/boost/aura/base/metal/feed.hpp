@@ -75,16 +75,6 @@ public:
                 command_buffers_.clear();
 	}
 
-        /// @copydoc boost::aura::base::cuda::device::activate()
-	inline void activate() const
-	{
-	}
-
-        /// @copydoc boost::aura::base::cuda::device::deactivate()
-	inline void deactivate() const
-	{
-	}
-
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
 	inline const __strong id<MTLDevice>& get_base_device() const
 	{
@@ -93,6 +83,12 @@ public:
 
         /// @copydoc boost::aura::base::cuda::feed::get_base_feed()
 	inline const id<MTLCommandQueue> get_base_feed() const
+	{
+		return feed_;
+	}
+
+        /// @copydoc boost::aura::base::cuda::feed::get_base_feed()
+	inline id<MTLCommandQueue> get_base_feed()
 	{
 		return feed_;
 	}
