@@ -20,6 +20,7 @@ namespace aura {
 #endif
 
 using base::feed;
+using base::wait_for;
 
 } // namespace aura
 } // namespace boost

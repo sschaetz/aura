@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ev
+
 function build_and_test_target() 
 {
         CURDIR=$(pwd)
@@ -14,7 +16,7 @@ function build_and_test_target()
         cd $CURDIR
 }
 
-build_and_test_target "METAL"
 build_and_test_target "CUDA"
+build_and_test_target "METAL"
 build_and_test_target "OPENCL"
 

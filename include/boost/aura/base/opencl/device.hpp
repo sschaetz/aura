@@ -91,14 +91,14 @@ public:
         }
 
 
-        /// Make context active.
+        /// @copydoc boost::aura::base::cuda::device::activate()
         inline void activate() const
         {
                 // Pass
         }
 
 
-        /// Make context not active.
+        /// @copydoc boost::aura::base::cuda::device::deactivate()
         inline void deactivate() const
         {
                 // Pass

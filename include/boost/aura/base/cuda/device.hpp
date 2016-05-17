@@ -53,14 +53,14 @@ public:
         }
 
 
-        /// Make context active.
+        /// @copydoc boost::aura::base::cuda::device::activate()
         inline void activate() const
         {
                 AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(context_));
         }
 
 
-        /// Make context not active.
+        /// @copydoc boost::aura::base::cuda::device::deactivate()
         inline void deactivate() const
         {
                 AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
