@@ -17,6 +17,7 @@ public:
                 : ordinal_(ordinal)
         {
                 device_ = MTLCreateSystemDefaultDevice();
+                AURA_METAL_CHECK_ERROR(device_);
         }
 
 
@@ -30,7 +31,6 @@ public:
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
         inline __strong id<MTLDevice>& get_base_device()
         {
-                AURA_METAL_CHECK_ERROR(device_);
                 return device_;
         }
 

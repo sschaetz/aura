@@ -20,8 +20,8 @@ before_build:
 
 build_script:
         - mkdir build && cd build
-        - cmake -G"Visual Studio 14 Win64" ..
-        - cmake -DAURA_BASE=OPENCL -DAURA_UNIT_TEST_DEVICE=0 --build . --config Release
+        - cmake -DAURA_BASE=OPENCL -DAURA_UNIT_TEST_DEVICE=0 -G"Visual Studio 14 Win64" ..
+        - cmake --build . --config Release
 
 test_script:
         - ctest --output-on-failure
