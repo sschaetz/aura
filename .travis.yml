@@ -56,7 +56,7 @@ matrix:
                 - os: osx 
                   env: AURA_BASE=METAL
                        AURA_UNIT_TEST_DEVICE=0
-                       RUNTEST="yes"
+                       RUNTEST="no"
                   compiler: clang 
 
 
