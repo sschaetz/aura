@@ -24,7 +24,7 @@ BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: true 
 ColumnLimit:     80
 CommentPragmas:  '^ IWYU pragma:'
-ConstructorInitializerAllOnOneLineOrOnePerLine: true 
+ConstructorInitializerAllOnOneLineOrOnePerLine: false 
 ConstructorInitializerIndentWidth: 8
 ContinuationIndentWidth: 8
 Cpp11BracedListStyle: true

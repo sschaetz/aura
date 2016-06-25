@@ -4,10 +4,14 @@
 
 #include <cuda.h>
 
-namespace boost {
-namespace aura {
-namespace base_detail {
-namespace cuda {
+namespace boost
+{
+namespace aura
+{
+namespace base_detail
+{
+namespace cuda
+{
 
 /// Initialize base.
 inline void initialize()
@@ -25,4 +29,3 @@ inline void finalize()
 } // base_detail
 } // aura
 } // boost
-

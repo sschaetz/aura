@@ -11,21 +11,19 @@ namespace aura
 namespace detail
 {
 
-template <typename T>
-inline std::string value_to_string(const T &value)
+template <typename T> inline std::string value_to_string(const T &value)
 {
         std::ostringstream out;
         out << std::setprecision(std::numeric_limits<T>::digits10 + 1) << value;
         return out.str();
 }
 
-template <>
-inline std::string value_to_string(const float &value)
+template <> inline std::string value_to_string(const float &value)
 {
         std::ostringstream out;
-        out << std::fixed <<
-                std::setprecision(std::numeric_limits<float>::digits10 + 1) <<
-                value << 'f';
+        out << std::fixed
+            << std::setprecision(std::numeric_limits<float>::digits10 + 1)
+            << value << 'f';
         return out.str();
 }
 
@@ -58,7 +56,8 @@ inline std::string value_to_string(const std::string &value)
 
 struct preprocessor
 {
-        inline preprocessor() : re_("(<<<([A-z0-9_])+>>>)")
+        inline preprocessor()
+                : re_("(<<<([A-z0-9_])+>>>)")
         {
         }
 
@@ -92,4 +91,3 @@ private:
 
 } // namespace aura
 } // namespace boost
-

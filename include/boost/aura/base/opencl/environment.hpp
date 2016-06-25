@@ -1,9 +1,13 @@
 #pragma once
 
-namespace boost {
-namespace aura {
-namespace base_detail {
-namespace opencl {
+namespace boost
+{
+namespace aura
+{
+namespace base_detail
+{
+namespace opencl
+{
 
 /// @copydoc boost::aura::base::cuda::initialize()
 inline void initialize()
@@ -21,4 +25,3 @@ inline void finalize()
 } // base_detail
 } // aura
 } // boost
-

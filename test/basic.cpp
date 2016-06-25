@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(basic_device_getters)
 #ifndef AURA_BASE_METAL
                 auto base_context_handle = d.get_base_context();
 #endif
-		BOOST_CHECK(d.get_ordinal() == AURA_UNIT_TEST_DEVICE);
+                BOOST_CHECK(d.get_ordinal() == AURA_UNIT_TEST_DEVICE);
         }
         boost::aura::finalize();
 }
@@ -52,8 +52,8 @@ BOOST_AUTO_TEST_CASE(basic_feed)
                 auto base_context_handle = f.get_base_context();
 #endif
                 auto base_feed_handle = f.get_base_feed();
-		BOOST_CHECK(f.get_device().get_ordinal() ==
-                        AURA_UNIT_TEST_DEVICE);
+                BOOST_CHECK(
+                        f.get_device().get_ordinal() == AURA_UNIT_TEST_DEVICE);
                 boost::aura::feed f2(std::move(f));
                 f = std::move(f2);
 
@@ -63,4 +63,3 @@ BOOST_AUTO_TEST_CASE(basic_feed)
         }
         boost::aura::finalize();
 }
-
