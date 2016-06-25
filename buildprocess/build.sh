@@ -16,8 +16,14 @@ function build_and_test_target()
         CTEST_RESULT=$?
         cd $CURDIR
         echo "CMAKE" $CMAKE_RESULT "MAKE" $MAKE_RESULT CTEST $CTEST_RESULT
-        curl --upload-file /tmp/aura-build-$1.log $4newbr?cmake_result=$CMAKE_RESULT\&make_result=$MAKE_RESULT\&ctest_result=$CTEST_RESULT\&branch=$2\&commitid=$3\&backend=$1\&machine=$(hostname)
-}
+        if [ $# -ge 3 ]
+        then
+                if [ ! -z $4 ] 
+                then 
+                        curl --upload-file /tmp/aura-build-$1.log $4newbr?cmake_result=$CMAKE_RESULT\&make_result=$MAKE_RESULT\&ctest_result=$CTEST_RESULT\&branch=$2\&commitid=$3\&backend=$1\&machine=$(hostname)
+                fi
+        fi
+        }
 
 BRANCH=$(git branch | sed -n '/\* /s///p')
 COMMIT=$(git rev-parse HEAD)

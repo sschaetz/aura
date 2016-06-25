@@ -29,6 +29,7 @@ before_install:
           libboost-thread-dev 
           libboost-program-options-dev
           libboost-test-dev
+          libboost-regex-dev
           opencl-headers
           ; fi
         - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash buildprocess/amd_sdk.sh; fi
