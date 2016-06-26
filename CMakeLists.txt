@@ -71,8 +71,10 @@ ADD_DEFINITIONS(${AURA_BASE_DEFINE})
 
 
 # Compiler and linker flags
-SET(CMAKE_CXX_FLAGS "-std=c++0x -g -O3")
-IF (NOT WIN32)
+ADD_COMPILE_OPTIONS(-std=c++0x -g -O3)
+IF (WIN32)
+        ADD_COMPILE_OPTIONS(/EHsc)
+ELSE()
         # Prevent VS from spewing lots of warnings.
         ADD_COMPILE_OPTIONS(-Wall)
 ENDIF()
