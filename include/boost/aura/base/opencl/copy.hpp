@@ -42,11 +42,11 @@ template <typename T>
 void copy(const device_ptr<T>& first, const device_ptr<T>& last,
         device_ptr<T>& dst_first, feed& f)
 {
-        AURA_OPENCL_SAFE_CALL(
-                clEnqueueCopyBuffer(f.get_base_feed(), first.get_base_ptr(),
-                        dst_first.get_base(), first.get_offset() * sizeof(T),
-                        dst_first.get_offset() * sizeof(T),
-                        std::distance(first, last) * sizeof(T), 0, 0, 0));
+        AURA_OPENCL_SAFE_CALL(clEnqueueCopyBuffer(f.get_base_feed(),
+                first.get_base_ptr(), dst_first.get_base_ptr(),
+                first.get_offset() * sizeof(T),
+                dst_first.get_offset() * sizeof(T),
+                std::distance(first, last) * sizeof(T), 0, 0, 0));
 }
 
 } // opencl
