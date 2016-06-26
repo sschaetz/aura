@@ -5,6 +5,8 @@
 
 #include <cuda.h>
 
+#include <iterator>
+
 namespace boost
 {
 namespace aura
@@ -21,7 +23,8 @@ void copy(InputIt first, InputIt last, device_ptr<T>& dst_first, feed& f)
         f.get_device().activate();
         AURA_CUDA_SAFE_CALL(cuMemcpyHtoDAsync(
                 dst_first.get_base_ptr() + dst_first.get_offset() * sizeof(T),
-                &(*first), (last - first) * sizeof(T), f.get_base_feed()));
+                &(*first), std::distance(first, last) * sizeof(T),
+                f.get_base_feed()));
         f.get_device().deactivate();
 }
 
@@ -34,7 +37,7 @@ void copy(const device_ptr<T>& first, const device_ptr<T>& last,
         f.get_device().activate();
         AURA_CUDA_SAFE_CALL(cuMemcpyDtoHAsync(&(*dst_first),
                 first.get_base_ptr() + first.get_offset(),
-                (last - first) * sizeof(T), f.get_base_feed()));
+                std::distance(first, last) * sizeof(T), f.get_base_feed()));
         f.get_device().deactivate();
 }
 
@@ -47,7 +50,7 @@ void copy(const device_ptr<T>& first, const device_ptr<T>& last,
         AURA_CUDA_SAFE_CALL(cuMemcpyDtoDAsync(
                 dst_first.get_base_ptr() + dst_first.get_offset() * sizeof(T),
                 first.get_base_ptr() + first.get_offset() * sizeof(T),
-                (last - first) * sizeof(T), f.get_base_feed()));
+                std::distance(first, last) * sizeof(T), f.get_base_feed()));
         f.get_device().deactivate();
 }
 

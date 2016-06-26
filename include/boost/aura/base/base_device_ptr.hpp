@@ -16,6 +16,13 @@ namespace detail
 template <typename T, typename BaseType>
 struct base_device_ptr
 {
+        /// Types required to make this an iterator.
+        typedef std::random_access_iterator_tag iterator_category;
+        typedef T value_type;
+        typedef std::ptrdiff_t difference_type;
+        typedef T* pointer;
+        typedef T& reference;
+
         /// Base handle type
         /// Can not be assigned to nullptr since
         /// it is defined as long long unsigned int.
@@ -24,7 +31,6 @@ struct base_device_ptr
         /// Base handle type
         typedef const BaseType const_base_type;
 
-public:
         /// @brief Create pointer that points nowhere.
         base_device_ptr()
                 : memory_(0)
