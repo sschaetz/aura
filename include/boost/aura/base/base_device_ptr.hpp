@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/aura/memory_tag.hpp>
+#include <boost/aura/device.hpp>
 
 #include <cstddef>
 
@@ -12,16 +13,16 @@ namespace detail
 {
 
 /// Base device pointer does not manage memory.
-template <typename T, typename BASE_TYPE>
+template <typename T, typename BaseType>
 struct base_device_ptr
 {
         /// Base handle type
         /// Can not be assigned to nullptr since
         /// it is defined as long long unsigned int.
-        typedef BASE_TYPE base_type;
+        typedef BaseType base_type;
 
         /// Base handle type
-        typedef const BASE_TYPE const_base_type;
+        typedef const BaseType const_base_type;
 
 public:
         /// @brief Create pointer that points nowhere.
@@ -109,8 +110,8 @@ public:
         }
 
         /// Assign operator.
-        base_device_ptr<T, BASE_TYPE> &operator=(
-                base_device_ptr<T, BASE_TYPE> const &b)
+        base_device_ptr<T, BaseType> &operator=(
+                base_device_ptr<T, BaseType> const &b)
         {
                 memory_ = b.memory_;
                 offset_ = b.offset_;
@@ -120,68 +121,78 @@ public:
         }
 
         /// Assign nullptr operator.
-        base_device_ptr<T, BASE_TYPE> &operator=(std::nullptr_t)
+        base_device_ptr<T, BaseType> &operator=(std::nullptr_t)
         {
                 reset();
                 return *this;
         }
 
         /// Addition operator.
-        base_device_ptr<T, BASE_TYPE> operator+(const std::size_t &b) const
+        base_device_ptr<T, BaseType> operator+(const std::size_t &b) const
         {
-                return base_device_ptr<T, BASE_TYPE>(
+                return base_device_ptr<T, BaseType>(
                         memory_, offset_ + b, *device_, tag_);
         }
 
+        std::ptrdiff_t operator+(const base_device_ptr<T, BaseType>& b) const
+        {
+                return offset_ + b.offset_;
+        }
+
         /// Addition assignment operator
-        base_device_ptr<T, BASE_TYPE> &operator+=(const std::size_t &b)
+        base_device_ptr<T, BaseType> &operator+=(const std::size_t &b)
         {
                 offset_ += b;
                 return *this;
         }
 
         /// Prefix addition operator
-        base_device_ptr<T, BASE_TYPE> &operator++()
+        base_device_ptr<T, BaseType> &operator++()
         {
                 ++offset_;
                 return *this;
         }
 
         /// postfix addition operator
-        base_device_ptr<T, BASE_TYPE> operator++(int)
+        base_device_ptr<T, BaseType> operator++(int)
         {
-                return base_device_ptr<T, BASE_TYPE>(
+                return base_device_ptr<T, BaseType>(
                         memory_, offset_ + 1, *device_);
         }
 
         /// subtraction operator
-        base_device_ptr<T, BASE_TYPE> operator-(const std::size_t &b) const
+        base_device_ptr<T, BaseType> operator-(const std::size_t &b) const
         {
                 return *this + (-b);
         }
 
+        std::ptrdiff_t operator-(const base_device_ptr<T, BaseType>& b) const
+        {
+                return offset_ - b.offset_;
+        }
+
         /// subtraction assignment operator
-        base_device_ptr<T, BASE_TYPE> &operator-=(const std::size_t &b)
+        base_device_ptr<T, BaseType> &operator-=(const std::size_t &b)
         {
                 return *this += (-b);
         }
 
         /// prefix subtraction operator
-        base_device_ptr<T, BASE_TYPE> &operator--()
+        base_device_ptr<T, BaseType> &operator--()
         {
                 --offset_;
                 return *this;
         }
 
         /// postfix subtraction operator
-        base_device_ptr<T, BASE_TYPE> operator--(int)
+        base_device_ptr<T, BaseType> operator--(int)
         {
-                return base_device_ptr<T, BASE_TYPE>(
+                return base_device_ptr<T, BaseType>(
                         memory_, offset_ - 1, *device_, tag_);
         }
 
         /// equal to operator
-        bool operator==(const base_device_ptr<T, BASE_TYPE> &b) const
+        bool operator==(const base_device_ptr<T, BaseType> &b) const
         {
                 if (nullptr == device_ || nullptr == b.device_)
                 {
@@ -204,7 +215,7 @@ public:
         }
 
         /// not equal to operator
-        bool operator!=(const base_device_ptr<T, BASE_TYPE> &b) const
+        bool operator!=(const base_device_ptr<T, BaseType> &b) const
         {
                 return !(*this == b);
         }

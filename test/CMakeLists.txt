@@ -16,6 +16,7 @@ FUNCTION(ADD_AURA_TEST TEST_NAME TEST_SOURCE)
 ENDFUNCTION()
 
 ADD_AURA_TEST(test.basic basic.cpp)
+ADD_AURA_TEST(test.copy copy.cpp)
 ADD_AURA_TEST(test.preprocessor preprocessor.cpp)
 ADD_AURA_TEST(test.device_ptr device_ptr.cpp)
 
