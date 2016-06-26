@@ -71,8 +71,11 @@ ADD_DEFINITIONS(${AURA_BASE_DEFINE})
 
 
 # Compiler and linker flags
-SET(CMAKE_CXX_FLAGS "-Wall -std=c++0x -g -O3")
-
+SET(CMAKE_CXX_FLAGS "-std=c++0x -g -O3")
+IF (NOT WIN32)
+        # Prevent VS from spewing lots of warnings.
+        ADD_COMPILE_OPTIONS(-Wall)
+ENDIF()
 
 # Set global include directories for project.
 INCLUDE_DIRECTORIES("${AURA_BASE_INCLUDE_DIRS}")
