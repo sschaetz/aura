@@ -11,14 +11,16 @@ namespace aura
 namespace detail
 {
 
-template <typename T> inline std::string value_to_string(const T &value)
+template <typename T>
+inline std::string value_to_string(const T &value)
 {
         std::ostringstream out;
         out << std::setprecision(std::numeric_limits<T>::digits10 + 1) << value;
         return out.str();
 }
 
-template <> inline std::string value_to_string(const float &value)
+template <>
+inline std::string value_to_string(const float &value)
 {
         std::ostringstream out;
         out << std::fixed

@@ -22,7 +22,7 @@ struct device_ptr_base_type
         std::shared_ptr<T> host_ptr;
 
         // Emulate memory_ = 0; behaviour of other base types.
-        device_ptr_base_type& operator=(int a)
+        device_ptr_base_type &operator=(int a)
         {
                 if (a == 0)
                 {
@@ -35,16 +35,19 @@ struct device_ptr_base_type
 
 
 template <typename T>
-using device_ptr = boost::aura::detail::base_device_ptr<T, device_ptr_base_type<T>>;
+using device_ptr =
+        boost::aura::detail::base_device_ptr<T, device_ptr_base_type<T>>;
 
 /// equal to operator (reverse order)
-template <typename T> bool operator==(std::nullptr_t, const device_ptr<T> &ptr)
+template <typename T>
+bool operator==(std::nullptr_t, const device_ptr<T> &ptr)
 {
         return (ptr == nullptr);
 }
 
 /// not equal to operator (reverse order)
-template <typename T> bool operator!=(std::nullptr_t, const device_ptr<T> &ptr)
+template <typename T>
+bool operator!=(std::nullptr_t, const device_ptr<T> &ptr)
 {
         return (ptr != nullptr);
 }
@@ -52,7 +55,7 @@ template <typename T> bool operator!=(std::nullptr_t, const device_ptr<T> &ptr)
 namespace detail
 {
 
-void free_posix_memalign(void* ptr, NSUInteger)
+void free_posix_memalign(void *ptr, NSUInteger)
 {
         free(ptr);
 }
@@ -63,31 +66,31 @@ int counter = 0;
 
 /// Allocate device memory.
 template <typename T>
-device_ptr<T> device_malloc(std::size_t size,
-        device& d, memory_access_tag tag = memory_access_tag::rw)
+device_ptr<T> device_malloc(std::size_t size, device &d,
+        memory_access_tag tag = memory_access_tag::rw)
 {
         constexpr std::size_t metal_memory_alignment = 16384;
         std::size_t num_bytes = size * sizeof(T);
         // Compute aligned array size.
         size_t aligned_size = num_bytes +
-            (metal_memory_alignment -
-             (num_bytes % metal_memory_alignment));
+                (metal_memory_alignment - (num_bytes % metal_memory_alignment));
 
-        void* host_ptr;
+        void *host_ptr;
 
         // Allocate array.
         int err = 0;
-        err = posix_memalign(&host_ptr,
-                metal_memory_alignment, aligned_size);
+        err = posix_memalign(&host_ptr, metal_memory_alignment, aligned_size);
         AURA_METAL_CHECK_ERROR((err == KERN_SUCCESS));
 
         // Create buffer.
         typename device_ptr<T>::base_type m;
-        m.device_buffer = [d.get_base_device() newBufferWithBytesNoCopy:host_ptr
-                                length:aligned_size
-                                options:0 deallocator:nil];
-        m.host_ptr = std::shared_ptr<T>(reinterpret_cast<T*>(host_ptr),
-                        [](T* ptr)
+        m.device_buffer =
+                [d.get_base_device() newBufferWithBytesNoCopy:host_ptr
+                                                       length:aligned_size
+                                                      options:0
+                                                  deallocator:nil];
+        m.host_ptr =
+                std::shared_ptr<T>(reinterpret_cast<T *>(host_ptr), [](T *ptr)
                         {
                                 free(ptr);
                         });
@@ -98,7 +101,7 @@ device_ptr<T> device_malloc(std::size_t size,
 
 /// Free device memory.
 template <typename T>
-void device_free(device_ptr<T>& ptr)
+void device_free(device_ptr<T> &ptr)
 {
         ptr.reset();
 }

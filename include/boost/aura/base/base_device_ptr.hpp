@@ -45,7 +45,8 @@ public:
         /// @brief Create device pointer that points to memory.
         /// @param m Memory that identifies device memory
         /// @param d Device the memory is allocated on
-        base_device_ptr(base_type &m, device &d, memory_access_tag tag = memory_access_tag::rw)
+        base_device_ptr(base_type &m, device &d,
+                memory_access_tag tag = memory_access_tag::rw)
                 : memory_(m)
                 , offset_(0)
                 , device_(&d)
@@ -108,7 +109,8 @@ public:
         }
 
         /// Assign operator.
-        base_device_ptr<T, BASE_TYPE> &operator=(base_device_ptr<T, BASE_TYPE> const &b)
+        base_device_ptr<T, BASE_TYPE> &operator=(
+                base_device_ptr<T, BASE_TYPE> const &b)
         {
                 memory_ = b.memory_;
                 offset_ = b.offset_;
@@ -127,7 +129,8 @@ public:
         /// Addition operator.
         base_device_ptr<T, BASE_TYPE> operator+(const std::size_t &b) const
         {
-                return base_device_ptr<T, BASE_TYPE>(memory_, offset_ + b, *device_, tag_);
+                return base_device_ptr<T, BASE_TYPE>(
+                        memory_, offset_ + b, *device_, tag_);
         }
 
         /// Addition assignment operator
@@ -147,7 +150,8 @@ public:
         /// postfix addition operator
         base_device_ptr<T, BASE_TYPE> operator++(int)
         {
-                return base_device_ptr<T, BASE_TYPE>(memory_, offset_ + 1, *device_);
+                return base_device_ptr<T, BASE_TYPE>(
+                        memory_, offset_ + 1, *device_);
         }
 
         /// subtraction operator
@@ -172,7 +176,8 @@ public:
         /// postfix subtraction operator
         base_device_ptr<T, BASE_TYPE> operator--(int)
         {
-                return base_device_ptr<T, BASE_TYPE>(memory_, offset_ - 1, *device_, tag_);
+                return base_device_ptr<T, BASE_TYPE>(
+                        memory_, offset_ - 1, *device_, tag_);
         }
 
         /// equal to operator

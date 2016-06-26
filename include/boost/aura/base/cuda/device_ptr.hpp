@@ -49,7 +49,8 @@ device_ptr<T> device_malloc(std::size_t size, device &d,
 }
 
 /// Free device memory.
-template <typename T> void device_free(device_ptr<T> &ptr)
+template <typename T>
+void device_free(device_ptr<T> &ptr)
 {
         ptr.get_device().activate();
         AURA_CUDA_SAFE_CALL(cuMemFree(ptr.get_base_ptr()));
