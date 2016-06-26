@@ -22,10 +22,11 @@ BOOST_AUTO_TEST_CASE(excessive_ptr)
 
                 auto ptr = boost::aura::device_malloc<float>(1024, d);
                 boost::aura::copy(host_src.begin(), host_src.end(), ptr, f);
-                boost::aura::copy(ptr, ptr+1024, host_dst.begin(), f);
+                boost::aura::copy(ptr, ptr + 1024, host_dst.begin(), f);
                 boost::aura::wait_for(f);
                 boost::aura::device_free(ptr);
-                BOOST_CHECK(std::equal(host_src.begin(), host_src.end(), host_dst.begin()));
+                BOOST_CHECK(std::equal(
+                        host_src.begin(), host_src.end(), host_dst.begin()));
         }
         boost::aura::finalize();
 }

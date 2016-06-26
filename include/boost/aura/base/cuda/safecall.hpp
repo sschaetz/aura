@@ -8,7 +8,7 @@
                 CUresult err = call;                                        \
                 if (err != CUDA_SUCCESS)                                    \
                 {                                                           \
-                        const char *errstr;                                 \
+                        const char* errstr;                                 \
                         cuGetErrorName(err, &errstr);                       \
                         std::ostringstream os;                              \
                         os << "CUDA error " << err << " " << errstr         \
@@ -24,7 +24,7 @@
         {                                                                   \
                 if (err != CUDA_SUCCESS)                                    \
                 {                                                           \
-                        const char *errstr;                                 \
+                        const char* errstr;                                 \
                         cuGetErrorName(err, &errstr);                       \
                         std::ostringstream os;                              \
                         os << "CUDA error " << err << " " << errstr         \

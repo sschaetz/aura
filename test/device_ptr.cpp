@@ -24,10 +24,10 @@ BOOST_AUTO_TEST_CASE(pointer_arithmetic)
         {
                 boost::aura::device d(AURA_UNIT_TEST_DEVICE);
                 auto ptr = boost::aura::device_malloc<float>(1024, d);
-                BOOST_CHECK(ptr-ptr == 0);
-                BOOST_CHECK(ptr+ptr == 0);
+                BOOST_CHECK(ptr - ptr == 0);
+                BOOST_CHECK(ptr + ptr == 0);
                 auto ptr2 = ptr + 100;
-                BOOST_CHECK(ptr2-ptr == 100);
+                BOOST_CHECK(ptr2 - ptr == 100);
                 boost::aura::device_free(ptr);
         }
         boost::aura::finalize();

@@ -29,7 +29,7 @@ public:
          *
          * @param d device to create feed for
          */
-        inline explicit feed(device &d)
+        inline explicit feed(device& d)
                 : device_(&d)
         {
                 device_->activate();
@@ -43,7 +43,7 @@ public:
          *
          * @param f feed to move here
          */
-        feed(feed &&f)
+        feed(feed&& f)
                 : device_(f.device_)
                 , feed_(f.feed_)
         {
@@ -55,7 +55,7 @@ public:
          *
          * @param f feed to move here
          */
-        feed &operator=(feed &&f)
+        feed& operator=(feed&& f)
         {
                 finalize();
                 device_ = f.device_;
@@ -79,31 +79,31 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-        inline const CUdevice &get_base_device() const
+        inline const CUdevice& get_base_device() const
         {
                 return device_->get_base_device();
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_contet()
-        inline const CUcontext &get_base_context() const
+        inline const CUcontext& get_base_context() const
         {
                 return device_->get_base_context();
         }
 
         /// Access base feed.
-        inline const CUstream &get_base_feed() const
+        inline const CUstream& get_base_feed() const
         {
                 return feed_;
         }
 
         /// Access base feed.
-        inline CUstream &get_base_feed()
+        inline CUstream& get_base_feed()
         {
                 return feed_;
         }
 
         // Access device.
-        const device &get_device()
+        const device& get_device()
         {
                 return *device_;
         }
@@ -121,7 +121,7 @@ private:
         }
 
         /// Pointer to device the feed was created for
-        device *device_;
+        device* device_;
 
         /// Stream handle
         CUstream feed_;
@@ -132,7 +132,7 @@ private:
  *
  * @param f the feed to wait for
  */
-inline void wait_for(feed &f)
+inline void wait_for(feed& f)
 {
         f.synchronize();
 }

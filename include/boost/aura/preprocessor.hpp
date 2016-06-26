@@ -12,7 +12,7 @@ namespace detail
 {
 
 template <typename T>
-inline std::string value_to_string(const T &value)
+inline std::string value_to_string(const T& value)
 {
         std::ostringstream out;
         out << std::setprecision(std::numeric_limits<T>::digits10 + 1) << value;
@@ -20,7 +20,7 @@ inline std::string value_to_string(const T &value)
 }
 
 template <>
-inline std::string value_to_string(const float &value)
+inline std::string value_to_string(const float& value)
 {
         std::ostringstream out;
         out << std::fixed
@@ -30,7 +30,7 @@ inline std::string value_to_string(const float &value)
 }
 
 template <typename T>
-inline std::string value_to_string(const std::vector<T> &values)
+inline std::string value_to_string(const std::vector<T>& values)
 {
         std::string s("{");
         s += value_to_string(values[0]);
@@ -43,12 +43,12 @@ inline std::string value_to_string(const std::vector<T> &values)
         return s += "}";
 }
 
-inline std::string value_to_string(const char *value)
+inline std::string value_to_string(const char* value)
 {
         return std::string(value);
 }
 
-inline std::string value_to_string(const std::string &value)
+inline std::string value_to_string(const std::string& value)
 {
         return value;
 }
@@ -65,7 +65,7 @@ struct preprocessor
 
         /// Add define to preprocessor.
         template <typename T>
-        void add_define(const std::string &name, const T &value)
+        void add_define(const std::string& name, const T& value)
         {
                 auto t = name;
                 t.insert(0, "<<<");
@@ -74,10 +74,10 @@ struct preprocessor
         }
 
         /// Take in string and output preprocessed string.
-        inline std::string operator()(const std::string &s)
+        inline std::string operator()(const std::string& s)
         {
                 return boost::regex_replace(s, re_,
-                        [this](const boost::smatch &m)
+                        [this](const boost::smatch& m)
                         {
                                 return defines_[m[0]];
                         });

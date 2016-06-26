@@ -22,7 +22,7 @@ struct device_ptr_base_type
         std::shared_ptr<T> host_ptr;
 
         // Emulate memory_ = 0; behaviour of other base types.
-        device_ptr_base_type &operator=(int a)
+        device_ptr_base_type& operator=(int a)
         {
                 if (a == 0)
                 {
@@ -40,14 +40,14 @@ using device_ptr =
 
 /// equal to operator (reverse order)
 template <typename T>
-bool operator==(std::nullptr_t, const device_ptr<T> &ptr)
+bool operator==(std::nullptr_t, const device_ptr<T>& ptr)
 {
         return (ptr == nullptr);
 }
 
 /// not equal to operator (reverse order)
 template <typename T>
-bool operator!=(std::nullptr_t, const device_ptr<T> &ptr)
+bool operator!=(std::nullptr_t, const device_ptr<T>& ptr)
 {
         return (ptr != nullptr);
 }
@@ -55,7 +55,7 @@ bool operator!=(std::nullptr_t, const device_ptr<T> &ptr)
 namespace detail
 {
 
-void free_posix_memalign(void *ptr, NSUInteger)
+void free_posix_memalign(void* ptr, NSUInteger)
 {
         free(ptr);
 }
@@ -66,7 +66,7 @@ int counter = 0;
 
 /// Allocate device memory.
 template <typename T>
-device_ptr<T> device_malloc(std::size_t size, device &d,
+device_ptr<T> device_malloc(std::size_t size, device& d,
         memory_access_tag tag = memory_access_tag::rw)
 {
         constexpr std::size_t metal_memory_alignment = 16384;
@@ -75,7 +75,7 @@ device_ptr<T> device_malloc(std::size_t size, device &d,
         size_t aligned_size = num_bytes +
                 (metal_memory_alignment - (num_bytes % metal_memory_alignment));
 
-        void *host_ptr;
+        void* host_ptr;
 
         // Allocate array.
         int err = 0;
@@ -90,7 +90,7 @@ device_ptr<T> device_malloc(std::size_t size, device &d,
                                                       options:0
                                                   deallocator:nil];
         m.host_ptr =
-                std::shared_ptr<T>(reinterpret_cast<T *>(host_ptr), [](T *ptr)
+                std::shared_ptr<T>(reinterpret_cast<T*>(host_ptr), [](T* ptr)
                         {
                                 free(ptr);
                         });
@@ -101,7 +101,7 @@ device_ptr<T> device_malloc(std::size_t size, device &d,
 
 /// Free device memory.
 template <typename T>
-void device_free(device_ptr<T> &ptr)
+void device_free(device_ptr<T>& ptr)
 {
         ptr.reset();
 }

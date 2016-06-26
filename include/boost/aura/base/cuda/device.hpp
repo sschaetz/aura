@@ -35,13 +35,13 @@ public:
         }
 
         /// Access the device handle.
-        inline const CUdevice &get_base_device() const
+        inline const CUdevice& get_base_device() const
         {
                 return device_;
         }
 
         /// Access the context handle.
-        inline const CUcontext &get_base_context() const
+        inline const CUcontext& get_base_context() const
         {
                 return context_;
         }

@@ -35,7 +35,7 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::feed::feed(device&)
-        inline explicit feed(device &d)
+        inline explicit feed(device& d)
                 : device_(&d)
                 , feed_([device_->get_base_device() newCommandQueue])
         {
@@ -43,7 +43,7 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::feed::feed(feed&&)
-        feed(feed &&f)
+        feed(feed&& f)
                 : device_(f.device_)
                 , feed_(f.feed_)
         {
@@ -51,7 +51,7 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::feed::operator=()
-        feed &operator=(feed &&f)
+        feed& operator=(feed&& f)
         {
                 finalize();
                 device_ = f.device_;
@@ -78,7 +78,7 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-        inline const __strong id<MTLDevice> &get_base_device() const
+        inline const __strong id<MTLDevice>& get_base_device() const
         {
                 return device_->get_base_device();
         }
@@ -96,7 +96,7 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::feed::get_device()
-        const device &get_device()
+        const device& get_device()
         {
                 return *device_;
         }
@@ -104,7 +104,7 @@ public:
         /// Create and return new command buffer.
         /// @note Metal specific.
         /// @return New command buffer.
-        detail::command_buffer &get_command_buffer()
+        detail::command_buffer& get_command_buffer()
         {
                 command_buffers_.emplace_back(detail::command_buffer());
                 command_buffers_.back().command_buffer = [feed_ commandBuffer];
@@ -124,7 +124,7 @@ private:
         }
 
         /// Pointer to device the feed was created for
-        device *device_;
+        device* device_;
 
         /// Store list of all created command buffers.
         std::list<detail::command_buffer> command_buffers_;
@@ -138,7 +138,7 @@ private:
  *
  * @param f the feed to wait for
  */
-inline void wait_for(feed &f)
+inline void wait_for(feed& f)
 {
         f.synchronize();
 }

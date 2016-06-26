@@ -28,7 +28,7 @@ using base::feed;
  *
  * @param f the feed to wait for
  */
-inline void wait_for(feed &f)
+inline void wait_for(feed& f)
 {
         f.synchronize();
 }

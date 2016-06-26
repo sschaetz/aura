@@ -23,14 +23,14 @@ using device_ptr = boost::aura::detail::base_device_ptr<T, CUdeviceptr>;
 
 /// equal to operator (reverse order)
 template <typename T>
-bool operator==(std::nullptr_t, const device_ptr<T> &ptr)
+bool operator==(std::nullptr_t, const device_ptr<T>& ptr)
 {
         return (ptr == nullptr);
 }
 
 /// not equal to operator (reverse order)
 template <typename T>
-bool operator!=(std::nullptr_t, const device_ptr<T> &ptr)
+bool operator!=(std::nullptr_t, const device_ptr<T>& ptr)
 {
         return (ptr != nullptr);
 }
@@ -38,7 +38,7 @@ bool operator!=(std::nullptr_t, const device_ptr<T> &ptr)
 
 /// Allocate device memory.
 template <typename T>
-device_ptr<T> device_malloc(std::size_t size, device &d,
+device_ptr<T> device_malloc(std::size_t size, device& d,
         memory_access_tag tag = memory_access_tag::rw)
 {
         d.activate();
@@ -50,7 +50,7 @@ device_ptr<T> device_malloc(std::size_t size, device &d,
 
 /// Free device memory.
 template <typename T>
-void device_free(device_ptr<T> &ptr)
+void device_free(device_ptr<T>& ptr)
 {
         ptr.get_device().activate();
         AURA_CUDA_SAFE_CALL(cuMemFree(ptr.get_base_ptr()));

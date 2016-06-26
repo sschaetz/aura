@@ -33,7 +33,7 @@ public:
          *
          * @param d device to create feed for
          */
-        inline explicit feed(device &d)
+        inline explicit feed(device& d)
                 : device_(&d)
         {
                 int errorcode = 0;
@@ -47,7 +47,7 @@ public:
          *
          * @param f feed to move here
          */
-        feed(feed &&f)
+        feed(feed&& f)
                 : device_(f.device_)
                 , feed_(f.feed_)
         {
@@ -59,7 +59,7 @@ public:
          *
          * @param f feed to move here
          */
-        feed &operator=(feed &&f)
+        feed& operator=(feed&& f)
         {
                 finalize();
                 device_ = f.device_;
@@ -81,31 +81,31 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-        inline const cl_device_id &get_base_device() const
+        inline const cl_device_id& get_base_device() const
         {
                 return device_->get_base_device();
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_contet()
-        inline const cl_context &get_base_context() const
+        inline const cl_context& get_base_context() const
         {
                 return device_->get_base_context();
         }
 
         /// Access const base feed.
-        inline const cl_command_queue &get_base_feed() const
+        inline const cl_command_queue& get_base_feed() const
         {
                 return feed_;
         }
 
         /// Access base feed.
-        inline cl_command_queue &get_base_feed()
+        inline cl_command_queue& get_base_feed()
         {
                 return feed_;
         }
 
         // Access device.
-        const device &get_device()
+        const device& get_device()
         {
                 return *device_;
         }
@@ -121,7 +121,7 @@ private:
         }
 
         /// Pointer to device the feed was created for
-        device *device_;
+        device* device_;
 
         /// Stream handle
         cl_command_queue feed_;
