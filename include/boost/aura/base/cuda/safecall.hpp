@@ -33,3 +33,19 @@
                 }                                                           \
         }                                                                   \
 /**/
+
+
+/// Check if a call returned error and throw exception if it did.
+#define AURA_CUDA_NVRTC_SAFE_CALL(call)                                     \
+        {                                                                   \
+                nvrtcResult err = call;                                     \
+                if (err != NVRTC_SUCCESS)                                   \
+                {                                                           \
+                        const char* errstr = nvrtcGetErrorString(err);      \
+                        std::ostringstream os;                              \
+                        os << "CUDA NVRTC error " << err << " " << errstr   \
+                           << " file " << __FILE__ << " line " << __LINE__; \
+                        throw os.str();                                     \
+                }                                                           \
+        }                                                                   \
+/**/
