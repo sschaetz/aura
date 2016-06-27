@@ -34,6 +34,14 @@ BOOST_AUTO_TEST_CASE(basic_library_from_string)
                         int tid = blockIdx.x;
                         c[tid] = a[tid] + b[tid];
                 }
+                #endif
+                #ifdef AURA_BASE_OPENCL
+                __kernel void  add
+                        (__global int *a, __global int *b, __global int *c)
+                {
+                        int tid = get_global_id(0);
+                        c[tid] = a[tid] + b[tid];
+                }
                 #endif)"
                                          "\n");
                 boost::aura::library l(kernelstring, d);
