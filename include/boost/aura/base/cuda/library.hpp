@@ -35,6 +35,7 @@ public:
         /// Create library from string.
         inline explicit library(const std::string& kernelstring, device& d,
                 const std::string& options = "")
+                : device_(&d)
         {
                 create_from_string(kernelstring, d, options);
         }
@@ -42,6 +43,7 @@ public:
         /// Create library from file.
         inline explicit library(
                 boost::aura::path p, device& d, const std::string& options = "")
+                : device_(&d)
         {
                 auto kernelstring = boost::aura::read_all(p);
                 create_from_string(kernelstring, d, options);
