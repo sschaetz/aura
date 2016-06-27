@@ -16,17 +16,18 @@ namespace cuda
 class device
 {
 public:
-        /**
-         * Create device form ordinal.
-         *
-         * @param ordinal Device number
-         */
+        /// Create device form ordinal.
+        /// @param ordinal Device number
         inline explicit device(std::size_t ordinal)
                 : ordinal_(ordinal)
         {
                 AURA_CUDA_SAFE_CALL(cuDeviceGet(&device_, ordinal));
                 AURA_CUDA_SAFE_CALL(cuCtxCreate(&context_, 0, device_));
         }
+
+        /// Prevent copies.
+        device(const device&) = delete;
+        void operator=(const device&) = delete;
 
         /// Destroy device.
         inline ~device()

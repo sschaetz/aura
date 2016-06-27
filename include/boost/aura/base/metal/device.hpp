@@ -24,6 +24,10 @@ public:
                 AURA_METAL_CHECK_ERROR(device_);
         }
 
+        /// Prevent copies.
+        device(const device&) = delete;
+        void operator=(const device&) = delete;
+
         /// @copydoc boost::aura::base::cuda::device::~device()
         inline ~device()
         {
