@@ -13,10 +13,13 @@ FUNCTION(ADD_AURA_TEST TEST_NAME TEST_SOURCE)
                 TARGET_LINK_LIBRARIES(${TEST_NAME}
                                       ${FOUNDATION_LIB})
         ENDIF()
+        TARGET_INCLUDE_DIRECTORIES(${TEST_NAME} PUBLIC
+                "${PROJECT_SOURCE_DIR}/")
 ENDFUNCTION()
 
 ADD_AURA_TEST(test.basic basic.cpp)
 ADD_AURA_TEST(test.copy copy.cpp)
 ADD_AURA_TEST(test.preprocessor preprocessor.cpp)
 ADD_AURA_TEST(test.device_ptr device_ptr.cpp)
+ADD_AURA_TEST(test.io io.cpp)
 
