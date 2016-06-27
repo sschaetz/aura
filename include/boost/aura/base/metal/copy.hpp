@@ -36,6 +36,7 @@ const T* unwrap(const device_ptr<T>& ptr)
 template <typename InputIt, typename T>
 void copy(InputIt first, InputIt last, device_ptr<T>& dst_first, feed& f)
 {
+        wait_for(f);
         std::copy(first, last, detail::unwrap(dst_first));
 }
 
@@ -45,6 +46,7 @@ template <typename T, typename OutputIt>
 void copy(const device_ptr<T>& first, const device_ptr<T>& last,
         OutputIt dst_first, feed& f)
 {
+        wait_for(f);
         std::copy(detail::unwrap(first), detail::unwrap(last), dst_first);
 }
 
@@ -53,6 +55,7 @@ template <typename T>
 void copy(const device_ptr<T>& first, const device_ptr<T>& last,
         device_ptr<T>& dst_first, feed& f)
 {
+        wait_for(f);
         std::copy(detail::unwrap(first), detail::unwrap(last),
                 detail::unwrap(dst_first));
 }
