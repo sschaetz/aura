@@ -35,6 +35,12 @@ public:
         {
         }
 
+        /// Access kernel (base).
+        CUfunction get_base_kernel()
+        {
+                return kernel_;
+        }
+
 private:
         CUfunction kernel_;
 };

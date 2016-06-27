@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boost/aura/base/metal/safecall.hpp>
-#include <boost/aura/base/metal/library.hpp>
+#include <boost/aura/base/opencl/safecall.hpp>
+#include <boost/aura/base/opencl/library.hpp>
 
 namespace boost
 {
@@ -9,7 +9,7 @@ namespace aura
 {
 namespace base_detail
 {
-namespace metal
+namespace opencl
 {
 
 class kernel
@@ -18,10 +18,10 @@ public:
         /// Create kernel from library.
         inline explicit kernel(const std::string& name, library& l)
         {
-                NSString* kernel_name = @(name.c_str());
-                kernel_ =
-                        [l.get_base_library() newFunctionWithName:kernel_name];
-                AURA_METAL_CHECK_ERROR(kernel_);
+                int errorcode = 0;
+                kernel_ = clCreateKernel(
+                        l.get_base_library(), name.c_str(), &errorcode);
+                AURA_OPENCL_CHECK_ERROR(errorcode);
         }
 
         /// Prevent copies.
@@ -31,21 +31,20 @@ public:
         /// Destroy kernel.
         inline ~kernel()
         {
-                kernel_ = nil;
+                AURA_OPENCL_SAFE_CALL(clReleaseKernel(kernel_));
         }
 
         /// Access kernel (base).
-        id<MTLFunction> get_base_kernel()
+        cl_kernel get_base_kernel()
         {
                 return kernel_;
         }
 
-
 private:
-        id<MTLFunction> kernel_;
+        cl_kernel kernel_;
 };
 
-} // namespace metal
+} // namespace opencl
 } // namespace base_detail
 } // namespace aura
 } // namespace boost
