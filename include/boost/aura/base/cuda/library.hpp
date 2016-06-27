@@ -35,8 +35,8 @@ public:
         }
 
         // Create library from file.
-        inline explicit library(boost::aura::path p, device& d,
-                const std::string& options = "")
+        inline explicit library(
+                boost::aura::path p, device& d, const std::string& options = "")
         {
                 auto kernelstring = boost::aura::read_all(p);
                 create_from_string(kernelstring, d, options);
@@ -58,40 +58,40 @@ private:
                         std::string("#define AURA_BASE_CUDA\n") + kernelstring;
                 d.activate();
 
-		// Create and compile.
-		nvrtcProgram program;
-		nvrtcCreateProgram(&program,
-                                kernelstring_with_define.c_str() ,
-                                NULL, 0, NULL, NULL);
-		nvrtcCompileProgram(program, 0, NULL);
+                // Create and compile.
+                nvrtcProgram program;
+                nvrtcCreateProgram(&program, kernelstring_with_define.c_str(),
+                        NULL, 0, NULL, NULL);
+                nvrtcCompileProgram(program, 0, NULL);
 
-		// Optain PTX.
-		size_t ptx_size;
-		nvrtcGetPTXSize(program, &ptx_size);
-		char* ptx = new char[ptx_size];
-		nvrtcGetPTX(program, ptx);
+                // Optain PTX.
+                size_t ptx_size;
+                nvrtcGetPTXSize(program, &ptx_size);
+                char* ptx = new char[ptx_size];
+                nvrtcGetPTX(program, ptx);
 
-		// Store the log.
-		size_t log_size;
-		nvrtcGetProgramLogSize(program, &log_size);
+                // Store the log.
+                size_t log_size;
+                nvrtcGetProgramLogSize(program, &log_size);
                 log_.resize(log_size);
-		nvrtcGetProgramLog(program, &(log_[0]));
+                nvrtcGetProgramLog(program, &(log_[0]));
                 std::cout << log_ << std::endl;
 
                 // Program not needed any more.
-		nvrtcDestroyProgram(&program);
+                nvrtcDestroyProgram(&program);
 
-		// Build for device by setting context and JIT argument.
-		const std::size_t num_options = 1;
-		CUjit_option options[num_options];
-		void * values[num_options];
+                // Build for device by setting context and JIT argument.
+                const std::size_t num_options = 1;
+                CUjit_option options[num_options];
+                void* values[num_options];
 
-		// Set jit target from context (which we got by setting the device).
-		options[0] = CU_JIT_TARGET_FROM_CUCONTEXT;
-		values[0] = NULL;
+                // Set jit target from context (which we got by setting the
+                // device).
+                options[0] = CU_JIT_TARGET_FROM_CUCONTEXT;
+                values[0] = NULL;
 
-		AURA_CUDA_SAFE_CALL(cuModuleLoadDataEx(&library_, ptx, num_options,
-                        options, values));
+                AURA_CUDA_SAFE_CALL(cuModuleLoadDataEx(
+                        &library_, ptx, num_options, options, values));
 
                 d.deactivate();
         }

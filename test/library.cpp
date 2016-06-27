@@ -34,7 +34,8 @@ BOOST_AUTO_TEST_CASE(basic_library_from_string)
                         int tid = blockIdx.x;
                         c[tid] = a[tid] + b[tid];
                 }
-                #endif)" "\n");
+                #endif)"
+                                         "\n");
                 boost::aura::library l(kernelstring, d);
         }
         boost::aura::finalize();
@@ -46,12 +47,9 @@ BOOST_AUTO_TEST_CASE(basic_library_from_file)
         {
                 boost::aura::device d(AURA_UNIT_TEST_DEVICE);
                 boost::aura::library l(
-                        boost::aura::path(
-                                boost::aura::test::get_test_dir() +
+                        boost::aura::path(boost::aura::test::get_test_dir() +
                                 "/kernels.al"),
                         d);
         }
         boost::aura::finalize();
 }
-
-
