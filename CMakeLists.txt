@@ -46,7 +46,8 @@ ENDIF()
 
 # Set correct defines for GPU libraries. 
 IF (${AURA_BASE} STREQUAL CUDA)
-        SET(AURA_BASE_LIBRARIES ${CUDA_LIBRARIES})
+        FIND_CUDA_HELPER_LIBS(nvrtc)
+        SET(AURA_BASE_LIBRARIES ${CUDA_LIBRARIES} ${CUDA_nvrtc_LIBRARY})
         SET(AURA_BASE_INCLUDE_DIRS ${CUDA_INCLUDE_DIRS})
         IF (APPLE)
                 SET(AURA_BASE_LINK_DIRS "/usr/local/cuda/lib")
