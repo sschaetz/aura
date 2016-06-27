@@ -1,12 +1,16 @@
 #pragma once
 
 #include <boost/aura/base/base_mesh_bundle.hpp>
-#include <boost/aura/base/cuda/feed.hpp>
-#include <boost/aura/base/cuda/kernel.hpp>
-#include <boost/aura/base/cuda/safecall.hpp>
+#include <boost/aura/base/opencl/feed.hpp>
+#include <boost/aura/base/opencl/kernel.hpp>
+#include <boost/aura/base/opencl/safecall.hpp>
 #include <boost/aura/meta/tsizeof.hpp>
 
-#include <cuda.h>
+#ifdef __APPLE__
+#include "OpenCL/opencl.h"
+#else
+#include "CL/cl.h"
+#endif
 
 namespace boost
 {
@@ -14,14 +18,14 @@ namespace aura
 {
 namespace base_detail
 {
-namespace cuda
+namespace opencl
 {
 
-typedef void* arg_t;
+typedef std::pair<void*, std::size_t> arg_t;
 template <std::size_t N>
 using args_tt = std::array<arg_t, N>;
 
-// Alias for returned packed arguments
+// alias for returned packed arguments
 template <std::size_t N>
 using args_t = std::pair<char*, args_tt<N>>;
 
@@ -30,14 +34,14 @@ template <typename ArgsItr, typename T0>
 void fill_args_(char* p, ArgsItr it, const T0 a0)
 {
         std::memcpy(p, &a0, sizeof(T0));
-        *it = p;
+        *it = std::make_pair(p, sizeof(T0));
 }
 
 template <typename ArgsItr, typename T0, typename... Targs>
 void fill_args_(char* p, ArgsItr it, const T0 a0, const Targs... ar)
 {
         std::memcpy(p, &a0, sizeof(T0));
-        *it = p;
+        *it = std::make_pair(p, sizeof(T0));
         fill_args_(p + sizeof(T0), ++it, ar...);
 }
 
@@ -55,28 +59,33 @@ args_t<sizeof...(Targs)> args(const Targs... ar)
 namespace detail
 {
 
-template <unsigned long N, typename MeshType, typename BundleType>
-inline void invoke_impl(kernel& k, const MeshType& m, const BundleType& b,
-        const args_t<N>&& a, feed& f)
+template <unsigned long N>
+inline void invoke_impl(
+        kernel& k, const mesh& m, const bundle& b, const args_t<N>&& a, feed& f)
 {
-        auto mesh_bundle = adjust_mesh_bundle(m, b);
-        f.get_device().activate();
+        // set parameters
+        for (std::size_t i = 0; i < a.second.size(); i++)
+        {
+                AURA_OPENCL_SAFE_CALL(clSetKernelArg(k.get_base_kernel(), i,
+                        a.second[i].second, a.second[i].first));
+        }
 
-        AURA_CUDA_SAFE_CALL(cuLaunchKernel(k.get_base_kernel(),
-                mesh_bundle.first[0], mesh_bundle.first[1],
-                mesh_bundle.first[2], mesh_bundle.second[0],
-                mesh_bundle.second[1], mesh_bundle.second[2], 0,
-                f.get_base_feed(), const_cast<void**>(&a.second[0]), NULL));
-        f.get_device().deactivate();
+        auto mesh_bundle = adjust_mesh_bundle(m, b);
+
+        // call kernel
+        AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(f.get_base_feed(),
+                k.get_base_kernel(), mesh_bundle.first.size(), NULL,
+                &mesh_bundle.first[0], &mesh_bundle.second[0], 0, NULL, NULL));
         free(a.first);
 }
 
-
 } // namespace detail
+
+
 
 /// invoke kernel without args
 inline template <typename MeshType, typename BundleType>
-void invoke(kernel& k, const MeshType& m, const BundleType& b, feed& f)
+inline void invoke(kernel& k, const MeshType& m, const BundleType& b, feed& f)
 {
         detail::invoke_impl(k, m, b, args_t<0>(), f);
 }
@@ -89,7 +98,8 @@ inline void invoke(kernel& k, const MeshType& m, const BundleType& b,
         detail::invoke_impl(k, m, b, std::move(a), f);
 }
 
-} // cuda
+
+} // opencl
 } // base_detail
 } // aura
 } // boost

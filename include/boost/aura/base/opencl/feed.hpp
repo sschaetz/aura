@@ -104,11 +104,17 @@ public:
                 return feed_;
         }
 
-        // Access device.
-        const device& get_device()
+        /// @copydoc boost::aura::base::cuda::feed::get_device()
+        device& get_device()
         {
                 return *device_;
         }
+
+        const device& get_device() const
+        {
+                return *device_;
+        }
+
 
 private:
         /// Finalize object.

@@ -96,7 +96,12 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::feed::get_device()
-        const device& get_device()
+        device& get_device()
+        {
+                return *device_;
+        }
+
+        const device& get_device() const
         {
                 return *device_;
         }
