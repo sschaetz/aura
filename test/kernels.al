@@ -1,21 +1,21 @@
 #ifdef AURA_BASE_CUDA
-extern "C" __global__ void add(int *a, int *b, int *c ) 
+extern "C" __global__ void add(float *a, float *b, float *c ) 
 {
-        int tid = blockIdx.x;    
+        unsigned int tid = blockIdx.x;    
 #endif
 #ifdef AURA_BASE_OPENCL
 __kernel void add
-        (__global int *a, __global int *b, __global int *c)
+        (__global float *a, __global float *b, __global float *c)
 {
-        int tid = get_global_id(0);
+        uint tid = get_global_id(0);
 #endif
 #ifdef AURA_BASE_METAL
 #include <metal_stdlib>
 using namespace metal;
 kernel void add
-        (device int *a [[buffer(0)]], 
-        device int *b [[buffer(1)]], 
-        device int *c [[buffer(2)]],
+        (device float *a [[buffer(0)]], 
+        device float *b [[buffer(1)]], 
+        device float *c [[buffer(2)]],
         const uint tid [[thread_position_in_grid]])
 {
 #endif

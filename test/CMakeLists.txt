@@ -17,6 +17,7 @@ FUNCTION(ADD_AURA_TEST TEST_NAME TEST_SOURCE)
                 "${PROJECT_SOURCE_DIR}/")
 ENDFUNCTION()
 
+ADD_AURA_TEST(test.invoke invoke.cpp)
 ADD_AURA_TEST(test.basic basic.cpp)
 ADD_AURA_TEST(test.copy copy.cpp)
 ADD_AURA_TEST(test.preprocessor preprocessor.cpp)
