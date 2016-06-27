@@ -56,6 +56,17 @@ public:
                 return *device_;
         }
 
+        /// Access library.
+        CUmodule get_base_library()
+        {
+                return library_;
+        }
+
+        const CUmodule get_base_library() const
+        {
+                return library_;
+        }
+
         ~library()
         {
                 finalize();

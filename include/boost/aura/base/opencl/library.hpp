@@ -53,6 +53,17 @@ public:
                 return *device_;
         }
 
+        /// Access library.
+        cl_program get_base_library()
+        {
+                return library_;
+        }
+
+        const cl_program get_base_library() const
+        {
+                return library_;
+        }
+
         ~library()
         {
                 finalize();

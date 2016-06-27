@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <boost/aura/device.hpp>
+#include <boost/aura/kernel.hpp>
 #include <boost/aura/environment.hpp>
 #include <boost/aura/library.hpp>
 
@@ -29,12 +30,12 @@ BOOST_AUTO_TEST_CASE(basic_library_from_string)
                 boost::aura::device d(AURA_UNIT_TEST_DEVICE);
 
                 std::string kernelstring(R"(#ifdef AURA_BASE_CUDA
-                        __global__ void  add(int *a, int *b, int *c )
+                        extern "C" __global__ void add(int *a, int *b, int *c )
                         {
                                 int tid = blockIdx.x;
                         #endif
                         #ifdef AURA_BASE_OPENCL
-                        __kernel void  add
+                        __kernel void add
                                 (__global int *a, __global int *b, __global int *c)
                         {
                                 int tid = get_global_id(0);
@@ -42,7 +43,7 @@ BOOST_AUTO_TEST_CASE(basic_library_from_string)
                         #ifdef AURA_BASE_METAL
                         #include <metal_stdlib>
                         using namespace metal;
-                        kernel void  add
+                        kernel void add
                                 (device int *a [[buffer(0)]],
                                 device int *b [[buffer(1)]],
                                 device int *c [[buffer(2)]],
@@ -53,6 +54,7 @@ BOOST_AUTO_TEST_CASE(basic_library_from_string)
                         })"
                                          "\n");
                 boost::aura::library l(kernelstring, d);
+                boost::aura::kernel k("add", l);
         }
         boost::aura::finalize();
 }
@@ -66,6 +68,7 @@ BOOST_AUTO_TEST_CASE(basic_library_from_file)
                         boost::aura::path(boost::aura::test::get_test_dir() +
                                 "/kernels.al"),
                         d);
+                boost::aura::kernel k("add", l);
         }
         boost::aura::finalize();
 }
