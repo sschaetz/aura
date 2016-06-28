@@ -24,4 +24,5 @@ ADD_AURA_TEST(test.preprocessor preprocessor.cpp)
 ADD_AURA_TEST(test.device_ptr device_ptr.cpp)
 ADD_AURA_TEST(test.io io.cpp)
 ADD_AURA_TEST(test.library library.cpp)
+ADD_AURA_TEST(test.tiny_vector tiny_vector.cpp)
 
