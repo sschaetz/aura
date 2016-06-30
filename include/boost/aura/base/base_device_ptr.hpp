@@ -33,7 +33,7 @@ struct base_device_ptr
 
         /// @brief Create pointer that points nowhere.
         base_device_ptr()
-                : memory_(0)
+                : memory_()
                 , offset_(0)
                 , device_(nullptr)
                 , tag_(memory_access_tag::rw)
@@ -42,7 +42,7 @@ struct base_device_ptr
 
         /// @brief Create pointer that points nowhere.
         base_device_ptr(std::nullptr_t)
-                : memory_(0)
+                : memory_()
                 , offset_(0)
                 , device_(nullptr)
                 , tag_(memory_access_tag::rw)
@@ -77,7 +77,6 @@ struct base_device_ptr
         /// Invalidate pointer (sets everything to null).
         void reset()
         {
-                memory_ = 0;
                 device_ = nullptr;
                 offset_ = 0;
                 tag_ = memory_access_tag::rw;
