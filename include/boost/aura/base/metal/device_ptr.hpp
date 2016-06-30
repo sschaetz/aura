@@ -31,6 +31,17 @@ struct device_ptr_base_type
                 }
                 return *this;
         }
+
+        bool operator==(const device_ptr_base_type<T>& other) const
+        {
+                return (device_buffer == other.device_buffer &&
+                        host_ptr == other.host_ptr);
+        }
+
+        bool operator!=(const device_ptr_base_type<T>& other) const
+        {
+                return !(*this == other);
+        }
 };
 
 

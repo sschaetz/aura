@@ -42,6 +42,7 @@ public:
 
         /// Create empty array
         device_array()
+                : data_()
         {
         }
 
