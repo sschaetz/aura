@@ -48,26 +48,14 @@ public:
 
 
         /// Access device.
-        const device& get_device()
-        {
-                return *device_;
-        }
+        const device& get_device() { return *device_; }
 
         /// Access library.
-        cl_program get_base_library()
-        {
-                return library_;
-        }
+        cl_program get_base_library() { return library_; }
 
-        const cl_program get_base_library() const
-        {
-                return library_;
-        }
+        const cl_program get_base_library() const { return library_; }
 
-        ~library()
-        {
-                finalize();
-        }
+        ~library() { finalize(); }
 
 private:
         /// Create a library from a string.

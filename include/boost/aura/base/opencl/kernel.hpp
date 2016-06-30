@@ -29,16 +29,10 @@ public:
         void operator=(const kernel&) = delete;
 
         /// Destroy kernel.
-        inline ~kernel()
-        {
-                AURA_OPENCL_SAFE_CALL(clReleaseKernel(kernel_));
-        }
+        inline ~kernel() { AURA_OPENCL_SAFE_CALL(clReleaseKernel(kernel_)); }
 
         /// Access kernel (base).
-        cl_kernel get_base_kernel()
-        {
-                return kernel_;
-        }
+        cl_kernel get_base_kernel() { return kernel_; }
 
 private:
         cl_kernel kernel_;

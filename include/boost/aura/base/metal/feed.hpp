@@ -61,10 +61,7 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::feed::~feed()
-        inline ~feed()
-        {
-                finalize();
-        }
+        inline ~feed() { finalize(); }
 
         /// @copydoc boost::aura::base::cuda::feed::synchronize()
         inline void synchronize()
@@ -84,27 +81,15 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::feed::get_base_feed()
-        inline const id<MTLCommandQueue> get_base_feed() const
-        {
-                return feed_;
-        }
+        inline const id<MTLCommandQueue> get_base_feed() const { return feed_; }
 
         /// @copydoc boost::aura::base::cuda::feed::get_base_feed()
-        inline id<MTLCommandQueue> get_base_feed()
-        {
-                return feed_;
-        }
+        inline id<MTLCommandQueue> get_base_feed() { return feed_; }
 
         /// @copydoc boost::aura::base::cuda::feed::get_device()
-        device& get_device()
-        {
-                return *device_;
-        }
+        device& get_device() { return *device_; }
 
-        const device& get_device() const
-        {
-                return *device_;
-        }
+        const device& get_device() const { return *device_; }
 
         /// Create and return new command buffer.
         /// @note Metal specific.
@@ -143,10 +128,7 @@ private:
  *
  * @param f the feed to wait for
  */
-inline void wait_for(feed& f)
-{
-        f.synchronize();
-}
+inline void wait_for(feed& f) { f.synchronize(); }
 
 } // metal
 } // base_detail

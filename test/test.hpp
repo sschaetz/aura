@@ -7,10 +7,7 @@ namespace aura
 namespace test
 {
 
-std::string get_test_dir()
-{
-        return std::string(AURA_TEST_SOURCE_DIR);
-}
+std::string get_test_dir() { return std::string(AURA_TEST_SOURCE_DIR); }
 
 } // namespace test
 } // namespace aura

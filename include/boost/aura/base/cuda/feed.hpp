@@ -65,10 +65,7 @@ public:
         }
 
         /// Destroy feed.
-        inline ~feed()
-        {
-                finalize();
-        }
+        inline ~feed() { finalize(); }
 
         /// Wait until all commands in the feed have finished.
         inline void synchronize()
@@ -91,27 +88,15 @@ public:
         }
 
         /// Access base feed.
-        inline const CUstream& get_base_feed() const
-        {
-                return feed_;
-        }
+        inline const CUstream& get_base_feed() const { return feed_; }
 
         /// Access base feed.
-        inline CUstream& get_base_feed()
-        {
-                return feed_;
-        }
+        inline CUstream& get_base_feed() { return feed_; }
 
         // Access device.
-        device& get_device()
-        {
-                return *device_;
-        }
+        device& get_device() { return *device_; }
 
-        const device& get_device() const
-        {
-                return *device_;
-        }
+        const device& get_device() const { return *device_; }
 
 private:
         /// Finalize object.
@@ -137,10 +122,7 @@ private:
  *
  * @param f the feed to wait for
  */
-inline void wait_for(feed& f)
-{
-        f.synchronize();
-}
+inline void wait_for(feed& f) { f.synchronize(); }
 
 } // cuda
 } // base_detail

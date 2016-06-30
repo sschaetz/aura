@@ -30,28 +30,16 @@ public:
         void operator=(const device&) = delete;
 
         /// Destroy device.
-        inline ~device()
-        {
-                AURA_CUDA_SAFE_CALL(cuCtxDestroy(context_));
-        }
+        inline ~device() { AURA_CUDA_SAFE_CALL(cuCtxDestroy(context_)); }
 
         /// Access the device handle.
-        inline const CUdevice& get_base_device() const
-        {
-                return device_;
-        }
+        inline const CUdevice& get_base_device() const { return device_; }
 
         /// Access the context handle.
-        inline const CUcontext& get_base_context() const
-        {
-                return context_;
-        }
+        inline const CUcontext& get_base_context() const { return context_; }
 
         /// Access the device ordinal.
-        inline std::size_t get_ordinal() const
-        {
-                return ordinal_;
-        }
+        inline std::size_t get_ordinal() const { return ordinal_; }
 
         /// Make device activate device.
         inline void activate() const

@@ -69,16 +69,10 @@ public:
         }
 
         /// Destroy feed.
-        inline ~feed()
-        {
-                finalize();
-        }
+        inline ~feed() { finalize(); }
 
         /// Wait until all commands in the feed have finished.
-        inline void synchronize()
-        {
-                AURA_OPENCL_SAFE_CALL(clFinish(feed_));
-        }
+        inline void synchronize() { AURA_OPENCL_SAFE_CALL(clFinish(feed_)); }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
         inline const cl_device_id& get_base_device() const
@@ -93,27 +87,15 @@ public:
         }
 
         /// Access const base feed.
-        inline const cl_command_queue& get_base_feed() const
-        {
-                return feed_;
-        }
+        inline const cl_command_queue& get_base_feed() const { return feed_; }
 
         /// Access base feed.
-        inline cl_command_queue& get_base_feed()
-        {
-                return feed_;
-        }
+        inline cl_command_queue& get_base_feed() { return feed_; }
 
         /// @copydoc boost::aura::base::cuda::feed::get_device()
-        device& get_device()
-        {
-                return *device_;
-        }
+        device& get_device() { return *device_; }
 
-        const device& get_device() const
-        {
-                return *device_;
-        }
+        const device& get_device() const { return *device_; }
 
 
 private:

@@ -29,22 +29,13 @@ public:
         void operator=(const device&) = delete;
 
         /// @copydoc boost::aura::base::cuda::device::~device()
-        inline ~device()
-        {
-                device_ = nil;
-        }
+        inline ~device() { device_ = nil; }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-        inline __strong id<MTLDevice>& get_base_device()
-        {
-                return device_;
-        }
+        inline __strong id<MTLDevice>& get_base_device() { return device_; }
 
         /// @copydoc boost::aura::base::cuda::device::get_ordinal()
-        inline std::size_t get_ordinal() const
-        {
-                return ordinal_;
-        }
+        inline std::size_t get_ordinal() const { return ordinal_; }
 
         /// @copydoc boost::aura::base::cuda::device::activate()
         inline void activate() const

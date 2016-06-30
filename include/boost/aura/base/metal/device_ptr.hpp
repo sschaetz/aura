@@ -66,10 +66,7 @@ bool operator!=(std::nullptr_t, const device_ptr<T>& ptr)
 namespace detail
 {
 
-void free_posix_memalign(void* ptr, NSUInteger)
-{
-        free(ptr);
-}
+void free_posix_memalign(void* ptr, NSUInteger) { free(ptr); }
 
 } // detail
 

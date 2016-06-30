@@ -68,16 +68,10 @@ public:
         /// Copy ctor and assignment provided by compiler
 
         /// Operator [], no bounds check
-        T& operator[](const int& offset)
-        {
-                return data_[offset];
-        }
+        T& operator[](const int& offset) { return data_[offset]; }
 
         /// Operator [], no bounds check
-        const T& operator[](const int& offset) const
-        {
-                return data_[offset];
-        }
+        const T& operator[](const int& offset) const { return data_[offset]; }
 
         /// Add element to vector and increment size, no bounds check
         void push_back(const T& e)
@@ -94,42 +88,21 @@ public:
         }
 
         // Begin
-        iterator begin()
-        {
-                return data_.begin();
-        }
-        const_iterator begin() const
-        {
-                return data_.begin();
-        }
+        iterator begin() { return data_.begin(); }
+        const_iterator begin() const { return data_.begin(); }
 
         // End
-        iterator end()
-        {
-                return data_.begin() + size_;
-        }
-        const_iterator end() const
-        {
-                return data_.begin() + size_;
-        }
+        iterator end() { return data_.begin() + size_; }
+        const_iterator end() const { return data_.begin() + size_; }
 
         /// return the size of the vector
-        inline const std::size_t size() const
-        {
-                return size_;
-        }
+        inline const std::size_t size() const { return size_; }
 
         /// Return the capacity of the tiny vector
-        inline const std::size_t capacity() const
-        {
-                return max_size;
-        }
+        inline const std::size_t capacity() const { return max_size; }
 
         /// Clear the tiny vector
-        inline void clear()
-        {
-                size_ = 0;
-        }
+        inline void clear() { size_ = 0; }
 
         /// Print contents of vector
         inline void debug__()
@@ -141,16 +114,10 @@ public:
         }
 
         /// Get data
-        const std::array<T, max_size>& array() const
-        {
-                return data_;
-        }
+        const std::array<T, max_size>& array() const { return data_; }
 
         /// Cast to size operator
-        operator T()
-        {
-                return product(*this);
-        }
+        operator T() { return product(*this); }
 
         /// Equal to
         template <std::size_t max_size_>

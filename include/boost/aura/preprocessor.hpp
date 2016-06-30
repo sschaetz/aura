@@ -48,10 +48,7 @@ inline std::string value_to_string(const char* value)
         return std::string(value);
 }
 
-inline std::string value_to_string(const std::string& value)
-{
-        return value;
-}
+inline std::string value_to_string(const std::string& value) { return value; }
 
 } // namespace detail
 

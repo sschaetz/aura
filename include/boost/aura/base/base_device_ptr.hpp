@@ -83,36 +83,18 @@ struct base_device_ptr
         }
 
         /// Returns a pointer to the device memory.
-        base_type get_base_ptr()
-        {
-                return memory_;
-        }
-        const_base_type get_base_ptr() const
-        {
-                return memory_;
-        }
+        base_type get_base_ptr() { return memory_; }
+        const_base_type get_base_ptr() const { return memory_; }
 
         /// Returns a pointer to the device memory.
-        std::size_t get_offset() const
-        {
-                return offset_;
-        }
+        std::size_t get_offset() const { return offset_; }
 
         /// Returns a pointer to the device memory.
-        device& get_device()
-        {
-                return *device_;
-        }
-        const device& get_device() const
-        {
-                return *device_;
-        }
+        device& get_device() { return *device_; }
+        const device& get_device() const { return *device_; }
 
         /// Returns the memory tag.
-        memory_access_tag get_memory_access_tag() const
-        {
-                return tag_;
-        }
+        memory_access_tag get_memory_access_tag() const { return tag_; }
 
         /// Assign operator.
         base_device_ptr<T, BaseType>& operator=(
@@ -225,10 +207,7 @@ struct base_device_ptr
                 return !(*this == b);
         }
 
-        bool operator!=(std::nullptr_t) const
-        {
-                return !(*this == nullptr);
-        }
+        bool operator!=(std::nullptr_t) const { return !(*this == nullptr); }
 
 private:
         /// actual pointer that identifies device memory

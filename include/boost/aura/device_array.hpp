@@ -61,9 +61,7 @@ public:
         }
 
         /// destroy object
-        ~device_array()
-        {
-        }
+        ~device_array() {}
 
         // move constructor, move device_array here, invalidate other
         // @param da device_array to move here
@@ -85,35 +83,17 @@ public:
         }
 
         /// Access bounds and size
-        BoundsType bounds() const
-        {
-                return bounds_;
-        }
+        BoundsType bounds() const { return bounds_; }
 
-        std::size_t size() const
-        {
-                return product(bounds_);
-        }
+        std::size_t size() const { return product(bounds_); }
 
         /// Begin
-        iterator begin()
-        {
-                return *(data_.get());
-        }
-        const_iterator begin() const
-        {
-                return *(data_.get());
-        }
+        iterator begin() { return *(data_.get()); }
+        const_iterator begin() const { return *(data_.get()); }
 
         /// End
-        iterator end()
-        {
-                return *(data_.get()) + product(bounds_);
-        }
-        const_iterator end() const
-        {
-                return *(data_.get()) + product(bounds_);
-        }
+        iterator end() { return *(data_.get()) + product(bounds_); }
+        const_iterator end() const { return *(data_.get()) + product(bounds_); }
 
 private:
         /// Deleter type

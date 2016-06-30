@@ -31,15 +31,10 @@ public:
         void operator=(const kernel&) = delete;
 
         /// Destroy kernel.
-        inline ~kernel()
-        {
-        }
+        inline ~kernel() {}
 
         /// Access kernel (base).
-        CUfunction get_base_kernel()
-        {
-                return kernel_;
-        }
+        CUfunction get_base_kernel() { return kernel_; }
 
 private:
         CUfunction kernel_;

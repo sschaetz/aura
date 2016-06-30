@@ -29,16 +29,10 @@ public:
         void operator=(const kernel&) = delete;
 
         /// Destroy kernel.
-        inline ~kernel()
-        {
-                kernel_ = nil;
-        }
+        inline ~kernel() { kernel_ = nil; }
 
         /// Access kernel (base).
-        id<MTLFunction> get_base_kernel()
-        {
-                return kernel_;
-        }
+        id<MTLFunction> get_base_kernel() { return kernel_; }
 
 
 private:

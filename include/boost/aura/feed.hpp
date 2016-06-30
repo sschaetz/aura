@@ -28,10 +28,7 @@ using base::feed;
  *
  * @param f the feed to wait for
  */
-inline void wait_for(feed& f)
-{
-        f.synchronize();
-}
+inline void wait_for(feed& f) { f.synchronize(); }
 
 } // namespace aura
 } // namespace boost
