@@ -77,7 +77,7 @@ public:
         device_array& operator=(device_array&& da)
         {
                 bounds_ = da.bounds_;
-                data_ = boost::move(da.data_);
+                data_ = std::move(da.data_);
                 da.bounds_.clear();
                 return *this;
         }
@@ -113,7 +113,7 @@ private:
         typedef std::unique_ptr<device_ptr<T>, deleter_t> data_t;
 
         /// Allocation helper function
-        data_t allocate(std::size_t size, device& d)
+        void allocate(std::size_t size, device& d)
         {
                 data_ = data_t(new device_ptr<T>(device_malloc<T>(size, d)),
                         deleter_t());

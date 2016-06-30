@@ -1,8 +1,8 @@
 #pragma once
 
 #include <boost/regex.hpp>
-#include <iostream>
 #include <iomanip>
+#include <sstream>
 
 namespace boost
 {

@@ -84,7 +84,7 @@ inline void invoke_impl(
 
 
 /// invoke kernel without args
-inline template <typename MeshType, typename BundleType>
+template <typename MeshType, typename BundleType>
 inline void invoke(kernel& k, const MeshType& m, const BundleType& b, feed& f)
 {
         detail::invoke_impl(k, m, b, args_t<0>(), f);
