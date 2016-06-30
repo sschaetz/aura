@@ -1,5 +1,8 @@
 #pragma once
 
+#include <boost/aura/feed.hpp>
+#include <boost/aura/device_array.hpp>
+
 #if defined AURA_BASE_CUDA
 #include <boost/aura/base/cuda/copy.hpp>
 #elif defined AURA_BASE_OPENCL

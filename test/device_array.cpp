@@ -2,6 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <boost/aura/copy.hpp>
 #include <boost/aura/device.hpp>
 #include <boost/aura/device_array.hpp>
 #include <boost/aura/environment.hpp>
@@ -56,4 +57,32 @@ BOOST_AUTO_TEST_CASE(iterators)
                         ar0.end());
         }
         finalize();
+}
+
+BOOST_AUTO_TEST_CASE(basic_copy)
+{
+        boost::aura::initialize();
+        {
+                boost::aura::device d(AURA_UNIT_TEST_DEVICE);
+                boost::aura::feed f(d);
+
+                std::vector<float> host_src(1024, 21.0f);
+                std::vector<float> host_dst(1024, 0.0f);
+
+                boost::aura::device_array<float> src(1024, d);
+                boost::aura::device_array<float> dst(1024, d);
+
+                // Host to device
+                boost::aura::copy(
+                        host_src.begin(), host_src.end(), src.begin(), f);
+                // Device to device.
+                boost::aura::copy(src.begin(), src.end(), dst.begin(), f);
+                // Device to host
+                boost::aura::copy(dst.begin(), dst.end(), host_dst.begin(), f);
+
+                boost::aura::wait_for(f);
+                BOOST_CHECK(std::equal(
+                        host_src.begin(), host_src.end(), host_dst.begin()));
+        }
+        boost::aura::finalize();
 }
