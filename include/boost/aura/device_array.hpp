@@ -95,6 +95,16 @@ public:
         iterator end() { return *(data_.get()) + product(bounds_); }
         const_iterator end() const { return *(data_.get()) + product(bounds_); }
 
+        /// Access base pointers.
+        typename iterator::base_type get_base_ptr()
+        {
+                return data_.get()->get_base_ptr();
+        }
+        typename const_iterator::const_base_type get_base_ptr() const
+        {
+                return data_.get()->get_base_ptr();
+        }
+
 private:
         /// Deleter type
         typedef detail::device_array_deleter<T> deleter_t;
