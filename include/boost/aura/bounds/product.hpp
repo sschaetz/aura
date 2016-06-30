@@ -8,7 +8,7 @@ namespace boost
 namespace aura
 {
 
-/// Identify element for product.
+/// Identity element for product.
 template <typename T>
 typename std::enable_if<std::is_arithmetic<T>::value, T>::type
 product_identity_element()
@@ -16,7 +16,7 @@ product_identity_element()
         return 1;
 }
 
-/// Identify element for product.
+/// Identity element for addition.
 template <typename T>
 typename std::enable_if<std::is_arithmetic<T>::value, T>::type
 addition_identity_element()

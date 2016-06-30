@@ -18,19 +18,14 @@ namespace aura
 
 /// tiny_vector, has a max size but also an actual size,
 /// wrapps an std::array and a size.
-template <typename T, std::size_t max_size_>
+template <typename T, std::size_t max_size>
 class tiny_vector
 {
 
-        // Make sure we have constructors for the specified size
-        BOOST_MPL_ASSERT((boost::mpl::less_equal<boost::mpl::int_<max_size_>,
-                boost::mpl::int_<AURA_TINY_VECTOR_MAX_SIZE>>));
-
 public:
-        typedef typename std::array<T, max_size_>::value_type value_type;
-        typedef typename std::array<T, max_size_>::iterator iterator;
-        typedef typename std::array<T, max_size_>::const_iterator
-                const_iterator;
+        typedef typename std::array<T, max_size>::value_type value_type;
+        typedef typename std::array<T, max_size>::iterator iterator;
+        typedef typename std::array<T, max_size>::const_iterator const_iterator;
 
         /// Empty tiny vector
         inline tiny_vector()
@@ -50,7 +45,7 @@ public:
 
         /// create a new bundle of existing bundle, adding another element
         explicit tiny_vector(
-                const tiny_vector<T, max_size_>& other, const T& another)
+                const tiny_vector<T, max_size>& other, const T& another)
                 : size_(other.size_)
                 , data_(other.data_)
         {
@@ -63,7 +58,7 @@ public:
         inline explicit tiny_vector(const std::vector<U>& other)
                 : size_(0)
         {
-                assert(other.size() <= max_size_);
+                assert(other.size() <= max_size);
                 for (const U& a : other)
                 {
                         push_back(static_cast<T>(a));
@@ -127,7 +122,7 @@ public:
         /// Return the capacity of the tiny vector
         inline const std::size_t capacity() const
         {
-                return max_size_;
+                return max_size;
         }
 
         /// Clear the tiny vector
@@ -146,7 +141,7 @@ public:
         }
 
         /// Get data
-        const std::array<T, max_size_>& array() const
+        const std::array<T, max_size>& array() const
         {
                 return data_;
         }
@@ -158,7 +153,8 @@ public:
         }
 
         /// Equal to
-        bool operator==(const tiny_vector<T, AURA_TINY_VECTOR_MAX_SIZE>& b)
+        template <std::size_t max_size_>
+        bool operator==(const tiny_vector<T, max_size_>& b)
         {
                 return size_ == b.size_ &&
                         std::equal(data_.begin(), data_.begin() + size_,
@@ -166,7 +162,8 @@ public:
         }
 
         /// Not equal to
-        bool operator!=(const tiny_vector<T, AURA_TINY_VECTOR_MAX_SIZE>& b)
+        template <std::size_t max_size_>
+        bool operator!=(const tiny_vector<T, max_size_>& b)
         {
                 return !(*this == b);
         }
@@ -176,7 +173,7 @@ private:
         std::size_t size_;
 
         /// array containing data
-        std::array<T, max_size_> data_;
+        std::array<T, max_size> data_;
 };
 
 } // namespace aura
