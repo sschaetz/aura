@@ -83,21 +83,55 @@ public:
                 return *this;
         }
 
-private:
-        typedef detail::device_array_deleter<T> deleter_t;
-        typedef std::unique_ptr<device_ptr<T>, deleter_t> data_t;
-
-        data_t allocate(std::size_t size, device& d)
+        /// Access bounds and size
+        BoundsType bounds() const
         {
-                auto ptr = new device_ptr<T>;
-                *ptr = device_malloc<T>(size, d);
-                return data_t(ptr, deleter_t());
+                return bounds_;
         }
 
-        /// Stores the bounds.
+        std::size_t size() const
+        {
+                return product(bounds_);
+        }
+
+        /// Begin
+        iterator begin()
+        {
+                return *(data_.get());
+        }
+        const_iterator begin() const
+        {
+                return *(data_.get());
+        }
+
+        /// End
+        iterator end()
+        {
+                return *(data_.get()) + product(bounds_);
+        }
+        const_iterator end() const
+        {
+                return *(data_.get()) + product(bounds_);
+        }
+
+private:
+        /// Deleter type
+        typedef detail::device_array_deleter<T> deleter_t;
+
+        /// Data type
+        typedef std::unique_ptr<device_ptr<T>, deleter_t> data_t;
+
+        /// Allocation helper function
+        data_t allocate(std::size_t size, device& d)
+        {
+                data_ = data_t(new device_ptr<T>(device_malloc<T>(size, d)),
+                        deleter_t());
+        }
+
+        /// Stores the bounds
         BoundsType bounds_;
 
-        /// Holds data.
+        /// Holds data
         data_t data_;
 };
 

@@ -28,6 +28,15 @@ BOOST_AUTO_TEST_CASE(test_product)
         BOOST_CHECK((std::size_t)(b1) == 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9);
 }
 
+BOOST_AUTO_TEST_CASE(test_product_alternative)
+{
+        using bounds = std::vector<std::size_t>;
+        bounds b0;
+        BOOST_CHECK(product(b0) == 0);
+        bounds b1({1, 2, 3, 4, 5, 6, 7, 8, 9});
+        BOOST_CHECK(product(b1) == 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9);
+}
+
 BOOST_AUTO_TEST_CASE(test_other)
 {
         using bounds = tiny_vector<std::size_t, 10>;
