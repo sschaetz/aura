@@ -21,22 +21,29 @@ typedef void* arg_t;
 template <std::size_t N>
 using args_tt = std::array<arg_t, N>;
 
-// Alias for returned packed arguments
+/// Alias for returned packed arguments
 template <std::size_t N>
 using args_t = std::pair<char*, args_tt<N>>;
+
+/// Unwrap argument.
+template <typename T>
+const T* unwrap(const T& a)
+{
+        return &a;
+}
 
 /// Copy arguments to memory block recursively
 template <typename ArgsItr, typename T0>
 void fill_args_(char* p, ArgsItr it, const T0 a0)
 {
-        std::memcpy(p, &a0, sizeof(T0));
+        std::memcpy(p, unwrap(a0), sizeof(T0));
         *it = p;
 }
 
 template <typename ArgsItr, typename T0, typename... Targs>
 void fill_args_(char* p, ArgsItr it, const T0 a0, const Targs... ar)
 {
-        std::memcpy(p, &a0, sizeof(T0));
+        std::memcpy(p, unwrap(a0), sizeof(T0));
         *it = p;
         fill_args_(p + sizeof(T0), ++it, ar...);
 }
