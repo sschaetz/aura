@@ -224,6 +224,20 @@ private:
 };
 
 
+/// equal to operator (reverse order)
+template <typename T, typename BaseType>
+bool operator==(std::nullptr_t, const base_device_ptr<T, BaseType>& ptr)
+{
+        return (ptr == nullptr);
+}
+
+/// not equal to operator (reverse order)
+template <typename T, typename BaseType>
+bool operator!=(std::nullptr_t, const base_device_ptr<T, BaseType>& ptr)
+{
+        return (ptr != nullptr);
+}
+
 } // detail
 } // aura
 } // boost

@@ -24,10 +24,11 @@ namespace base = base_detail::opencl;
 namespace base = base_detail::metal;
 #endif
 
+
+
 /// Pack arguments
 template <typename... Targs>
-auto args(const Targs... ar)
-        -> base::args_t<sizeof...(Targs)>
+auto args(const Targs... ar) -> base::args_t<sizeof...(Targs)>
 {
         return base::args_impl(ar...);
 }

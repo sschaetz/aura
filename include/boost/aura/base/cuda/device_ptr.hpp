@@ -17,23 +17,40 @@ namespace base_detail
 namespace cuda
 {
 
+template <typename T>
+struct device_ptr_base_type
+{
+        CUdeviceptr device_buffer;
+
+        // Emulate memory_ = 0; behaviour of other base types.
+        device_ptr_base_type& operator=(int a)
+        {
+                if (a == 0)
+                {
+                        device_buffer = nullptr;
+                }
+                return *this;
+        }
+
+        bool operator==(const device_ptr_base_type<T>& other) const
+        {
+                return device_buffer == other.device_buffer;
+        }
+
+        bool operator!=(const device_ptr_base_type<T>& other) const
+        {
+                return !(*this == other);
+        }
+
+        const bool is_shared_memory() const { return false; }
+};
+
+
+
 /// Specialize base_device_ptr for specific backend.
 template <typename T>
-using device_ptr = boost::aura::detail::base_device_ptr<T, CUdeviceptr>;
-
-/// equal to operator (reverse order)
-template <typename T>
-bool operator==(std::nullptr_t, const device_ptr<T>& ptr)
-{
-        return (ptr == nullptr);
-}
-
-/// not equal to operator (reverse order)
-template <typename T>
-bool operator!=(std::nullptr_t, const device_ptr<T>& ptr)
-{
-        return (ptr != nullptr);
-}
+using device_ptr =
+        boost::aura::detail::base_device_ptr<T, device_ptr_base_type<T>>;
 
 
 /// Allocate device memory.
@@ -43,7 +60,7 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
 {
         d.activate();
         typename device_ptr<T>::base_type m;
-        AURA_CUDA_SAFE_CALL(cuMemAlloc(&m, size * sizeof(T)));
+        AURA_CUDA_SAFE_CALL(cuMemAlloc(&m.device_buffer, size * sizeof(T)));
         d.deactivate();
         return device_ptr<T>(m, d, tag);
 }
@@ -53,7 +70,7 @@ template <typename T>
 void device_free(device_ptr<T>& ptr)
 {
         ptr.get_device().activate();
-        AURA_CUDA_SAFE_CALL(cuMemFree(ptr.get_base_ptr()));
+        AURA_CUDA_SAFE_CALL(cuMemFree(ptr.get_base_ptr().device_buffer));
         ptr.get_device().deactivate();
         ptr.reset();
 }

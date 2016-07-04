@@ -42,6 +42,8 @@ struct device_ptr_base_type
         {
                 return !(*this == other);
         }
+
+        const bool is_shared_memory() const { return true; }
 };
 
 
@@ -49,19 +51,6 @@ template <typename T>
 using device_ptr =
         boost::aura::detail::base_device_ptr<T, device_ptr_base_type<T>>;
 
-/// equal to operator (reverse order)
-template <typename T>
-bool operator==(std::nullptr_t, const device_ptr<T>& ptr)
-{
-        return (ptr == nullptr);
-}
-
-/// not equal to operator (reverse order)
-template <typename T>
-bool operator!=(std::nullptr_t, const device_ptr<T>& ptr)
-{
-        return (ptr != nullptr);
-}
 
 namespace detail
 {

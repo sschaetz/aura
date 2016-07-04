@@ -17,7 +17,38 @@ namespace opencl
 {
 
 template <typename T>
-using device_ptr = boost::aura::detail::base_device_ptr<T, cl_mem>;
+struct device_ptr_base_type
+{
+        cl_mem device_buffer;
+
+        // Emulate memory_ = 0; behaviour of other base types.
+        device_ptr_base_type& operator=(int a)
+        {
+                if (a == 0)
+                {
+                        device_buffer = nullptr;
+                }
+                return *this;
+        }
+
+        bool operator==(const device_ptr_base_type<T>& other) const
+        {
+                return device_buffer == other.device_buffer;
+        }
+
+        bool operator!=(const device_ptr_base_type<T>& other) const
+        {
+                return !(*this == other);
+        }
+
+        const bool is_shared_memory() const { return false; }
+};
+
+/// Specialize base_device_ptr for specific backend.
+template <typename T>
+using device_ptr =
+        boost::aura::detail::base_device_ptr<T, device_ptr_base_type<T>>;
+
 
 /// equal to operator (reverse order)
 template <typename T>
@@ -55,9 +86,10 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
         memory_access_tag tag = memory_access_tag::rw)
 {
         int errorcode = 0;
-        typename device_ptr<T>::base_type m = clCreateBuffer(
-                d.get_base_context(), translate_memory_access_tag(tag),
-                size * sizeof(T), 0, &errorcode);
+        typename device_ptr<T>::base_type m;
+        m.device_buffer = clCreateBuffer(d.get_base_context(),
+                translate_memory_access_tag(tag), size * sizeof(T), 0,
+                &errorcode);
         AURA_OPENCL_CHECK_ERROR(errorcode);
         return device_ptr<T>(m, d, tag);
 }
@@ -66,7 +98,8 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
 template <typename T>
 void device_free(device_ptr<T>& ptr)
 {
-        AURA_OPENCL_SAFE_CALL(clReleaseMemObject(ptr.get_base_ptr()));
+        AURA_OPENCL_SAFE_CALL(
+                clReleaseMemObject(ptr.get_base_ptr().device_buffer));
         ptr.reset();
 }
 
