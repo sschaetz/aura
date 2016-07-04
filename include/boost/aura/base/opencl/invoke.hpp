@@ -47,7 +47,7 @@ void fill_args_(char* p, ArgsItr it, const T0 a0, const Targs... ar)
 
 /// Pack arguments
 template <typename... Targs>
-args_t<sizeof...(Targs)> args(const Targs... ar)
+args_t<sizeof...(Targs)> args_impl(const Targs... ar)
 {
         args_tt<sizeof...(Targs)> pa;
         char* p = (char*)malloc(tsizeof<Targs...>::sz);
@@ -80,23 +80,6 @@ inline void invoke_impl(
 }
 
 } // namespace detail
-
-
-
-/// invoke kernel without args
-template <typename MeshType, typename BundleType>
-inline void invoke(kernel& k, const MeshType& m, const BundleType& b, feed& f)
-{
-        detail::invoke_impl(k, m, b, args_t<0>(), f);
-}
-
-/// invoke kernel with args
-template <unsigned long N, typename MeshType, typename BundleType>
-inline void invoke(kernel& k, const MeshType& m, const BundleType& b,
-        const args_t<N>&& a, feed& f)
-{
-        detail::invoke_impl(k, m, b, std::move(a), f);
-}
 
 
 } // opencl

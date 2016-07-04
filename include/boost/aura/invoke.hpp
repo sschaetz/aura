@@ -1,5 +1,8 @@
 #pragma once
 
+#include <boost/aura/base/base_mesh_bundle.hpp>
+#include <boost/aura/kernel.hpp>
+
 #if defined AURA_BASE_CUDA
 #include <boost/aura/base/cuda/invoke.hpp>
 #elif defined AURA_BASE_OPENCL
@@ -21,8 +24,29 @@ namespace base = base_detail::opencl;
 namespace base = base_detail::metal;
 #endif
 
-using base::invoke;
-using base::args;
+/// Pack arguments
+template <typename... Targs>
+auto args(const Targs... ar)
+        -> base::args_t<sizeof...(Targs)>
+{
+        return base::args_impl(ar...);
+}
+
+/// invoke kernel without args
+inline template <typename MeshType, typename BundleType>
+void invoke(kernel& k, const MeshType& m, const BundleType& b, feed& f)
+{
+        base::detail::invoke_impl(k, m, b, base::args_t<0>(), f);
+}
+
+/// invoke kernel with args
+template <unsigned long N, typename MeshType, typename BundleType>
+inline void invoke(kernel& k, const MeshType& m, const BundleType& b,
+        const base::args_t<N>&& a, feed& f)
+{
+        base::detail::invoke_impl(k, m, b, std::move(a), f);
+}
+
 
 } // namespace aura
 } // namespace boost

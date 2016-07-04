@@ -41,7 +41,7 @@ void fill_args_(args_tt<0>::iterator it, const T0 a0, const Targs... ar)
 
 /// Pack arguments.
 template <typename... Targs>
-args_t<sizeof...(Targs)> args(const Targs... ar)
+args_t<sizeof...(Targs)> args_impl(const Targs... ar)
 {
         args_tt<sizeof...(Targs)> pa;
         fill_args_(pa.begin(), ar...);
@@ -96,21 +96,6 @@ inline void invoke_impl(kernel& k, const MeshType& m, const BundleType& b,
 
 
 } // namespace detail
-
-/// invoke kernel without args
-inline template <typename MeshType, typename BundleType>
-void invoke(kernel& k, const MeshType& m, const BundleType& b, feed& f)
-{
-        detail::invoke_impl(k, m, b, args_t<0>(), f);
-}
-
-/// invoke kernel with args
-template <unsigned long N, typename MeshType, typename BundleType>
-inline void invoke(kernel& k, const MeshType& m, const BundleType& b,
-        const args_t<N>&& a, feed& f)
-{
-        detail::invoke_impl(k, m, b, std::move(a), f);
-}
 
 } // metal
 } // base_detail
