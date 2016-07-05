@@ -106,6 +106,12 @@ public:
                 return data_.get()->get_base_ptr();
         }
 
+        /// Indicate if memory hold by array is shared with host or not.
+        const bool is_shared_memory() const
+        {
+                return data_.get()->is_shared_memory();
+        }
+
 
 private:
         /// Deleter type

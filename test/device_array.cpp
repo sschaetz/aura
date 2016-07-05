@@ -86,3 +86,18 @@ BOOST_AUTO_TEST_CASE(basic_copy)
         }
         boost::aura::finalize();
 }
+
+BOOST_AUTO_TEST_CASE(shared)
+{
+        initialize();
+        {
+                device d(AURA_UNIT_TEST_DEVICE);
+                device_array<float> ar0(bounds({2, 2, 2, 2}), d);
+#ifdef AURA_BASE_METAL
+                BOOST_CHECK(ar0.is_shared_memory() == true);
+#else
+                BOOST_CHECK(ar0.is_shared_memory() == false);
+#endif
+        }
+        finalize();
+}
