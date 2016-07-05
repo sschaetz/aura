@@ -41,6 +41,8 @@ struct device_ptr_base_type
                 return !(*this == other);
         }
 
+        /// @copydoc
+        /// boost::aura::base::cuda::device_base_ptr::is_shared_memory()
         const bool is_shared_memory() const { return false; }
 };
 

@@ -32,6 +32,7 @@ struct device_ptr_base_type
                 return *this;
         }
 
+        /// Comparison operators
         bool operator==(const device_ptr_base_type<T>& other) const
         {
                 return device_buffer == other.device_buffer;
@@ -42,6 +43,7 @@ struct device_ptr_base_type
                 return !(*this == other);
         }
 
+        /// Indicate if memory hold by pointer is shared with host or not.
         const bool is_shared_memory() const { return false; }
 };
 

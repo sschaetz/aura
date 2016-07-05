@@ -48,3 +48,20 @@ BOOST_AUTO_TEST_CASE(excessive_ptr)
         }
         boost::aura::finalize();
 }
+
+BOOST_AUTO_TEST_CASE(shared)
+{
+        boost::aura::initialize();
+        {
+                boost::aura::device d(AURA_UNIT_TEST_DEVICE);
+                auto ptr =
+                        boost::aura::device_malloc<float>(1024 * 1024 * 20, d);
+#ifdef AURA_BASE_METAL
+                BOOST_CHECK(ptr.is_shared_memory() == true);
+#else
+                BOOST_CHECK(ptr.is_shared_memory() == false);
+#endif
+                boost::aura::device_free(ptr);
+        }
+        boost::aura::finalize();
+}

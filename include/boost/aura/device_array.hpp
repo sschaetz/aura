@@ -100,10 +100,12 @@ public:
         {
                 return data_.get()->get_base_ptr();
         }
+
         typename const_iterator::const_base_type get_base_ptr() const
         {
                 return data_.get()->get_base_ptr();
         }
+
 
 private:
         /// Deleter type
