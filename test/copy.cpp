@@ -71,3 +71,41 @@ BOOST_AUTO_TEST_CASE(out_of_bounds_copy)
         }
         boost::aura::finalize();
 }
+
+BOOST_AUTO_TEST_CASE(basic_copy_shared)
+{
+        boost::aura::initialize();
+        {
+                boost::aura::device d(AURA_UNIT_TEST_DEVICE);
+                boost::aura::feed f(d);
+
+                std::vector<float> host_src(1024, 21.0f);
+                std::vector<float> host_dst(1024, 0.0f);
+
+                auto ptr0 = boost::aura::device_malloc<float>(1024, d);
+                auto ptr1 = boost::aura::device_malloc<float>(1024, d);
+
+                // Host to device
+                boost::aura::copy(host_src.begin(), host_src.end(), ptr0, f);
+                // Device to device.
+                boost::aura::copy(ptr0, ptr0 + 1024, ptr1, f);
+                // Device to host
+                boost::aura::copy(ptr1, ptr1 + 1024, host_dst.begin(), f);
+
+                boost::aura::wait_for(f);
+                BOOST_CHECK(std::equal(
+                        host_src.begin(), host_src.end(), host_dst.begin()));
+
+                if (ptr1.is_shared_memory())
+                {
+                        BOOST_CHECK(std::equal(host_src.begin(), host_src.end(),
+                                ptr1.get_host_ptr()));
+                }
+
+                BOOST_CHECK(std::equal(
+                        host_src.begin(), host_src.end(), host_dst.begin()));
+                boost::aura::device_free(ptr0);
+                boost::aura::device_free(ptr1);
+        }
+        boost::aura::finalize();
+}

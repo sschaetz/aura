@@ -102,6 +102,12 @@ BOOST_AUTO_TEST_CASE(basic_library_from_file_array)
 
                 BOOST_CHECK(std::equal(
                         expected.begin(), expected.end(), c.begin()));
+
+                if (c_device.is_shared_memory())
+                {
+                        BOOST_CHECK(std::equal(expected.begin(), expected.end(),
+                                c_device.get_host_ptr()));
+                }
         }
         boost::aura::finalize();
 }

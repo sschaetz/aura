@@ -31,6 +31,10 @@ struct device_ptr_base_type
                 return *this;
         }
 
+        /// Access host ptr.
+        T* get_host_ptr() { return nullptr; }
+        const T* get_host_ptr() const { return nullptr; }
+
         bool operator==(const device_ptr_base_type<T>& other) const
         {
                 return device_buffer == other.device_buffer;

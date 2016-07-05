@@ -22,7 +22,7 @@ struct device_ptr_base_type
 {
         CUdeviceptr device_buffer;
 
-        // Emulate memory_ = 0; behaviour of other base types.
+        /// Emulate memory_ = 0; behaviour of other base types.
         device_ptr_base_type& operator=(int a)
         {
                 if (a == 0)
@@ -31,6 +31,10 @@ struct device_ptr_base_type
                 }
                 return *this;
         }
+
+        /// Access host ptr.
+        T* get_host_ptr() { return nullptr; }
+        const T* get_host_ptr() const { return nullptr; }
 
         /// Comparison operators
         bool operator==(const device_ptr_base_type<T>& other) const

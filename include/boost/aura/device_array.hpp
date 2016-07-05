@@ -106,6 +106,11 @@ public:
                 return data_.get()->get_base_ptr();
         }
 
+        /// Access host pointers.
+        T* get_host_ptr() { return data_.get()->get_host_ptr(); }
+
+        const T* get_host_ptr() const { return data_.get()->get_host_ptr(); }
+
         /// Indicate if memory hold by array is shared with host or not.
         const bool is_shared_memory() const
         {
