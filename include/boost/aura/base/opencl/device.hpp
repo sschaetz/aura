@@ -8,6 +8,8 @@
 #include "CL/cl.h"
 #endif
 
+#include <vector>
+
 namespace boost
 {
 namespace aura

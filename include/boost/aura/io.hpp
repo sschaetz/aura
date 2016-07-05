@@ -24,7 +24,7 @@ struct path
 };
 
 /// Read contens of a file into a string and return it.
-std::string read_all(path p)
+inline std::string read_all(path p)
 {
         // Read contents of file.
         std::ifstream in(p.str, std::ios::in);
