@@ -4,6 +4,8 @@
 #include <boost/aura/device.hpp>
 #include <boost/aura/device_ptr.hpp>
 
+#include <memory>
+
 namespace boost
 {
 namespace aura
