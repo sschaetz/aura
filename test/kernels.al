@@ -22,3 +22,15 @@ kernel void add
         c[tid] = a[tid] + b[tid];
 }
 
+
+// Alang version of add kernel.
+
+AURA_KERNEL void add_alang(
+        AURA_DEVMEM float* a, 
+        AURA_DEVMEM float* b, 
+        AURA_DEVMEM float* c
+        AURA_MESH_ID_ARG)
+{
+        c[AURA_MESH_ID_0] = a[AURA_MESH_ID_0] + b[AURA_MESH_ID_0];
+}
+

@@ -28,4 +28,5 @@ ADD_AURA_TEST(test.library library.cpp)
 ADD_AURA_TEST(test.tiny_vector tiny_vector.cpp)
 ADD_AURA_TEST(test.device_array device_array.cpp)
 ADD_AURA_TEST(test.multi_comp_units multi_comp_units1.cpp multi_comp_units2.cpp)
+ADD_AURA_TEST(test.alang alang.cpp alang.cpp)
 
