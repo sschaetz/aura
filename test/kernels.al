@@ -34,3 +34,32 @@ AURA_KERNEL void add_alang(
         c[AURA_MESH_ID_0] = a[AURA_MESH_ID_0] + b[AURA_MESH_ID_0];
 }
 
+AURA_KERNEL void all_alang_mesh(
+        AURA_DEVMEM float* a, 
+        AURA_DEVMEM float* b, 
+        AURA_DEVMEM float* c
+        AURA_MESH_ID_ARG
+        AURA_MESH_SIZE_ARG
+        AURA_BUNDLE_ID_ARG
+        AURA_BUNDLE_SIZE_ARG)
+{
+        unsigned int id = AURA_MESH_ID_0 * AURA_MESH_SIZE_1 * AURA_MESH_SIZE_2 +
+               AURA_MESH_ID_1 * AURA_MESH_SIZE_2 +
+               AURA_MESH_ID_2;
+        c[id] = a[id] + b[id];
+}
+
+AURA_KERNEL void all_alang_bundle(
+        AURA_DEVMEM float* a, 
+        AURA_DEVMEM float* b, 
+        AURA_DEVMEM float* c
+        AURA_MESH_ID_ARG
+        AURA_MESH_SIZE_ARG
+        AURA_BUNDLE_ID_ARG
+        AURA_BUNDLE_SIZE_ARG)
+{
+        unsigned int id = AURA_BUNDLE_ID_0 * AURA_BUNDLE_SIZE_1 * AURA_BUNDLE_SIZE_2 +
+               AURA_BUNDLE_ID_1 * AURA_BUNDLE_SIZE_2 +
+               AURA_BUNDLE_ID_2;
+        c[id] = a[id] + b[id];
+}

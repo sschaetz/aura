@@ -79,10 +79,12 @@ inline void invoke_impl(kernel& k, const MeshType& m, const BundleType& b,
                 [enc setBuffer:a[i] offset:0 atIndex:i];
         }
 
+#if AURA_DEBUG_MESH_BUNDLE
         std::cout << mesh_bundle.first[0] << " " << mesh_bundle.first[1] << " "
                   << mesh_bundle.first[2] << " " << mesh_bundle.second[0] << " "
                   << mesh_bundle.second[1] << " " << mesh_bundle.second[2]
                   << std::endl;
+#endif
 
         MTLSize threadGroups = MTLSizeMake(mesh_bundle.first[0],
                 mesh_bundle.first[1], mesh_bundle.first[2]);

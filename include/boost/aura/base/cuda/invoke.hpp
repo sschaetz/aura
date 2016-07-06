@@ -62,6 +62,14 @@ inline void invoke_impl(kernel& k, const MeshType& m, const BundleType& b,
         auto mesh_bundle = adjust_mesh_bundle(m, b);
         f.get_device().activate();
 
+#if AURA_DEBUG_MESH_BUNDLE
+        std::cout << mesh_bundle.first[0] << " " << mesh_bundle.first[1] << " "
+                  << mesh_bundle.first[2] << " " << mesh_bundle.second[0] << " "
+                  << mesh_bundle.second[1] << " " << mesh_bundle.second[2]
+                  << std::endl;
+#endif
+
+
         AURA_CUDA_SAFE_CALL(cuLaunchKernel(k.get_base_kernel(),
                 mesh_bundle.first[0], mesh_bundle.first[1],
                 mesh_bundle.first[2], mesh_bundle.second[0],

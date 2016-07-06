@@ -70,7 +70,14 @@ inline void invoke_impl(
                         a.second[i].second, a.second[i].first));
         }
 
-        auto mesh_bundle = adjust_mesh_bundle(m, b);
+        auto mesh_bundle = adjust_mesh_bundle(m, b, false);
+
+#if AURA_DEBUG_MESH_BUNDLE
+        std::cout << mesh_bundle.first[0] << " " << mesh_bundle.first[1] << " "
+                  << mesh_bundle.first[2] << " " << mesh_bundle.second[0] << " "
+                  << mesh_bundle.second[1] << " " << mesh_bundle.second[2]
+                  << std::endl;
+#endif
 
         // call kernel
         AURA_OPENCL_SAFE_CALL(clEnqueueNDRangeKernel(f.get_base_feed(),

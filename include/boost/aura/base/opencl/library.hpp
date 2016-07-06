@@ -79,10 +79,31 @@ private:
                 library_ =
                         clCreateProgramWithSource(device_->get_base_context(),
                                 1, &strings, &len, &errorcode);
-                AURA_OPENCL_CHECK_ERROR(errorcode);
-                AURA_OPENCL_SAFE_CALL(clBuildProgram(library_, 1,
-                        &device_->get_base_device(), opt.c_str(), NULL, NULL));
+                try
+                {
+                        AURA_OPENCL_CHECK_ERROR(errorcode);
+                        AURA_OPENCL_SAFE_CALL(clBuildProgram(library_, 1,
+                                &device_->get_base_device(), opt.c_str(), NULL,
+                                NULL));
+                }
+                catch (...)
+                {
+                        size_t log_size;
+                        AURA_OPENCL_SAFE_CALL(clGetProgramBuildInfo(library_,
+                                device_->get_base_device(),
+                                CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size));
+                        log_.resize(log_size);
 
+
+                        AURA_OPENCL_SAFE_CALL(clGetProgramBuildInfo(library_,
+                                device_->get_base_device(),
+                                CL_PROGRAM_BUILD_LOG, log_size, &(log_[0]),
+                                NULL));
+
+                        std::cout << log_ << std::endl;
+
+                        throw;
+                }
                 size_t log_size;
                 AURA_OPENCL_SAFE_CALL(clGetProgramBuildInfo(library_,
                         device_->get_base_device(), CL_PROGRAM_BUILD_LOG, 0,

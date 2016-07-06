@@ -81,8 +81,22 @@ private:
                 nvrtcProgram program;
                 AURA_CUDA_NVRTC_SAFE_CALL(nvrtcCreateProgram(&program,
                         kernelstring_with_define.c_str(), NULL, 0, NULL, NULL));
-                AURA_CUDA_NVRTC_SAFE_CALL(
-                        nvrtcCompileProgram(program, 0, NULL));
+                try
+                {
+                        AURA_CUDA_NVRTC_SAFE_CALL(
+                                nvrtcCompileProgram(program, 0, NULL));
+                }
+                catch (...)
+                {
+                        size_t log_size;
+                        AURA_CUDA_NVRTC_SAFE_CALL(
+                                nvrtcGetProgramLogSize(program, &log_size));
+                        log_.resize(log_size);
+                        AURA_CUDA_NVRTC_SAFE_CALL(
+                                nvrtcGetProgramLog(program, &(log_[0])));
+                        std::cout << log_ << std::endl;
+                        throw;
+                }
 
                 // Optain PTX.
                 size_t ptx_size;
