@@ -1,3 +1,6 @@
+// Work around a compiler bug on MacOS on Boost 1.60
+#define BOOST_NO_CXX11_VARIADIC_TEMPLATES
+
 #include <boost/aura/copy.hpp>
 #include <boost/aura/device.hpp>
 #include <boost/aura/device_ptr.hpp>

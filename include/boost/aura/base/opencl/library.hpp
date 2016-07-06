@@ -2,6 +2,8 @@
 
 #include <boost/aura/base/opencl/device.hpp>
 #include <boost/aura/base/opencl/safecall.hpp>
+#include <boost/aura/base/opencl/alang.hpp>
+#include <boost/aura/base/alang.hpp>
 #include <boost/aura/io.hpp>
 
 #include <iostream>
@@ -62,9 +64,13 @@ private:
         void create_from_string(
                 const std::string& kernelstring, const std::string& opt)
         {
+                shared_alang_header salh;
+                alang_header alh;
+
                 // Prepend AURA define to kernel.
                 auto kernelstring_with_define =
-                        std::string("#define AURA_BASE_OPENCL\n") +
+                        std::string("#define AURA_BASE_OPENCL\n") + salh.get() +
+                        std::string("\n") + alh.get() + std::string("\n") +
                         kernelstring;
 
                 int errorcode = 0;

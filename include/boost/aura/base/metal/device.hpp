@@ -4,6 +4,8 @@
 
 #import <Metal/Metal.h>
 
+#include <cstddef>
+
 namespace boost
 {
 namespace aura
@@ -48,6 +50,8 @@ public:
         {
                 // Pass
         }
+
+        inline bool supports_shared_memory() const { return true; }
 
 private:
         /// Device ordinal

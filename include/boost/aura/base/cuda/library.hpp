@@ -2,6 +2,8 @@
 
 #include <boost/aura/base/cuda/device.hpp>
 #include <boost/aura/base/cuda/safecall.hpp>
+#include <boost/aura/base/cuda/alang.hpp>
+#include <boost/aura/base/alang.hpp>
 #include <boost/aura/io.hpp>
 
 #include <cuda.h>
@@ -65,9 +67,14 @@ private:
         void create_from_string(const std::string& kernelstring, device& d,
                 const std::string& opt)
         {
+                shared_alang_header salh;
+                alang_header alh;
+
                 // Prepend AURA define to kernel.
                 auto kernelstring_with_define =
-                        std::string("#define AURA_BASE_CUDA\n") + kernelstring;
+                        std::string("#define AURA_BASE_CUDA\n") + salh.get() +
+                        std::string("\n") + alh.get() + std::string("\n") +
+                        kernelstring;
                 d.activate();
 
                 // Create and compile.

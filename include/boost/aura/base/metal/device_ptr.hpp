@@ -61,11 +61,9 @@ using device_ptr =
 namespace detail
 {
 
-void free_posix_memalign(void* ptr, NSUInteger) { free(ptr); }
+inline void free_posix_memalign(void* ptr, NSUInteger) { free(ptr); }
 
 } // detail
-
-int counter = 0;
 
 /// Allocate device memory.
 template <typename T>

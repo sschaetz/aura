@@ -5,6 +5,8 @@
 
 #import <Metal/Metal.h>
 
+#include <list>
+
 namespace boost
 {
 namespace aura
