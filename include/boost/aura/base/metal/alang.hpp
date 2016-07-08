@@ -15,6 +15,8 @@ struct alang_header
         {
                 static std::string v = R"(
 
+// PYTHON-BEGIN
+
 #include <metal_stdlib>
 #include <metal_compute>
 #include <metal_math>
@@ -45,6 +47,8 @@ using namespace metal;
 #define AURA_BUNDLE_SIZE_0 aura_bundle_size.x
 #define AURA_BUNDLE_SIZE_1 aura_bundle_size.y
 #define AURA_BUNDLE_SIZE_2 aura_bundle_size.z
+
+// PYTHON-END
 
 )";
                 return v;

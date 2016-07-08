@@ -1,24 +1,25 @@
 #include <boost/python.hpp>
+#include <boost/python/raw_function.hpp>
 
 #include <boost/aura/environment.hpp>
 
 using namespace boost::python;
 
-const char* initialize()
+void initialize()
 {
         boost::aura::initialize();
-        return "yo!";
+        return;
 }
 
-const char* finalize()
+void finalize()
 {
         boost::aura::finalize();
-        return "yo!";
+        return;
 }
 
 BOOST_PYTHON_MODULE(aura_opencl)
 {
         using namespace boost::python;
-        def("initialize", initialize);
-        def("finalize", finalize);
+        def("initialize", raw_function(initialize));
+        def("finalize", raw_function(finalize));
 }

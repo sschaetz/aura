@@ -15,6 +15,8 @@ struct alang_header
         {
                 static std::string v = R"(
 
+// PYTHON-BEGIN
+
 #define AURA_KERNEL extern "C" __global__
 #define AURA_CONSTANT
 #define AURA_DEVMEM
@@ -38,6 +40,8 @@ struct alang_header
 #define AURA_BUNDLE_SIZE_0 blockDim.x
 #define AURA_BUNDLE_SIZE_1 blockDim.y
 #define AURA_BUNDLE_SIZE_2 blockDim.z
+
+// PYTHON-END
 
 )";
                 return v;
