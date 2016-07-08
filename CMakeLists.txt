@@ -28,7 +28,7 @@ ELSE ()
                 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
         ENDIF ()
 ENDIF()
-FIND_PACKAGE(Boost COMPONENTS system thread filesystem unit_test_framework regex)
+FIND_PACKAGE(Boost COMPONENTS system thread filesystem unit_test_framework regex python)
 
 
 # Find GPU libraries.

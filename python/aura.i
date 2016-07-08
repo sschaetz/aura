@@ -1,23 +1,21 @@
 %module aura
 %{
-namespace boost
-{
-namespace aura
-{
-#define AURA_BASE_CUDA
+#define SWIG_FILE_WITH_INIT
 
-#include "boost/aura/environment.hpp"
-#include "boost/aura/feed.hpp"
-#include "boost/aura/device.hpp"
-}
-}
-%}
 namespace boost
 {
 namespace aura
 {
-%include "boost/aura/environment.hpp"
-%include "boost/aura/feed.hpp"
-%include "boost/aura/device.hpp"
-}
-}
+
+#include "../include/boost/aura/base/opencl/device.hpp"
+#include "../include/boost/aura/base/opencl/environment.hpp"
+
+
+%}
+
+
+%include "../include/boost/aura/base/opencl/device.hpp"
+%include "../include/boost/aura/base/opencl/environment.hpp"
+
+
+
