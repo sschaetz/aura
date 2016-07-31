@@ -1,3 +1,6 @@
+# Docs
+doc/build/*
+doc/xml
 
 # Created by https://www.gitignore.io/api/c++,objective-c,python,vim,xcode,sublimetext,pycharm,c,cmake
 
