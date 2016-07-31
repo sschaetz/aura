@@ -1,0 +1,5 @@
+[requires]
+pybind11/1.4@memsharded/stable
+
+[generators]
+cmake
