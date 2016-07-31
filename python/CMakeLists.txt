@@ -1,7 +1,6 @@
 INCLUDE(${CMAKE_CURRENT_BINARY_DIR}/../conanbuildinfo.cmake)
 CONAN_BASIC_SETUP()
 
-
 SET(PYTHON_INCLUDE_DIR "/Users/sschaetz/.pyenv/versions/3.4.3/include/python3.4m")
 SET(PYTHON_LIBRARY "/Users/sschaetz/.pyenv/versions/3.4.3/lib")
 

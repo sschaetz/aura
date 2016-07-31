@@ -1,6 +1,6 @@
 branches:
         only:
-                - v2 
+                - develop
 
 shallow_clone: true 
 
