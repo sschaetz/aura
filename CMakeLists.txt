@@ -103,4 +103,24 @@ ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/test/)
 # WIP
 #ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/python/)
 
-
+# Documentation
+FIND_PACKAGE(Doxygen)
+IF (DOXYGEN_FOUND)
+        # Build doxygen XML.
+        CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in 
+                ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+        ADD_CUSTOM_TARGET(doxygen ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                COMMENT "Generating API documentation with Doxygen" VERBATIM)
+        # Run sphinx (with breathe).
+        CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/doc/source/conf.py.in 
+                ${CMAKE_CURRENT_BINARY_DIR}/conf.py @ONLY)
+        ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/doc/html
+                COMMAND sphinx-build -b html -c . ${CMAKE_CURRENT_SOURCE_DIR}/doc/source ${CMAKE_CURRENT_BINARY_DIR}/doc/html
+                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                )
+        # Make a target that builds all of the above.
+        ADD_CUSTOM_TARGET(sphinx ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/doc/html)
+        ADD_CUSTOM_TARGET(doc)
+        ADD_DEPENDENCIES(doc doxygen sphinx)
+ENDIF(DOXYGEN_FOUND)
