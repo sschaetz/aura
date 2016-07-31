@@ -7,3 +7,6 @@
 Aura is a modern, header-only C++ library for accelerator development. Aura 
 works with both OpenCL and CUDA backends. The Aura API is not stable yet (alpha
 version).
+
+## Documentation
+Work in progress: https://sschaetz.github.io/aura/
