@@ -2,10 +2,8 @@
 
 #include <boost/aura/config.hpp>
 
-#include <boost/mpl/assert.hpp>
-#include <boost/mpl/less_equal.hpp>
-
 #include <array>
+#include <cassert>
 #include <initializer_list>
 #include <iostream>
 #include <vector>
