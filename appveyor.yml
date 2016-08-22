@@ -14,6 +14,13 @@ clone_folder: C:\aura
 platform:
         - x64
 
+install:
+        - cmd: echo "Downloading conan..."
+        - ps: wget http://downloads.conan.io/latest_windows -OutFile conan_installer.exe
+        - cmd: conan_installer.exe /VERYSILENT
+        - cmd: set PATH=%PATH%;C:\Program Files (x86)\Conan\conan
+        - cmd: conan --version
+
 before_build:
         - ps: Start-FileDownload "http://registrationcenter-download.intel.com/akdlm/irc_nas/8386/intel_sdk_for_opencl_2015_r3_x64_setup.msi"
         - start /wait msiexec /i intel_sdk_for_opencl_2015_r3_x64_setup.msi /qn  /l*v msiexec.log
