@@ -30,7 +30,7 @@ before_install:
           libboost-program-options-dev
           libboost-test-dev
           libboost-regex-dev
-          opencl-header
+          opencl-headers
           ; fi
         - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash buildprocess/amd_sdk.sh; fi
         - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then tar -xjf AMD-SDK.tar.bz2; fi
@@ -43,13 +43,9 @@ before_install:
         - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CMAKE_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64; fi
         - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then chmod +x ${AMDAPPSDKROOT}/bin/x86_64/clinfo; fi
         - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ${AMDAPPSDKROOT}/bin/x86_64/clinfo; fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget http://downloads.conan.io/latest_debian -O conan.deb fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo dpkg -i conan.deb fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then rm conan.deb fi
-        - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then  fi
-        - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pip install conan; fi
 
 install:
+        - pip install conan
         - conan install
 
 matrix:
