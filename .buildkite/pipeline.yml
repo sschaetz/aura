@@ -1,4 +1,37 @@
 steps:
-  - name: Unit Tests
-    command: .buildkite/build.sh
-    timeout_in_minutes: 15
+        - name: Unit Tests 512 GPU Metal
+          command: .buildkite/build.sh
+          timeout_in_minutes: 15
+          env:
+                AURA_BASE: "METAL"
+                AURA_UNIT_TEST_DEVICE: "1"
+          agents:
+                gpubundlesize=512
+ 
+        - name: Unit Tests 256 GPU Metal
+          command: .buildkite/build.sh
+          timeout_in_minutes: 15
+          env:
+                AURA_BASE: "METAL"
+                AURA_UNIT_TEST_DEVICE: "1"
+          agents:
+                gpubundlesize=256
+
+        - name: Unit Tests 512 GPU OpenCL 
+          command: .buildkite/build.sh
+          timeout_in_minutes: 15
+          env:
+                AURA_BASE: "OPENCL"
+                AURA_UNIT_TEST_DEVICE: "1"
+          agents:
+                gpubundlesize=512
+ 
+        - name: Unit Tests 256 GPU OpenCL 
+          command: .buildkite/build.sh
+          timeout_in_minutes: 15
+          env:
+                AURA_BASE: "OPENCL"
+                AURA_UNIT_TEST_DEVICE: "1"
+          agents:
+                gpubundlesize=256
+
