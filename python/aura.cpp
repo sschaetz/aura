@@ -1,6 +1,6 @@
-#include <boost/aura/environment.hpp>
-#include <boost/aura/device.hpp>
 #include <boost/aura/bounds.hpp>
+#include <boost/aura/device.hpp>
+#include <boost/aura/environment.hpp>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -13,9 +13,9 @@ PYBIND11_PLUGIN(aura)
         py::module m("aura", "aura python wrapper");
 
         m.def("initialize", &boost::aura::initialize,
-                    "Function that initializes aura.");
+                "Function that initializes aura.");
         m.def("finalize", &boost::aura::finalize,
-                    "Function that finalizes aura.");
+                "Function that finalizes aura.");
 
         py::class_<device>(m, "device")
                 .def(py::init<std::size_t>())

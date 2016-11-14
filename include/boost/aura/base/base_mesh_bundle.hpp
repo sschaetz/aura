@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boost/aura/memory_tag.hpp>
 #include <boost/aura/device.hpp>
+#include <boost/aura/memory_tag.hpp>
 
 #include <array>
 #include <utility>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boost/aura/base/opencl/safecall.hpp>
 #include <boost/aura/base/opencl/library.hpp>
+#include <boost/aura/base/opencl/safecall.hpp>
 
 namespace boost
 {

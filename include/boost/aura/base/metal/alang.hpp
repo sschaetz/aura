@@ -17,9 +17,9 @@ struct alang_header
 
 // PYTHON-BEGIN
 
-#include <metal_stdlib>
 #include <metal_compute>
 #include <metal_math>
+#include <metal_stdlib>
 
 using namespace metal;
 

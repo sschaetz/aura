@@ -1,9 +1,9 @@
 #pragma once
 
+#include <boost/aura/base/alang.hpp>
+#include <boost/aura/base/cuda/alang.hpp>
 #include <boost/aura/base/cuda/device.hpp>
 #include <boost/aura/base/cuda/safecall.hpp>
-#include <boost/aura/base/cuda/alang.hpp>
-#include <boost/aura/base/alang.hpp>
 #include <boost/aura/io.hpp>
 
 #include <cuda.h>

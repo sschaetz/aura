@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boost/aura/memory_tag.hpp>
 #include <boost/aura/device.hpp>
+#include <boost/aura/memory_tag.hpp>
 
 #include <cstddef>
 
@@ -193,7 +193,7 @@ struct base_device_ptr
         /// subtraction assignment operator
         base_device_ptr<T, BaseType>& operator-=(const std::size_t& b)
         {
-                return * this += (-b);
+                return *this += (-b);
         }
 
         /// prefix subtraction operator

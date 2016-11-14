@@ -42,13 +42,11 @@ void test_multi_comp_units2()
                 boost::aura::copy(b.begin(), b.end(), b_device.begin(), f);
                 boost::aura::copy(c.begin(), c.end(), c_device.begin(), f);
 
-                boost::aura::invoke(k, boost::aura::mesh({128, 1, 1}),
-                        boost::aura::bundle({
-                                1, 1, 1,
-                        }),
+                boost::aura::invoke(k, boost::aura::mesh({{128, 1, 1}}),
+                        boost::aura::bundle({{1, 1, 1}}),
                         boost::aura::args(a_device.get_base_ptr(),
-                                            b_device.get_base_ptr(),
-                                            c_device.get_base_ptr()),
+                                b_device.get_base_ptr(),
+                                c_device.get_base_ptr()),
                         f);
 
                 boost::aura::copy(

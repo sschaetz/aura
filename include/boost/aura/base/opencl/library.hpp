@@ -1,9 +1,9 @@
 #pragma once
 
+#include <boost/aura/base/alang.hpp>
+#include <boost/aura/base/opencl/alang.hpp>
 #include <boost/aura/base/opencl/device.hpp>
 #include <boost/aura/base/opencl/safecall.hpp>
-#include <boost/aura/base/opencl/alang.hpp>
-#include <boost/aura/base/alang.hpp>
 #include <boost/aura/io.hpp>
 
 #include <iostream>

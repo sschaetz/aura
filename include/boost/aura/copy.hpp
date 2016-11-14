@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boost/aura/feed.hpp>
 #include <boost/aura/device_array.hpp>
+#include <boost/aura/feed.hpp>
 
 #if defined AURA_BASE_CUDA
 #include <boost/aura/base/cuda/copy.hpp>

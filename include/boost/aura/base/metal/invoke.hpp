@@ -59,10 +59,9 @@ inline void invoke_impl(kernel& k, const MeshType& m, const BundleType& b,
         command_buffer& cmdb = f.get_command_buffer();
         AURA_METAL_CHECK_ERROR(cmdb.command_buffer);
 
-        id<MTLComputePipelineState> pstate =
-                [f.get_device().get_base_device()
-                        newComputePipelineStateWithFunction:k.get_base_kernel()
-                                                      error:nil];
+        id<MTLComputePipelineState> pstate = [f.get_device().get_base_device()
+                newComputePipelineStateWithFunction:k.get_base_kernel()
+                                              error:nil];
 
         AURA_METAL_CHECK_ERROR(pstate);
 

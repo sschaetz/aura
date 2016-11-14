@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boost/aura/base/cuda/safecall.hpp>
 #include <boost/aura/base/cuda/library.hpp>
+#include <boost/aura/base/cuda/safecall.hpp>
 
 #include <cuda.h>
 

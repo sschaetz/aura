@@ -9,6 +9,8 @@
 
 #include <test/test.hpp>
 
+#include <boost/core/ignore_unused.hpp>
+
 using namespace boost::aura;
 
 // _____________________________________________________________________________
@@ -53,6 +55,7 @@ BOOST_AUTO_TEST_CASE(iterators)
                 BOOST_CHECK(begin + product(bounds({2, 2, 2, 2})) == end);
                 BOOST_CHECK(ar0.begin() != ar0.end());
                 auto end2 = ar0.begin() + product(bounds({2, 2, 2, 2}));
+                boost::ignore_unused(end2);
                 BOOST_CHECK(ar0.begin() + product(bounds({2, 2, 2, 2})) ==
                         ar0.end());
         }

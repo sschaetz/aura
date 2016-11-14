@@ -2,8 +2,8 @@
 #include <boost/test/unit_test.hpp>
 
 #include <boost/aura/device.hpp>
-#include <boost/aura/kernel.hpp>
 #include <boost/aura/environment.hpp>
+#include <boost/aura/kernel.hpp>
 #include <boost/aura/library.hpp>
 
 #include <test/test.hpp>

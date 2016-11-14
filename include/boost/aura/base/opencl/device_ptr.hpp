@@ -82,6 +82,8 @@ inline cl_mem_flags translate_memory_access_tag(memory_access_tag tag)
                 return CL_MEM_READ_WRITE;
         case memory_access_tag::wo:
                 return CL_MEM_WRITE_ONLY;
+        default:
+                return CL_MEM_READ_WRITE;
         }
 }
 

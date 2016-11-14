@@ -90,11 +90,8 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
                                                        length:aligned_size
                                                       options:0
                                                   deallocator:nil];
-        m.host_ptr =
-                std::shared_ptr<T>(reinterpret_cast<T*>(host_ptr), [](T* ptr)
-                        {
-                                free(ptr);
-                        });
+        m.host_ptr = std::shared_ptr<T>(
+                reinterpret_cast<T*>(host_ptr), [](T* ptr) { free(ptr); });
 
         AURA_METAL_CHECK_ERROR(m.device_buffer);
         return device_ptr<T>(m, d, tag);

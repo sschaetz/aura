@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boost/aura/base/metal/safecall.hpp>
 #include <boost/aura/base/metal/library.hpp>
+#include <boost/aura/base/metal/safecall.hpp>
 
 namespace boost
 {

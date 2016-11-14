@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boost/aura/bounds/tiny_vector.hpp>
 #include <boost/aura/bounds/product.hpp>
+#include <boost/aura/bounds/tiny_vector.hpp>
 #include <boost/aura/config.hpp>
 
 namespace boost

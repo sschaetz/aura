@@ -73,9 +73,8 @@ struct preprocessor
         /// Take in string and output preprocessed string.
         inline std::string operator()(const std::string& s)
         {
-                return boost::regex_replace(s, re_,
-                        [this](const boost::smatch& m)
-                        {
+                return boost::regex_replace(
+                        s, re_, [this](const boost::smatch& m) {
                                 return defines_[m[0]];
                         });
         }

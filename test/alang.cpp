@@ -44,10 +44,8 @@ BOOST_AUTO_TEST_CASE(basic_alang)
                 boost::aura::copy(b.begin(), b.end(), b_ptr, f);
                 boost::aura::copy(c.begin(), c.end(), c_ptr, f);
 
-                boost::aura::invoke(
-                        k, boost::aura::mesh({128, 1, 1}), boost::aura::bundle({
-                                                                   1, 1, 1,
-                                                           }),
+                boost::aura::invoke(k, boost::aura::mesh({{128, 1, 1}}),
+                        boost::aura::bundle({{1, 1, 1}}),
                         boost::aura::args(a_ptr.get_base_ptr(),
                                 b_ptr.get_base_ptr(), c_ptr.get_base_ptr()),
                         f);
@@ -87,10 +85,8 @@ BOOST_AUTO_TEST_CASE(alang_all_mesh)
                 boost::aura::copy(b.begin(), b.end(), b_ptr, f);
                 boost::aura::copy(c.begin(), c.end(), c_ptr, f);
 
-                boost::aura::invoke(
-                        k, boost::aura::mesh({8, 9, 15}), boost::aura::bundle({
-                                                                  2, 3, 5,
-                                                          }),
+                boost::aura::invoke(k, boost::aura::mesh({{8, 9, 15}}),
+                        boost::aura::bundle({{2, 3, 5}}),
                         boost::aura::args(a_ptr.get_base_ptr(),
                                 b_ptr.get_base_ptr(), c_ptr.get_base_ptr()),
                         f);
@@ -130,10 +126,8 @@ BOOST_AUTO_TEST_CASE(alang_all_bundle)
                 boost::aura::copy(b.begin(), b.end(), b_ptr, f);
                 boost::aura::copy(c.begin(), c.end(), c_ptr, f);
 
-                boost::aura::invoke(
-                        k, boost::aura::mesh({4, 6, 10}), boost::aura::bundle({
-                                                                  4, 6, 10,
-                                                          }),
+                boost::aura::invoke(k, boost::aura::mesh({{4, 6, 10}}),
+                        boost::aura::bundle({{4, 6, 10}}),
                         boost::aura::args(a_ptr.get_base_ptr(),
                                 b_ptr.get_base_ptr(), c_ptr.get_base_ptr()),
                         f);
