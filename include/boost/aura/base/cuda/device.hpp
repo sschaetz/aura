@@ -16,6 +16,15 @@ namespace cuda
 class device
 {
 public:
+        /// Query the number of devices in the system.
+        static std::size_t num()
+        {
+                int num_devices;
+                AURA_CUDA_SAFE_CALL(cuDeviceGetCount(&num_devices));
+                return (std::size_t)num_devices;
+        }
+
+public:
         /// Create device form ordinal.
         /// @param ordinal Device number
         inline explicit device(std::size_t ordinal)

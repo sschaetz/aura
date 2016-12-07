@@ -6,7 +6,7 @@ function build_and_test_target()
         rm -rf /tmp/aura-build
         mkdir -p /tmp/aura-build
         cd /tmp/aura-build
-        cmake $BASEDIR/../ -DAURA_BASE=$1 > /tmp/aura-build-$1.log 2>&1
+        cmake $BASEDIR/../ -DAURA_BASE=$1 -DAURA_UNIT_TEST_DEVICE=$5 > /tmp/aura-build-$1.log 2>&1
         CMAKE_RESULT=$?
         make all -s -j8 >> /tmp/aura-build-$1.log 2>&1
         MAKE_RESULT=$?

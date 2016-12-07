@@ -18,6 +18,13 @@ namespace metal
 class device
 {
 public:
+        /// Query the number of devices in the system.
+        static std::size_t num()
+        {
+                return [MTLCopyAllDevices() count];
+        }
+
+public:
         /// @copydoc boost::aura::base::cuda::device::device()
         inline explicit device(std::size_t ordinal)
                 : ordinal_(ordinal)

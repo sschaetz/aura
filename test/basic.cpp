@@ -22,6 +22,19 @@ BOOST_AUTO_TEST_CASE(basic_device)
 
 // _____________________________________________________________________________
 
+BOOST_AUTO_TEST_CASE(basic_num_devices)
+{
+        boost::aura::initialize();
+        {
+                std::cout << "Num devices in system: " <<
+                        boost::aura::device::num() <<
+                        std::endl;
+        }
+        boost::aura::finalize();
+}
+
+// _____________________________________________________________________________
+
 BOOST_AUTO_TEST_CASE(basic_device_getters)
 {
         boost::aura::initialize();
