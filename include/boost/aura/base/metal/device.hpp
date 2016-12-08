@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/aura/base/check_initialized.hpp>
 #include <boost/aura/base/metal/safecall.hpp>
 
 #import <Metal/Metal.h>
@@ -27,12 +28,14 @@ public:
 public:
         /// @copydoc boost::aura::base::cuda::device::device()
         inline explicit device()
-                : ordinal_(-1)
+                : initialized_(false)
+                , ordinal_(-1)
         {}
 
         /// @copydoc boost::aura::base::cuda::device::device(std::size_t)
         inline explicit device(std::size_t ordinal)
-                : ordinal_(ordinal)
+                : initialized_(true)
+                , ordinal_(ordinal)
         {
                 device_ = MTLCreateSystemDefaultDevice();
                 AURA_METAL_CHECK_ERROR(device_);
@@ -42,36 +45,77 @@ public:
         device(const device&) = delete;
         void operator=(const device&) = delete;
 
+        /// Move construct.
+        device(device&& other)
+                : initialized_(other.initialized_)
+                , ordinal_(other.ordinal_)
+                , device_(other.device_)
+        {
+                other.initialized_ = false;
+                other.ordinal_ = -1;
+        }
+
+        /// Move assign.
+        device& operator=(device&& other)
+        {
+                reset();
+
+                initialized_ = other.initialized_;
+                ordinal_ = other.ordinal_;
+                device_ = other.device_;
+
+                other.initialized_ = false;
+                other.ordinal_ = -1;
+                return *this;
+        }
+
+        // Reset.
+        inline void reset()
+        {
+                if (initialized_)
+                {
+                        device_ = nil;
+                        initialized_ = false;
+                }
+                ordinal_ = -1;
+        }
+
         /// @copydoc boost::aura::base::cuda::device::~device()
         inline ~device()
         {
-                if (!(ordinal_ == -1))
-                {
-                        device_ = nil;
-                }
+                reset();
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-        inline __strong id<MTLDevice>& get_base_device() { return device_; }
+        inline __strong id<MTLDevice>& get_base_device()
+        {
+                AURA_CHECK_INITIALIZED(initialized_);
+                return device_;
+        }
 
         /// @copydoc boost::aura::base::cuda::device::get_ordinal()
-        inline std::size_t get_ordinal() const { return ordinal_; }
+        inline std::size_t get_ordinal() const
+        {
+                AURA_CHECK_INITIALIZED(initialized_);
+                return ordinal_;
+        }
 
         /// @copydoc boost::aura::base::cuda::device::activate()
         inline void activate() const
         {
-                // Pass
+                AURA_CHECK_INITIALIZED(initialized_);
         }
 
         /// @copydoc boost::aura::base::cuda::device::deactivate()
         inline void deactivate() const
         {
-                // Pass
+                AURA_CHECK_INITIALIZED(initialized_);
         }
 
-        inline bool supports_shared_memory() const { return true; }
-
 private:
+        /// Initialized flag
+        bool initialized_;
+
         /// Device ordinal
         std::size_t ordinal_;
 

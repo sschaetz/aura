@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/aura/base/check_initialized.hpp>
 #include <boost/aura/base/opencl/safecall.hpp>
 
 #define CL_USE_DEPRECATED_OPENCL_1_2_APIS
@@ -53,12 +54,14 @@ public:
 public:
         /// @copydoc boost::aura::base::cuda::device::device()
         inline explicit device()
-                : ordinal_(-1)
+                : initialized_(false)
+                , ordinal_(-1)
         {}
 
         /// @copydoc boost::aura::base::cuda::device::device(std::size_t)
         inline explicit device(std::size_t ordinal)
-                : ordinal_(ordinal)
+                : initialized_(true)
+                , ordinal_(ordinal)
         {
                 // Get platforms.
                 unsigned int num_platforms = 0;
@@ -106,42 +109,92 @@ public:
         device(const device&) = delete;
         void operator=(const device&) = delete;
 
-
-        /// @copydoc boost::aura::base::cuda::device::~device()
-        inline ~device()
+        /// Move construct.
+        device(device&& other)
+                : initialized_(other.initialized_)
+                , ordinal_(other.ordinal_)
+                , device_(other.device_)
+                , context_(other.context_)
         {
+                other.initialized_ = false;
+                other.ordinal_ = -1;
+        }
 
-                if (!(ordinal_ == -1))
+        /// Move assign.
+        device& operator=(device&& other)
+        {
+                reset();
+
+                initialized_ = other.initialized_;
+                ordinal_ = other.ordinal_;
+                device_ = other.device_;
+                context_ = other.context_;
+
+                other.initialized_ = false;
+                other.ordinal_ = -1;
+                return *this;
+        }
+
+        /// Reset.
+        inline void reset()
+        {
+                if (initialized_)
                 {
 #ifndef CL_VERSION_1_2
                         AURA_OPENCL_SAFE_CALL(clReleaseMemObject(dummy_mem_));
 #endif // CL_VERSION_1_2
                         AURA_OPENCL_SAFE_CALL(clReleaseContext(context_));
+                        initialized_ = false;
                 }
+                ordinal_ = -1;
+        }
+
+
+        /// @copydoc boost::aura::base::cuda::device::~device()
+        inline ~device()
+        {
+                reset();
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-        inline const cl_device_id& get_base_device() const { return device_; }
+        inline const cl_device_id& get_base_device() const
+        {
+                AURA_CHECK_INITIALIZED(initialized_);
+                return device_;
+        }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_conext()
-        inline const cl_context& get_base_context() const { return context_; }
+        inline const cl_context& get_base_context() const
+        {
+                AURA_CHECK_INITIALIZED(initialized_);
+                return context_;
+        }
 
         /// @copydoc boost::aura::base::cuda::device::get_ordinal()
-        inline std::size_t get_ordinal() const { return ordinal_; }
+        inline std::size_t get_ordinal() const
+        {
+                AURA_CHECK_INITIALIZED(initialized_);
+                return ordinal_;
+        }
 
         /// @copydoc boost::aura::base::cuda::device::activate()
         inline void activate() const
         {
+                AURA_CHECK_INITIALIZED(initialized_);
                 // Pass
         }
 
         /// @copydoc boost::aura::base::cuda::device::deactivate()
         inline void deactivate() const
         {
+                AURA_CHECK_INITIALIZED(initialized_);
                 // Pass
         }
 
 private:
+        /// Initialized flag
+        bool initialized_;
+
         /// Device ordinal
         std::size_t ordinal_;
 
