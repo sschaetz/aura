@@ -16,10 +16,13 @@ class kernel
 {
 public:
         /// @copydoc boost::aura::base::cuda::kernel()
-        inline explicit kernel() {}
+        inline explicit kernel()
+                : initialized_(false)
+        {}
 
         /// @copydoc boost::aura::base::cuda::kernel(const std::string& name, library& l)
         inline explicit kernel(const std::string& name, library& l)
+                : initialized_(true)
         {
                 int errorcode = 0;
                 kernel_ = clCreateKernel(
@@ -31,13 +34,50 @@ public:
         kernel(const kernel&) = delete;
         void operator=(const kernel&) = delete;
 
+        /// Move construct.
+        kernel(kernel&& other)
+                : initialized_(other.initialized_)
+                , kernel_(other.kernel_)
+        {
+                other.initialized_ = false;
+        }
+
+        /// Move assign.
+        kernel& operator=(kernel&& other)
+        {
+                reset();
+
+                initialized_ = other.initialized_;
+                kernel_ = other.kernel_;
+
+                other.initialized_ = false;
+                return *this;
+        }
+
+        /// Reset.
+        inline void reset()
+        {
+                if (initialized_)
+                {
+                        AURA_OPENCL_SAFE_CALL(clReleaseKernel(kernel_));
+                        initialized_ = false;
+                }
+        }
+
         /// Destroy kernel.
-        inline ~kernel() { AURA_OPENCL_SAFE_CALL(clReleaseKernel(kernel_)); }
+        inline ~kernel()
+        {
+                reset();
+        }
 
         /// Access kernel (base).
         cl_kernel get_base_kernel() { return kernel_; }
 
 private:
+        /// Initialized flag
+        bool initialized_;
+
+        /// Kernel handle.
         cl_kernel kernel_;
 };
 

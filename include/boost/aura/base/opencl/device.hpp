@@ -149,7 +149,6 @@ public:
                 ordinal_ = -1;
         }
 
-
         /// @copydoc boost::aura::base::cuda::device::~device()
         inline ~device()
         {
