@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/aura/base/alang.hpp>
+#include <boost/aura/base/check_initialized.hpp>
 #include <boost/aura/base/cuda/alang.hpp>
 #include <boost/aura/base/cuda/device.hpp>
 #include <boost/aura/base/cuda/safecall.hpp>
@@ -26,9 +27,8 @@ class library
 public:
         /// Create empty library.
         inline explicit library()
-                : device_(nullptr)
-        {
-        }
+                : initialized_(false)
+        {}
 
         /// Prevent copies.
         library(const library&) = delete;
@@ -39,7 +39,8 @@ public:
                 device& d,
                 bool inject_aura_preamble = true,
                 const std::string& options = "")
-                : device_(&d)
+                : initialized_(true)
+                , device_(&d)
         {
                 create_from_string(kernelstring, d, options, inject_aura_preamble);
         }
@@ -50,22 +51,78 @@ public:
                 device& d,
                 bool inject_aura_preamble = true,
                 const std::string& options = "")
-                : device_(&d)
+                : initialized_(true)
+                , device_(&d)
         {
                 auto kernelstring = boost::aura::read_all(p);
                 create_from_string(kernelstring, d, options, inject_aura_preamble);
         }
 
+        /// Move construct.
+        library(library&& other)
+                : initialized_(other.initialized_)
+                , device_(other.device_)
+                , library_(other.library_)
+                , log_(other.log_)
+        {
+                other.initialized_ = false;
+                other.device_ = nullptr;
+                other.library_ = nullptr;
+                other.log_ = "";
+        }
+
+        /// Move assign.
+        library& operator=(library&& other)
+        {
+                reset();
+
+                initialized_ = other.initialized_;
+                device_ = other.device_;
+                library_ = other.library_;
+                log_ = other.log_;
+
+                other.initialized_ = false;
+                other.device_ = nullptr;
+                other.library_ = nullptr;
+                other.log_ = "";
+                return *this;
+        }
 
         /// Access device.
-        const device& get_device() { return *device_; }
+        const device& get_device()
+        {
+                AURA_CHECK_INITIALIZED(initialized_);
+                return *device_;
+        }
 
         /// Access library.
-        CUmodule get_base_library() { return library_; }
+        CUmodule get_base_library()
+        {
+                AURA_CHECK_INITIALIZED(initialized_);
+                return library_;
+        }
 
-        const CUmodule get_base_library() const { return library_; }
+        const CUmodule get_base_library() const
+        {
+                AURA_CHECK_INITIALIZED(initialized_);
+                return library_;
+        }
 
-        ~library() { finalize(); }
+        /// Destructor.
+        ~library() { reset(); }
+
+        /// Finalize object.
+        void reset()
+        {
+                if (initialized_)
+                {
+                        AURA_CUDA_SAFE_CALL(cuModuleUnload(library_));
+                        initialized_ = false;
+                }
+                device_ = nullptr;
+                library_ = nullptr;
+                log_ = "";
+        }
 
 private:
         /// Create a library from a string.
@@ -145,14 +202,8 @@ private:
                 d.deactivate();
         }
 
-        /// Finalize object.
-        void finalize()
-        {
-                if (device_ != nullptr)
-                {
-                        AURA_CUDA_SAFE_CALL(cuModuleUnload(library_));
-                }
-        }
+        /// Initialized flag
+        bool initialized_;
 
         /// Pointer to device the feed was created for
         device* device_;
