@@ -32,20 +32,26 @@ public:
         void operator=(const library&) = delete;
 
         /// Create library from string.
-        inline explicit library(const std::string& kernelstring, device& d,
+        inline explicit library(
+                const std::string& kernelstring,
+                device& d,
+                bool inject_aura_preamble = true,
                 const std::string& options = "")
                 : device_(&d)
         {
-                create_from_string(kernelstring, options);
+                create_from_string(kernelstring, options, inject_aura_preamble);
         }
 
         /// Create library from file.
         inline explicit library(
-                boost::aura::path p, device& d, const std::string& options = "")
+                boost::aura::path p,
+                device& d,
+                bool inject_aura_preamble = true,
+                const std::string& options = "")
                 : device_(&d)
         {
                 auto kernelstring = boost::aura::read_all(p);
-                create_from_string(kernelstring, options);
+                create_from_string(kernelstring, options, inject_aura_preamble);
         }
 
 
@@ -62,20 +68,25 @@ public:
 private:
         /// Create a library from a string.
         void create_from_string(
-                const std::string& kernelstring, const std::string& opt)
+                const std::string& kernelstring,
+                const std::string& opt,
+                bool inject_aura_preamble)
         {
                 shared_alang_header salh;
                 alang_header alh;
 
-                // Prepend AURA define to kernel.
-                auto kernelstring_with_define =
-                        std::string("#define AURA_BASE_OPENCL\n") + salh.get() +
-                        std::string("\n") + alh.get() + std::string("\n") +
-                        kernelstring;
-
+                std::string kernelstring_with_preamble = kernelstring;
+                if (inject_aura_preamble)
+                {
+                        // Prepend AURA define to kernel.
+                        kernelstring_with_preamble=
+                                std::string("#define AURA_BASE_OPENCL\n") + salh.get() +
+                                std::string("\n") + alh.get() + std::string("\n") +
+                                kernelstring_with_preamble;
+                }
                 int errorcode = 0;
-                std::size_t len = kernelstring_with_define.length();
-                const char* strings = kernelstring_with_define.c_str();
+                std::size_t len = kernelstring_with_preamble.length();
+                const char* strings = kernelstring_with_preamble.c_str();
                 library_ =
                         clCreateProgramWithSource(device_->get_base_context(),
                                 1, &strings, &len, &errorcode);
