@@ -15,7 +15,10 @@ namespace metal
 class kernel
 {
 public:
-        /// Create kernel from library.
+        /// @copydoc boost::aura::base::cuda::kernel()
+        inline explicit kernel() {}
+
+        /// @copydoc boost::aura::base::cuda::kernel(const std::string& name, library& l)
         inline explicit kernel(const std::string& name, library& l)
         {
                 NSString* kernel_name = @(name.c_str());

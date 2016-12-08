@@ -2,6 +2,7 @@
 
 #include <boost/aura/device.hpp>
 #include <boost/aura/memory_tag.hpp>
+#include <boost/aura/mesh_bundle.hpp>
 
 #include <array>
 #include <utility>
@@ -10,10 +11,6 @@ namespace boost
 {
 namespace aura
 {
-
-/// Mesh and bundle suggestions that can be used when invoking kernels.
-using mesh = std::array<std::size_t, 3>;
-using bundle = std::array<std::size_t, 3>;
 
 /// Helper function that adjust mesh and bundle sizes for CUDA and Metal.
 /// OpenCL semantics are assumed throughout.

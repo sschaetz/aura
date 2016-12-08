@@ -26,6 +26,11 @@ public:
 
 public:
         /// @copydoc boost::aura::base::cuda::device::device()
+        inline explicit device()
+                : ordinal_(-1)
+        {}
+
+        /// @copydoc boost::aura::base::cuda::device::device(std::size_t)
         inline explicit device(std::size_t ordinal)
                 : ordinal_(ordinal)
         {
@@ -38,7 +43,13 @@ public:
         void operator=(const device&) = delete;
 
         /// @copydoc boost::aura::base::cuda::device::~device()
-        inline ~device() { device_ = nil; }
+        inline ~device()
+        {
+                if (!(ordinal_ == -1))
+                {
+                        device_ = nil;
+                }
+        }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
         inline __strong id<MTLDevice>& get_base_device() { return device_; }

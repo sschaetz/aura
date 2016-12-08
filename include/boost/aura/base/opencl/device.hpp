@@ -52,6 +52,11 @@ public:
 
 public:
         /// @copydoc boost::aura::base::cuda::device::device()
+        inline explicit device()
+                : ordinal_(-1)
+        {}
+
+        /// @copydoc boost::aura::base::cuda::device::device(std::size_t)
         inline explicit device(std::size_t ordinal)
                 : ordinal_(ordinal)
         {
@@ -105,10 +110,14 @@ public:
         /// @copydoc boost::aura::base::cuda::device::~device()
         inline ~device()
         {
+
+                if (!(ordinal_ == -1))
+                {
 #ifndef CL_VERSION_1_2
-                AURA_OPENCL_SAFE_CALL(clReleaseMemObject(dummy_mem_));
+                        AURA_OPENCL_SAFE_CALL(clReleaseMemObject(dummy_mem_));
 #endif // CL_VERSION_1_2
-                AURA_OPENCL_SAFE_CALL(clReleaseContext(context_));
+                        AURA_OPENCL_SAFE_CALL(clReleaseContext(context_));
+                }
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()

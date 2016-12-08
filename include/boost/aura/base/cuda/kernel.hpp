@@ -17,6 +17,9 @@ namespace cuda
 class kernel
 {
 public:
+        /// Create empty object.
+        inline explicit kernel() {}
+
         /// Create kernel from library.
         inline explicit kernel(const std::string& name, library& l)
         {
