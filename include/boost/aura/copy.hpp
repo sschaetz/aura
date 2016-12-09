@@ -38,7 +38,7 @@ void copy(Iterator src, device_array<T>& dst, base::feed& f)
 template <typename T>
 void copy(const T* src, device_array<T>& dst, base::feed& f)
 {
-        base::copy(src, src+dst.size(), dst.begin(), f);
+        base::copy(src, src + dst.size(), dst.begin(), f);
 }
 
 /// copy from device array

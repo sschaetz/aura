@@ -16,10 +16,10 @@ class kernel
 {
 public:
         /// @copydoc boost::aura::base::cuda::kernel()
-        inline explicit kernel()
-        {}
+        inline explicit kernel() {}
 
-        /// @copydoc boost::aura::base::cuda::kernel(const std::string& name, library& l)
+        /// @copydoc boost::aura::base::cuda::kernel(const std::string& name,
+        /// library& l)
         inline explicit kernel(const std::string& name, library& l)
         {
                 int errorcode = 0;
@@ -64,17 +64,14 @@ public:
         }
 
         /// Destroy kernel.
-        inline ~kernel()
-        {
-                reset();
-        }
+        inline ~kernel() { reset(); }
 
         /// Access kernel (base).
         cl_kernel get_base_kernel() { return kernel_; }
 
 private:
         /// Initialized flag
-        bool initialized_ { false };
+        bool initialized_{false};
 
         /// Kernel handle.
         cl_kernel kernel_;

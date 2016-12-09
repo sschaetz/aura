@@ -20,17 +20,15 @@ class device
 {
 public:
         /// Query the number of devices in the system.
-        static std::size_t num()
-        {
-                return [MTLCopyAllDevices() count];
-        }
+        static std::size_t num() { return [MTLCopyAllDevices() count]; }
 
 public:
         /// @copydoc boost::aura::base::cuda::device::device()
         inline explicit device()
                 : initialized_(false)
                 , ordinal_(-1)
-        {}
+        {
+        }
 
         /// @copydoc boost::aura::base::cuda::device::device(std::size_t)
         inline explicit device(std::size_t ordinal)
@@ -82,10 +80,7 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::device::~device()
-        inline ~device()
-        {
-                reset();
-        }
+        inline ~device() { reset(); }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
         inline __strong id<MTLDevice>& get_base_device()
@@ -102,22 +97,13 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::device::activate()
-        inline void activate() const
-        {
-                AURA_CHECK_INITIALIZED(initialized_);
-        }
+        inline void activate() const { AURA_CHECK_INITIALIZED(initialized_); }
 
         /// @copydoc boost::aura::base::cuda::device::deactivate()
-        inline void deactivate() const
-        {
-                AURA_CHECK_INITIALIZED(initialized_);
-        }
+        inline void deactivate() const { AURA_CHECK_INITIALIZED(initialized_); }
 
         /// Query initialized state.
-        inline bool initialized() const
-        {
-                return initialized_;
-        }
+        inline bool initialized() const { return initialized_; }
 
 private:
         /// Initialized flag

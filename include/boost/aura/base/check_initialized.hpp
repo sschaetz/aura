@@ -8,8 +8,8 @@
                 if (!flag)                                                  \
                 {                                                           \
                         std::ostringstream os;                              \
-                        os << "Attempt to utilize uninitialized object " << \
-                            " file " << __FILE__ << " line " << __LINE__;   \
+                        os << "Attempt to utilize uninitialized object "    \
+                           << " file " << __FILE__ << " line " << __LINE__; \
                         throw os.str();                                     \
                 }                                                           \
         }                                                                   \

@@ -16,11 +16,10 @@ class kernel
 {
 public:
         /// @copydoc boost::aura::base::cuda::kernel()
-        inline explicit kernel()
-        {
-        }
+        inline explicit kernel() {}
 
-        /// @copydoc boost::aura::base::cuda::kernel(const std::string& name, library& l)
+        /// @copydoc boost::aura::base::cuda::kernel(const std::string& name,
+        /// library& l)
         inline explicit kernel(const std::string& name, library& l)
         {
                 NSString* kernel_name = @(name.c_str());
@@ -65,10 +64,7 @@ public:
         }
 
         /// Destroy kernel.
-        inline ~kernel()
-        {
-                reset();
-        }
+        inline ~kernel() { reset(); }
 
         /// Access kernel (base).
         id<MTLFunction> get_base_kernel() { return kernel_; }
@@ -76,7 +72,7 @@ public:
 
 private:
         /// Initialized flag
-        bool initialized_ { false };
+        bool initialized_{false};
 
         /// Kernel handle.
         id<MTLFunction> kernel_;

@@ -28,34 +28,34 @@ public:
         /// Create empty library.
         inline explicit library()
                 : initialized_(false)
-        {}
+        {
+        }
 
         /// Prevent copies.
         library(const library&) = delete;
         void operator=(const library&) = delete;
 
         /// Create library from string.
-        inline explicit library(const std::string& kernelstring,
-                device& d,
+        inline explicit library(const std::string& kernelstring, device& d,
                 bool inject_aura_preamble = true,
                 const std::string& options = "")
                 : initialized_(true)
                 , device_(&d)
         {
-                create_from_string(kernelstring, d, options, inject_aura_preamble);
+                create_from_string(
+                        kernelstring, d, options, inject_aura_preamble);
         }
 
         /// Create library from file.
-        inline explicit library(
-                boost::aura::path p,
-                device& d,
+        inline explicit library(boost::aura::path p, device& d,
                 bool inject_aura_preamble = true,
                 const std::string& options = "")
                 : initialized_(true)
                 , device_(&d)
         {
                 auto kernelstring = boost::aura::read_all(p);
-                create_from_string(kernelstring, d, options, inject_aura_preamble);
+                create_from_string(
+                        kernelstring, d, options, inject_aura_preamble);
         }
 
         /// Move construct.
@@ -127,8 +127,7 @@ public:
 private:
         /// Create a library from a string.
         void create_from_string(const std::string& kernelstring, device& d,
-                const std::string& opt,
-                bool inject_aura_preamble)
+                const std::string& opt, bool inject_aura_preamble)
         {
                 shared_alang_header salh;
                 alang_header alh;
@@ -139,18 +138,16 @@ private:
                         // Prepend AURA define to kernel.
                         kernelstring_with_preamble =
                                 std::string("#define AURA_BASE_CUDA\n") +
-                                salh.get() +
-                                std::string("\n") +
-                                alh.get() +
-                                std::string("\n") +
-                                kernelstring_with_preamble;
+                                salh.get() + std::string("\n") + alh.get() +
+                                std::string("\n") + kernelstring_with_preamble;
                 }
                 d.activate();
 
                 // Create and compile.
                 nvrtcProgram program;
                 AURA_CUDA_NVRTC_SAFE_CALL(nvrtcCreateProgram(&program,
-                        kernelstring_with_preamble.c_str(), NULL, 0, NULL, NULL));
+                        kernelstring_with_preamble.c_str(), NULL, 0, NULL,
+                        NULL));
                 try
                 {
                         AURA_CUDA_NVRTC_SAFE_CALL(

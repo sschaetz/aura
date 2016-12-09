@@ -18,8 +18,7 @@ class kernel
 {
 public:
         /// Create empty object.
-        inline explicit kernel()
-        {}
+        inline explicit kernel() {}
 
         /// Create kernel from library.
         inline explicit kernel(const std::string& name, library& l)
@@ -67,17 +66,14 @@ public:
         }
 
         /// Destroy kernel.
-        inline ~kernel()
-        {
-                reset();
-        }
+        inline ~kernel() { reset(); }
 
         /// Access kernel (base).
         CUfunction get_base_kernel() { return kernel_; }
 
 private:
         /// Initialized flag
-        bool initialized_ { false };
+        bool initialized_{false};
 
         /// Kernel handle.
         CUfunction kernel_;

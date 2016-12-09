@@ -30,7 +30,8 @@ public:
         inline explicit device()
                 : initialized_(false)
                 , ordinal_(-1)
-        {}
+        {
+        }
 
         /// Create device form ordinal.
         /// @param ordinal Device number
@@ -85,10 +86,7 @@ public:
         }
 
         /// Destroy device.
-        inline ~device()
-        {
-                reset();
-        }
+        inline ~device() { reset(); }
 
         /// Access the device handle.
         inline const CUdevice& get_base_device() const
@@ -126,10 +124,7 @@ public:
         }
 
         /// Query initialized state.
-        inline bool initialized() const
-        {
-                return initialized_;
-        }
+        inline bool initialized() const { return initialized_; }
 
 private:
         /// Initialized flag

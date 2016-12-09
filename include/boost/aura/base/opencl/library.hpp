@@ -32,9 +32,7 @@ public:
         void operator=(const library&) = delete;
 
         /// Create library from string.
-        inline explicit library(
-                const std::string& kernelstring,
-                device& d,
+        inline explicit library(const std::string& kernelstring, device& d,
                 bool inject_aura_preamble = true,
                 const std::string& options = "")
                 : initialized_(true)
@@ -44,9 +42,7 @@ public:
         }
 
         /// Create library from file.
-        inline explicit library(
-                boost::aura::path p,
-                device& d,
+        inline explicit library(boost::aura::path p, device& d,
                 bool inject_aura_preamble = true,
                 const std::string& options = "")
                 : initialized_(true)
@@ -123,10 +119,8 @@ public:
 
 private:
         /// Create a library from a string.
-        void create_from_string(
-                const std::string& kernelstring,
-                const std::string& opt,
-                bool inject_aura_preamble)
+        void create_from_string(const std::string& kernelstring,
+                const std::string& opt, bool inject_aura_preamble)
         {
                 shared_alang_header salh;
                 alang_header alh;
@@ -135,10 +129,10 @@ private:
                 if (inject_aura_preamble)
                 {
                         // Prepend AURA define to kernel.
-                        kernelstring_with_preamble=
-                                std::string("#define AURA_BASE_OPENCL\n") + salh.get() +
-                                std::string("\n") + alh.get() + std::string("\n") +
-                                kernelstring_with_preamble;
+                        kernelstring_with_preamble =
+                                std::string("#define AURA_BASE_OPENCL\n") +
+                                salh.get() + std::string("\n") + alh.get() +
+                                std::string("\n") + kernelstring_with_preamble;
                 }
                 int errorcode = 0;
                 std::size_t len = kernelstring_with_preamble.length();
