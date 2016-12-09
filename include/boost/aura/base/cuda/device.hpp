@@ -35,11 +35,12 @@ public:
         /// Create device form ordinal.
         /// @param ordinal Device number
         inline explicit device(std::size_t ordinal)
-                : initialized_(true)
+                : initialized_(false)
                 , ordinal_(ordinal)
         {
                 AURA_CUDA_SAFE_CALL(cuDeviceGet(&device_, ordinal));
                 AURA_CUDA_SAFE_CALL(cuCtxCreate(&context_, 0, device_));
+                initialized_ = true;
         }
 
         /// Prevent copies.
@@ -122,6 +123,12 @@ public:
         {
                 AURA_CHECK_INITIALIZED(initialized_);
                 AURA_CUDA_SAFE_CALL(cuCtxSetCurrent(NULL));
+        }
+
+        /// Query initialized state.
+        inline bool initialized() const
+        {
+                return initialized_;
         }
 
 private:

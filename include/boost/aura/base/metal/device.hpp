@@ -34,11 +34,12 @@ public:
 
         /// @copydoc boost::aura::base::cuda::device::device(std::size_t)
         inline explicit device(std::size_t ordinal)
-                : initialized_(true)
+                : initialized_(false)
                 , ordinal_(ordinal)
         {
                 device_ = MTLCreateSystemDefaultDevice();
                 AURA_METAL_CHECK_ERROR(device_);
+                initialized_ = true;
         }
 
         /// Prevent copies.
@@ -110,6 +111,12 @@ public:
         inline void deactivate() const
         {
                 AURA_CHECK_INITIALIZED(initialized_);
+        }
+
+        /// Query initialized state.
+        inline bool initialized() const
+        {
+                return initialized_;
         }
 
 private:

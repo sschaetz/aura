@@ -60,7 +60,7 @@ public:
 
         /// @copydoc boost::aura::base::cuda::device::device(std::size_t)
         inline explicit device(std::size_t ordinal)
-                : initialized_(true)
+                : initialized_(false)
                 , ordinal_(ordinal)
         {
                 // Get platforms.
@@ -103,6 +103,7 @@ public:
                         context_, CL_MEM_READ_WRITE, 2, 0, &errorcode);
                 AURA_OPENCL_CHECK_ERROR(errorcode);
 #endif // CL_VERSION_1_2
+                initialized_ = true;
         }
 
         /// Prevent copies.
@@ -188,6 +189,12 @@ public:
         {
                 AURA_CHECK_INITIALIZED(initialized_);
                 // Pass
+        }
+
+        /// Query initialized state.
+        inline bool initialized() const
+        {
+                return initialized_;
         }
 
 private:
