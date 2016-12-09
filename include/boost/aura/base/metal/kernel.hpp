@@ -17,18 +17,17 @@ class kernel
 public:
         /// @copydoc boost::aura::base::cuda::kernel()
         inline explicit kernel()
-                : initialized_(false)
         {
         }
 
         /// @copydoc boost::aura::base::cuda::kernel(const std::string& name, library& l)
         inline explicit kernel(const std::string& name, library& l)
-                : initialized_(true)
         {
                 NSString* kernel_name = @(name.c_str());
                 kernel_ =
                         [l.get_base_library() newFunctionWithName:kernel_name];
                 AURA_METAL_CHECK_ERROR(kernel_);
+                initialized_ = true;
         }
 
         /// Prevent copies.
@@ -77,7 +76,7 @@ public:
 
 private:
         /// Initialized flag
-        bool initialized_;
+        bool initialized_ { false };
 
         /// Kernel handle.
         id<MTLFunction> kernel_;

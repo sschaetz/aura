@@ -19,17 +19,16 @@ class kernel
 public:
         /// Create empty object.
         inline explicit kernel()
-                : initialized_(false)
         {}
 
         /// Create kernel from library.
         inline explicit kernel(const std::string& name, library& l)
-                : initialized_(true)
         {
                 l.get_device().activate();
                 AURA_CUDA_SAFE_CALL(cuModuleGetFunction(
                         &kernel_, l.get_base_library(), name.c_str()));
                 l.get_device().deactivate();
+                initialized_ = true;
         }
 
         /// Prevent copies.
@@ -78,7 +77,7 @@ public:
 
 private:
         /// Initialized flag
-        bool initialized_;
+        bool initialized_ { false };
 
         /// Kernel handle.
         CUfunction kernel_;

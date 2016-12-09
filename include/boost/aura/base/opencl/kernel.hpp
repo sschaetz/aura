@@ -17,17 +17,16 @@ class kernel
 public:
         /// @copydoc boost::aura::base::cuda::kernel()
         inline explicit kernel()
-                : initialized_(false)
         {}
 
         /// @copydoc boost::aura::base::cuda::kernel(const std::string& name, library& l)
         inline explicit kernel(const std::string& name, library& l)
-                : initialized_(true)
         {
                 int errorcode = 0;
                 kernel_ = clCreateKernel(
                         l.get_base_library(), name.c_str(), &errorcode);
                 AURA_OPENCL_CHECK_ERROR(errorcode);
+                initialized_ = true;
         }
 
         /// Prevent copies.
@@ -75,7 +74,7 @@ public:
 
 private:
         /// Initialized flag
-        bool initialized_;
+        bool initialized_ { false };
 
         /// Kernel handle.
         cl_kernel kernel_;
