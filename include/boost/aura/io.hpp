@@ -2,8 +2,6 @@
 
 #include <boost/aura/check.hpp>
 
-#include <boost/test/unit_test.hpp>
-
 #include <fstream>
 #include <string>
 

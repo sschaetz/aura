@@ -24,15 +24,6 @@ namespace base = base_detail::opencl;
 namespace base = base_detail::metal;
 #endif
 
-/*
-/// Eagerly copy from src to destination.
-template <typename ST, typename DT>
-void copy(const ST& src, DT& dst, feed& f)
-{
-        base::copy(src.begin(), src.end(), dst.begin(), f);
-}
-*/
-
 /// copy to device array from an iterator
 template <typename T, typename Iterator>
 void copy(Iterator src, device_array<T>& dst, base::feed& f)
@@ -47,7 +38,7 @@ void copy(Iterator src, device_array<T>& dst, base::feed& f)
 template <typename T>
 void copy(const T* src, device_array<T>& dst, base::feed& f)
 {
-        base::copy(src, src+dst.size(), dst.end(), f);
+        base::copy(src, src+dst.size(), dst.begin(), f);
 }
 
 /// copy from device array
@@ -68,7 +59,7 @@ void copy(const std::vector<T>& src, device_array<T>& dst, feed& f)
 template <typename T>
 void copy(const device_array<T>& src, std::vector<T>& dst, feed& f)
 {
-        base::copy(src.begin(), src.begin(), &dst[0], f);
+        base::copy(src.begin(), src.end(), &dst[0], f);
 }
 
 /// copy from device array to device array

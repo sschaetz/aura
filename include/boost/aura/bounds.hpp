@@ -18,10 +18,7 @@ using bounds = tiny_vector<std::size_t, AURA_TINY_VECTOR_MAX_SIZE>;
 template <typename T>
 bounds make_bounds(const T& v)
 {
-        assert(v.size() <= AURA_TINY_VECTOR_MAX_SIZE);
-        bounds b;
-        std::copy(v.begin(), v.end(), b.begin());
-        return b;
+        return bounds(v);
 }
 
 } // namespace aura
