@@ -77,13 +77,13 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-        inline const __strong id<MTLDevice>& get_base_device() const
+        inline __strong id<MTLDevice>& get_base_device() const
         {
                 return device_->get_base_device();
         }
 
         /// @copydoc boost::aura::base::cuda::feed::get_base_feed()
-        inline const id<MTLCommandQueue> get_base_feed() const { return feed_; }
+        inline id<MTLCommandQueue> get_base_feed() const { return feed_; }
 
         /// @copydoc boost::aura::base::cuda::feed::get_base_feed()
         inline id<MTLCommandQueue> get_base_feed() { return feed_; }

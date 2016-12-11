@@ -6,6 +6,8 @@
 #include <boost/aura/base/metal/safecall.hpp>
 #include <boost/aura/io.hpp>
 
+#include <boost/core/ignore_unused.hpp>
+
 #include <iostream>
 
 namespace boost
@@ -122,6 +124,7 @@ private:
         void create_from_string(const std::string& kernelstring,
                 const std::string& opt, bool inject_aura_preamble)
         {
+                boost::ignore_unused(opt);
                 shared_alang_header salh;
                 alang_header alh;
 

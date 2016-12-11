@@ -10,6 +10,8 @@
 #include <cuda.h>
 #include <nvrtc.h>
 
+#include <boost/core/ignore_unused.hpp>
+
 #include <iostream>
 
 namespace boost
@@ -129,6 +131,7 @@ private:
         void create_from_string(const std::string& kernelstring, device& d,
                 const std::string& opt, bool inject_aura_preamble)
         {
+                boost::ignore_unused(opt);
                 shared_alang_header salh;
                 alang_header alh;
 
