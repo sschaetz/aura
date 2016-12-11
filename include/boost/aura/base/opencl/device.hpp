@@ -157,7 +157,7 @@ public:
         inline ~device() { reset(); }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-        inline cl_device_id get_base_device() const
+        inline cl_device_id const & get_base_device() const
         {
                 AURA_CHECK_INITIALIZED(initialized_);
                 return device_;

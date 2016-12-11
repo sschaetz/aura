@@ -85,7 +85,8 @@ BOOST_AUTO_TEST_CASE(alang_all_mesh)
                 boost::aura::copy(b.begin(), b.end(), b_ptr, f);
                 boost::aura::copy(c.begin(), c.end(), c_ptr, f);
 
-                boost::aura::invoke(k, boost::aura::mesh({{8, 9, 15}}),
+                boost::aura::invoke(k,
+                        boost::aura::mesh({{4, 3, 3}}),
                         boost::aura::bundle({{2, 3, 5}}),
                         boost::aura::args(a_ptr.get_base_ptr(),
                                 b_ptr.get_base_ptr(), c_ptr.get_base_ptr()),
@@ -126,7 +127,7 @@ BOOST_AUTO_TEST_CASE(alang_all_bundle)
                 boost::aura::copy(b.begin(), b.end(), b_ptr, f);
                 boost::aura::copy(c.begin(), c.end(), c_ptr, f);
 
-                boost::aura::invoke(k, boost::aura::mesh({{4, 6, 10}}),
+                boost::aura::invoke(k, boost::aura::mesh({{1, 1, 1}}),
                         boost::aura::bundle({{4, 6, 10}}),
                         boost::aura::args(a_ptr.get_base_ptr(),
                                 b_ptr.get_base_ptr(), c_ptr.get_base_ptr()),

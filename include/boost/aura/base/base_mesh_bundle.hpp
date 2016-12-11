@@ -12,11 +12,19 @@ namespace boost
 namespace aura
 {
 
+enum mesh_bundle_operation
+{
+        multiply,
+        none,
+        divide
+};
+
 /// Helper function that adjust mesh and bundle sizes for CUDA and Metal.
 /// OpenCL semantics are assumed throughout.
 template <typename MeshType, typename BundleType>
 std::pair<MeshType, BundleType> adjust_mesh_bundle(
-        const MeshType& m, const BundleType& b, bool divide = true)
+        const MeshType& m, const BundleType& b,
+        mesh_bundle_operation op = none)
 {
         typename MeshType::value_type meshx = m[0], meshy = 1, meshz = 1;
         typename BundleType::value_type bundlex = b[0], bundley = 1,
@@ -39,11 +47,26 @@ std::pair<MeshType, BundleType> adjust_mesh_bundle(
                 bundlez = b[2];
         }
 
-        if (divide)
+        switch (op)
         {
-                meshx /= bundlex;
-                meshy /= bundley;
-                meshz /= bundlez;
+                case mesh_bundle_operation::none:
+                {
+                        break;
+                }
+                case mesh_bundle_operation::divide:
+                {
+                        meshx /= bundlex;
+                        meshy /= bundley;
+                        meshz /= bundlez;
+                        break;
+                }
+                case mesh_bundle_operation::multiply:
+                {
+                        meshx *= bundlex;
+                        meshy *= bundley;
+                        meshz *= bundlez;
+                        break;
+                }
         }
 
         MeshType ret_mesh;

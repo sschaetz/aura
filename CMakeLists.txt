@@ -77,7 +77,7 @@ ADD_DEFINITIONS(${AURA_BASE_DEFINE})
 ADD_COMPILE_OPTIONS(-std=c++0x -g -O3)
 IF (WIN32)
         ADD_COMPILE_OPTIONS(/EHsc)
-        ADD_COMPILE_OPTIONS(/W3)
+        ADD_COMPILE_OPTIONS(/WX)
 ELSE()
         # Prevent VS from spewing lots of warnings.
         ADD_COMPILE_OPTIONS(-Wall)
