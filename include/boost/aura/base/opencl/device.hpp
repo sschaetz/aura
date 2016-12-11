@@ -164,7 +164,7 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_conext()
-        inline const cl_context get_base_context() const
+        inline cl_context get_base_context() const
         {
                 AURA_CHECK_INITIALIZED(initialized_);
                 return context_;
