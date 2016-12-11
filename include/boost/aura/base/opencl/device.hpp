@@ -206,6 +206,11 @@ private:
 
         /// Context handle
         cl_context context_;
+
+#ifndef CL_VERSION_1_2
+          cl_mem dummy_mem_;
+#endif // CL_VERSION_1_2
+
 };
 
 } // namespace opencl
