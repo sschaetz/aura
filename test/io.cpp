@@ -1,4 +1,5 @@
 #define BOOST_TEST_MODULE io
+#include <boost/test/unit_test.hpp>
 
 #include <boost/aura/io.hpp>
 #include <test/test.hpp>

@@ -6,6 +6,8 @@
 #include <boost/aura/base/opencl/safecall.hpp>
 #include <boost/aura/meta/tsizeof.hpp>
 
+#include <cstring>
+
 namespace boost
 {
 namespace aura
