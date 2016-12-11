@@ -94,10 +94,10 @@ public:
         const_iterator end() const { return data_.begin() + size_; }
 
         /// return the size of the vector
-        inline const std::size_t size() const { return size_; }
+        inline std::size_t size() const { return size_; }
 
         /// Return the capacity of the tiny vector
-        inline const std::size_t capacity() const { return max_size; }
+        inline std::size_t capacity() const { return max_size; }
 
         /// Clear the tiny vector
         inline void clear() { size_ = 0; }

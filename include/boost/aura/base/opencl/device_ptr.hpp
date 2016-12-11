@@ -47,7 +47,7 @@ struct device_ptr_base_type
 
         /// @copydoc
         /// boost::aura::base::cuda::device_base_ptr::is_shared_memory()
-        const bool is_shared_memory() const { return false; }
+        bool is_shared_memory() const { return false; }
 };
 
 /// Specialize base_device_ptr for specific backend.

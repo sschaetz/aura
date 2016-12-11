@@ -128,7 +128,7 @@ public:
         const T* get_host_ptr() const { return data_.get()->get_host_ptr(); }
 
         /// Indicate if memory hold by array is shared with host or not.
-        const bool is_shared_memory() const
+        bool is_shared_memory() const
         {
                 return data_.get()->is_shared_memory();
         }
@@ -166,7 +166,7 @@ private:
         {
                 data_ = data_t(new device_ptr<T>(device_malloc<T>(size, d)),
                         deleter_t());
-                initialized_;
+                initialized_ = true;
         }
 
         /// Initialized flag

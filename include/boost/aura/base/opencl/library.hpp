@@ -96,7 +96,7 @@ public:
                 return library_;
         }
 
-        const cl_program get_base_library() const
+        cl_program get_base_library() const
         {
                 AURA_CHECK_INITIALIZED(initialized_);
                 return library_;

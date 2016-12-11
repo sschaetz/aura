@@ -98,7 +98,7 @@ struct base_device_ptr
         memory_access_tag get_memory_access_tag() const { return tag_; }
 
         /// Indicate if memory hold by pointer is shared with host or not.
-        const bool is_shared_memory() const
+        bool is_shared_memory() const
         {
                 return memory_.is_shared_memory();
         }

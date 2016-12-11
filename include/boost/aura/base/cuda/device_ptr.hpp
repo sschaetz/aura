@@ -48,7 +48,7 @@ struct device_ptr_base_type
         }
 
         /// Indicate if memory hold by pointer is shared with host or not.
-        const bool is_shared_memory() const { return false; }
+        bool is_shared_memory() const { return false; }
 };
 
 
