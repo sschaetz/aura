@@ -3,6 +3,7 @@
 #include <boost/aura/base/check_initialized.hpp>
 #include <boost/aura/base/metal/safecall.hpp>
 
+#include <TargetConditionals.h>
 #import <Metal/Metal.h>
 
 #include <cstddef>
@@ -20,7 +21,16 @@ class device
 {
 public:
         /// Query the number of devices in the system.
-        static std::size_t num() { return [MTLCopyAllDevices() count]; }
+        static std::size_t num()
+        {
+#if TARGET_IPHONE_SIMULATOR == 1
+                return 0;
+#elif TARGET_OS_IPHONE == 1
+                return 1;
+#elif TARGET_OS_MAC == 1
+                return [MTLCopyAllDevices() count];
+#endif
+        }
 
 public:
         /// @copydoc boost::aura::base::cuda::device::device()

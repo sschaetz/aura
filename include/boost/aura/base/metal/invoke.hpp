@@ -55,7 +55,7 @@ template <unsigned long N, typename MeshType, typename BundleType>
 inline void invoke_impl(kernel& k, const MeshType& m, const BundleType& b,
         const args_t<N>&& a, feed& f)
 {
-        auto mesh_bundle = adjust_mesh_bundle(m, b);
+        auto mesh_bundle = adjust_mesh_bundle(m, b, false);
         command_buffer& cmdb = f.get_command_buffer();
         AURA_METAL_CHECK_ERROR(cmdb.command_buffer);
 

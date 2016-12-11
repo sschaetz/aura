@@ -65,13 +65,27 @@ public:
         /// destroy object
         ~device_array() {}
 
-        // move constructor, move device_array here, invalidate other
+        /// move constructor, move device_array here, invalidate other
         // @param da device_array to move here
         device_array(device_array&& da)
                 : bounds_(std::move(da.bounds_))
                 , data_(std::move(da.data_))
         {
                 da.bounds_.clear();
+        }
+
+        /// Resize vector (optionally disallow shrinking).
+        void resize(std::size_t size, device& d, bool shrink=true)
+        {
+                resize_impl(size, d, shrink);
+                bounds_ = BoundsType({size});
+        }
+
+        /// Resize vector (optionally disallow shrinking).
+        void resize(const BoundsType& b, device& d, bool shrink=true)
+        {
+                resize_impl(product(b), d, shrink);
+                bounds_ = b;
         }
 
         /// move assignment, move device_array here, invalidate other
@@ -119,8 +133,28 @@ public:
                 return data_.get()->is_shared_memory();
         }
 
-
 private:
+        /// Implementation of resize method
+        void resize_impl(std::size_t size, device& d, bool shrink=true)
+        {
+                if (!initialized_)
+                {
+                        allocate(size, d);
+                }
+                else
+                {
+                        auto current_size = product(bounds_);
+                        if (current_size > size && shrink)
+                        {
+                                allocate(size, d);
+                        }
+                        else if (current_size < size)
+                        {
+                                allocate(size, d);
+                        }
+                }
+        }
+
         /// Deleter type
         typedef detail::device_array_deleter<T> deleter_t;
 
@@ -132,7 +166,11 @@ private:
         {
                 data_ = data_t(new device_ptr<T>(device_malloc<T>(size, d)),
                         deleter_t());
+                initialized_;
         }
+
+        /// Initialized flag
+        bool initialized_ { false };
 
         /// Stores the bounds
         BoundsType bounds_;
