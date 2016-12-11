@@ -69,22 +69,22 @@ public:
         inline void synchronize() { AURA_OPENCL_SAFE_CALL(clFinish(feed_)); }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-        inline cl_device_id& get_base_device() const
+        inline const cl_device_id get_base_device() const
         {
                 return device_->get_base_device();
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_contet()
-        inline const cl_context& get_base_context() const
+        inline const cl_context get_base_context() const
         {
                 return device_->get_base_context();
         }
 
         /// Access const base feed.
-        inline const cl_command_queue& get_base_feed() const { return feed_; }
+        inline const cl_command_queue get_base_feed() const { return feed_; }
 
         /// Access base feed.
-        inline cl_command_queue& get_base_feed() { return feed_; }
+        inline cl_command_queue get_base_feed() { return feed_; }
 
         /// @copydoc boost::aura::base::cuda::feed::get_device()
         device& get_device() { return *device_; }

@@ -89,14 +89,14 @@ public:
         inline ~device() { reset(); }
 
         /// Access the device handle.
-        inline const CUdevice& get_base_device() const
+        inline const CUdevice get_base_device() const
         {
                 AURA_CHECK_INITIALIZED(initialized_);
                 return device_;
         }
 
         /// Access the context handle.
-        inline const CUcontext& get_base_context() const
+        inline const CUcontext get_base_context() const
         {
                 AURA_CHECK_INITIALIZED(initialized_);
                 return context_;

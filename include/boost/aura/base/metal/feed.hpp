@@ -77,7 +77,7 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-        inline __strong id<MTLDevice>& get_base_device() const
+        inline __strong id<MTLDevice> get_base_device() const
         {
                 return device_->get_base_device();
         }

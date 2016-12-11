@@ -76,22 +76,22 @@ public:
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-        inline const CUdevice& get_base_device() const
+        inline const CUdevice get_base_device() const
         {
                 return device_->get_base_device();
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_contet()
-        inline const CUcontext& get_base_context() const
+        inline const CUcontext get_base_context() const
         {
                 return device_->get_base_context();
         }
 
         /// Access base feed.
-        inline const CUstream& get_base_feed() const { return feed_; }
+        inline const CUstream get_base_feed() const { return feed_; }
 
         /// Access base feed.
-        inline CUstream& get_base_feed() { return feed_; }
+        inline CUstream get_base_feed() { return feed_; }
 
         // Access device.
         device& get_device() { return *device_; }
