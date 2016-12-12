@@ -24,7 +24,36 @@ namespace base = base_detail::opencl;
 namespace base = base_detail::metal;
 #endif
 
+/// Defines if mesh defines all threads or only the mesh size.
+enum mesh_definition
+{
+        all_threads,
+        mesh_size,
+};
 
+/// Normalize mesh to the aura standard definition of mesh:
+/// mesh defines the number of all threads that are launched
+/// on the accelerator.
+template <typename MeshType, typename BundleType>
+MeshType normalize_mesh(MeshType mesh, BundleType bundle,
+        mesh_definition mesh_def)
+{
+        switch (mesh_def)
+        {
+                case mesh_definition::all_threads:
+                {
+                        break;
+                }
+                case mesh_definition::mesh_size:
+                {
+                        for (std::size_t i = 0; i<mesh.size(); i++)
+                        {
+                                mesh[i] *= bundle[i];
+                        }
+                }
+        }
+        return mesh;
+}
 
 /// Pack arguments
 template <typename... Targs>
@@ -35,17 +64,21 @@ auto args(const Targs... ar) -> base::args_t<sizeof...(Targs)>
 
 /// invoke kernel without args
 template <typename MeshType, typename BundleType>
-inline void invoke(kernel& k, const MeshType& m, const BundleType& b, feed& f)
+inline void invoke(kernel& k, const MeshType& m, const BundleType& b, feed& f,
+        mesh_definition mesh_def = mesh_definition::mesh_size)
 {
-        base::detail::invoke_impl(k, m, b, base::args_t<0>(), f);
+        auto normalized_mesh = normalize_mesh(m, b, mesh_def);
+        base::detail::invoke_impl(k, normalize_mesh, b, base::args_t<0>(), f);
 }
 
 /// invoke kernel with args
 template <unsigned long N, typename MeshType, typename BundleType>
 inline void invoke(kernel& k, const MeshType& m, const BundleType& b,
-        const base::args_t<N>&& a, feed& f)
+        const base::args_t<N>&& a, feed& f,
+        mesh_definition mesh_def = mesh_definition::mesh_size)
 {
-        base::detail::invoke_impl(k, m, b, std::move(a), f);
+        auto normalized_mesh = normalize_mesh(m, b, mesh_def);
+        base::detail::invoke_impl(k, normalized_mesh, b, std::move(a), f);
 }
 
 

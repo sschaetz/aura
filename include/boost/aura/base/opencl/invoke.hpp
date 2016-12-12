@@ -66,7 +66,7 @@ inline void invoke_impl(
                         a.second[i].second, a.second[i].first));
         }
 
-        auto mesh_bundle = adjust_mesh_bundle(m, b, mesh_bundle_operation::multiply);
+        auto mesh_bundle = adjust_mesh_bundle(m, b, mesh_bundle_operation::none);
 
 #if AURA_DEBUG_MESH_BUNDLE
         std::cout << mesh_bundle.first[0] << " " << mesh_bundle.first[1] << " "

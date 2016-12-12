@@ -1,24 +1,16 @@
 function build_and_test_target() 
 {
-        CURDIR=$(pwd)
         BASEDIR=$(cd "$(dirname "$1")"; pwd)/$(basename "$1")
-        echo $BASEDIR
-        rm -rf /tmp/aura-build
         mkdir -p /tmp/aura-build
-        cd /tmp/aura-build
-        cmake $BASEDIR/../ -DAURA_BASE=$1 -DAURA_UNIT_TEST_DEVICE=$5 > /tmp/aura-build-$1.log 2>&1
+        pushd /tmp/aura-build
+        rm -rf ./*
+        cmake $BASEDIR/../ -DAURA_BASE=$1 -DAURA_UNIT_TEST_DEVICE=$4 > /tmp/aura-build-$1.log 2>&1
         CMAKE_RESULT=$?
         make all -s -j8 >> /tmp/aura-build-$1.log 2>&1
         MAKE_RESULT=$?
         ctest >> /tmp/aura-build-$1.log 2>&1
         CTEST_RESULT=$?
-        cd $CURDIR
-        echo "CMAKE" $CMAKE_RESULT "MAKE" $MAKE_RESULT CTEST $CTEST_RESULT
-        if [ $# -ge 3 ]
-        then
-                if [ ! -z $4 ] 
-                then 
-                        curl --upload-file /tmp/aura-build-$1.log $4newbr?cmake_result=$CMAKE_RESULT\&make_result=$MAKE_RESULT\&ctest_result=$CTEST_RESULT\&branch=$2\&commitid=$3\&backend=$1\&machine=$(hostname)
-                fi
-        fi
+        echo "cmake $CMAKE_RESULT make $MAKE_RESULT ctest $CTEST_RESULT"
+        ./test/test.alang >> /tmp/aura-build-$1.log 2>&1
+        popd
 }
