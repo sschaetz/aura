@@ -45,9 +45,17 @@ public:
                 for (unsigned int i = 0; i < num_platforms; i++)
                 {
                         unsigned int num_devices_platform = 0;
-                        AURA_OPENCL_SAFE_CALL(
-                                clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_ALL,
-                                        0, 0, &num_devices_platform));
+                        auto ret = clGetDeviceIDs(platforms[i],
+                                CL_DEVICE_TYPE_ALL,
+                                0, 0, &num_devices_platform);
+                        if (ret == CL_DEVICE_NOT_FOUND)
+                        {
+                                continue;
+                        }
+                        else
+                        {
+                                AURA_OPENCL_CHECK_ERROR(ret);
+                        }
                         num_devices += num_devices_platform;
                 }
                 return num_devices;
