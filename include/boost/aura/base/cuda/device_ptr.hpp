@@ -2,6 +2,7 @@
 
 #include <boost/aura/base/base_device_ptr.hpp>
 #include <boost/aura/base/cuda/device.hpp>
+#include <boost/aura/base/cuda/feed.hpp>
 #include <boost/aura/memory_tag.hpp>
 
 #include <cuda.h>
@@ -79,6 +80,22 @@ void device_free(device_ptr<T>& ptr)
         AURA_CUDA_SAFE_CALL(cuMemFree(ptr.get_base_ptr().device_buffer));
         ptr.get_device().deactivate();
         ptr.reset();
+}
+
+/// Set device memory (bytes).
+template <typename T>
+void device_memset(device_ptr<T>& ptr, char value, std::size_t num, feed& f)
+{
+        ptr.get_device().activate();
+        AURA_CUDA_SAFE_CALL(
+                        cuMemsetD8(
+                                ptr.get_base_ptr().device_buffer,
+                                value,
+                                num
+                        )
+                );
+        wait_for(f);
+        ptr.get_device().deactivate();
 }
 
 } // cuda

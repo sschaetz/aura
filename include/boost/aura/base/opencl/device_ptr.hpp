@@ -2,6 +2,7 @@
 
 #include <boost/aura/base/base_device_ptr.hpp>
 #include <boost/aura/base/opencl/device.hpp>
+#include <boost/aura/base/opencl/feed.hpp>
 #include <boost/aura/memory_tag.hpp>
 
 
@@ -111,6 +112,41 @@ void device_free(device_ptr<T>& ptr)
         ptr.reset();
 }
 
+/// Set device memory (bytes).
+template <typename T>
+void device_memset(device_ptr<T>& ptr, char value, std::size_t num, feed& f)
+{
+#ifdef CL_VERSION_1_2
+        AURA_OPENCL_SAFE_CALL(
+                clEnqueueFillBuffer(
+                        f.get_base_feed(),
+                        ptr.get_base_ptr().device_buffer,
+                        reinterpret_cast<const void*>(&value),
+                        1,
+                        0,
+                        num,
+                        0,
+                        NULL,
+                        NULL
+                )
+        );
+#else
+        std::vector<char> tmp(num, value);
+        AURA_OPENCL_SAFE_CALL(
+                clEnqueueWriteBuffer(
+                        f.get_base_feed(),
+                        ptr.get_base_ptr().device_buffer,
+                        CL_TRUE,
+                        ptr.get_offset() * sizeof(T),
+                        num,
+                        &(tmp[0]),
+                        0,
+                        NULL,
+                        NULL
+                )
+        );
+#endif
+}
 
 } // opencl
 } // base_detail

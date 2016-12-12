@@ -3,6 +3,7 @@
 #include <boost/aura/bounds.hpp>
 #include <boost/aura/device.hpp>
 #include <boost/aura/device_ptr.hpp>
+#include <boost/aura/feed.hpp>
 
 #include <memory>
 
@@ -86,6 +87,12 @@ public:
         {
                 resize_impl(product(b), d, shrink);
                 bounds_ = b;
+        }
+
+        /// Zero vector (fill with \0 bytes).
+        void zero(feed& f)
+        {
+                device_memset(*(data_.get()), 0, product(bounds_)*sizeof(T), f);
         }
 
         /// move assignment, move device_array here, invalidate other

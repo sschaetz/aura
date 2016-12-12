@@ -104,3 +104,34 @@ BOOST_AUTO_TEST_CASE(shared)
         }
         finalize();
 }
+
+BOOST_AUTO_TEST_CASE(basic_zero)
+{
+        boost::aura::initialize();
+        {
+                boost::aura::device d(AURA_UNIT_TEST_DEVICE);
+                boost::aura::feed f(d);
+
+                std::vector<float> host_src(1024, 21.0f);
+                std::vector<float> host_dst(1024, 42.0f);
+                std::vector<float> expected(1024, 0.0f);
+
+                boost::aura::device_array<float> dev(1024, d);
+
+                // Host to device
+                boost::aura::copy(
+                        host_src.begin(), host_src.end(), dev.begin(), f);
+
+                // Zero device.
+                dev.zero(f);
+
+                // Device to host
+                boost::aura::copy(dev.begin(), dev.end(), host_dst.begin(), f);
+
+                boost::aura::wait_for(f);
+
+                BOOST_CHECK(std::equal(
+                        expected.begin(), expected.end(), host_dst.begin()));
+        }
+        boost::aura::finalize();
+}

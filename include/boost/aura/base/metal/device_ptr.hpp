@@ -2,7 +2,10 @@
 
 #include <boost/aura/base/base_device_ptr.hpp>
 #include <boost/aura/base/metal/device.hpp>
+#include <boost/aura/base/metal/feed.hpp>
 #include <boost/aura/memory_tag.hpp>
+
+#include <boost/core/ignore_unused.hpp>
 
 #include <cstddef>
 
@@ -104,6 +107,18 @@ void device_free(device_ptr<T>& ptr)
         ptr.reset();
 }
 
+/// Set device memory (bytes).
+template <typename T>
+void device_memset(device_ptr<T> ptr, char value, std::size_t num, feed& f)
+{
+        boost::ignore_unused(f);
+        if (ptr.is_shared_memory())
+        {
+                std::memset(reinterpret_cast<void*>(ptr.get_host_ptr()),
+                                value,
+                                num);
+        }
+}
 
 } // metal
 } // base_detail
