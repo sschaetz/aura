@@ -8,6 +8,10 @@
 
 #include <cstddef>
 
+#if ! __has_feature(objc_arc)
+#error This file must be compiled with ARC. Either turn on ARC for the project or use -fobjc-arc flag
+#endif
+
 namespace boost
 {
 namespace aura
@@ -93,7 +97,7 @@ public:
         inline ~device() { reset(); }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
-        inline __strong id<MTLDevice> get_base_device()
+        inline id<MTLDevice> get_base_device()
         {
                 AURA_CHECK_INITIALIZED(initialized_);
                 return device_;
