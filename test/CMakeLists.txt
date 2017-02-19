@@ -10,7 +10,7 @@ FUNCTION(ADD_AURA_TEST TEST_NAME)
         FOREACH(TEST_SOURCE ${ARGN})
                 IF (APPLE)
                         SET_SOURCE_FILES_PROPERTIES(${TEST_SOURCE}
-                                PROPERTIES COMPILE_FLAGS "-x objective-c++")
+                                PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-arc")
                 ENDIF()
         ENDFOREACH()
         TARGET_LINK_LIBRARIES(${TEST_NAME} ${FOUNDATION_LIB})
