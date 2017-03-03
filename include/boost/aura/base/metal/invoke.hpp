@@ -59,6 +59,8 @@ template <unsigned long N, typename MeshType, typename BundleType>
 inline void invoke_impl(kernel& k, const MeshType& m, const BundleType& b,
         const args_t<N>&& a, feed& f)
 {
+    // Only Cocoa main thread / GCD threads have autorelease pools in place by default.
+    @autoreleasepool {
         // Metal base expects mesh size to be not the overal number of threads.
         auto mesh_bundle = adjust_mesh_bundle(m, b, mesh_bundle_operation::divide);
         command_buffer& cmdb = f.get_command_buffer();
@@ -98,6 +100,7 @@ inline void invoke_impl(kernel& k, const MeshType& m, const BundleType& b,
                 threadsPerThreadgroup:threadsPerGroup];
         [enc endEncoding];
         [cmdb.command_buffer commit];
+    }
 }
 
 
