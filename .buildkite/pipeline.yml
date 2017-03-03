@@ -7,7 +7,7 @@ steps:
                 AURA_UNIT_TEST_DEVICE: "1"
           agents:
                 gpubundlesize=512
-                xcode=8
+                xcode=8.2
  
         - name: Unit Tests 256 GPU Metal
           command: .buildkite/build.sh
@@ -17,7 +17,7 @@ steps:
                 AURA_UNIT_TEST_DEVICE: "1"
           agents:
                 gpubundlesize=256
-                xcode=8
+                xcode=8.2
 
         - name: Unit Tests 512 GPU OpenCL 
           command: .buildkite/build.sh
@@ -27,7 +27,7 @@ steps:
                 AURA_UNIT_TEST_DEVICE: "1"
           agents:
                 gpubundlesize=512
-                xcode=8
+                xcode=8.2
  
         - name: Unit Tests 256 GPU OpenCL 
           command: .buildkite/build.sh
@@ -37,5 +37,5 @@ steps:
                 AURA_UNIT_TEST_DEVICE: "1"
           agents:
                 gpubundlesize=256
-                xcode=8
+                xcode=8.2
 
