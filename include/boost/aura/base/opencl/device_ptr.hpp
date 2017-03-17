@@ -32,6 +32,9 @@ struct device_ptr_base_type
                 return *this;
         }
 
+        void reset()
+        {}
+
         /// Access host ptr.
         T* get_host_ptr() { return nullptr; }
         const T* get_host_ptr() const { return nullptr; }
