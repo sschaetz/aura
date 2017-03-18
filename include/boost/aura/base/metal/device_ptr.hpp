@@ -39,6 +39,11 @@ struct device_ptr_base_type
                 return *this;
         }
 
+        void reset()
+        {
+                host_ptr.reset();
+        };
+
         /// Access host ptr.
         T* get_host_ptr() { return host_ptr.get(); }
         const T* get_host_ptr() const { return host_ptr.get(); }
@@ -98,7 +103,12 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
                                                       options:0
                                                   deallocator:nil];
         m.host_ptr = std::shared_ptr<T>(
-                reinterpret_cast<T*>(host_ptr), [](T* ptr) { free(ptr); });
+                reinterpret_cast<T*>(host_ptr),
+                [](T* ptr)
+                {
+                        free(ptr);
+                }
+        );
 
         AURA_METAL_CHECK_ERROR(m.device_buffer);
         return device_ptr<T>(m, d, tag);

@@ -80,6 +80,7 @@ struct base_device_ptr
         {
                 device_ = nullptr;
                 offset_ = 0;
+                memory_.reset();
                 tag_ = memory_access_tag::rw;
         }
 
