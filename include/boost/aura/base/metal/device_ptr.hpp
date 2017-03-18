@@ -82,6 +82,7 @@ template <typename T>
 device_ptr<T> device_malloc(std::size_t size, device& d,
         memory_access_tag tag = memory_access_tag::rw)
 {
+    @autoreleasepool {
         constexpr std::size_t metal_memory_alignment = 16384;
         std::size_t num_bytes = size * sizeof(T);
         // Compute aligned array size.
@@ -112,6 +113,7 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
 
         AURA_METAL_CHECK_ERROR(m.device_buffer);
         return device_ptr<T>(m, d, tag);
+    }
 }
 
 /// Free device memory.

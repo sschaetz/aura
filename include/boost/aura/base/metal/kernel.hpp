@@ -26,11 +26,13 @@ public:
         /// library& l)
         inline explicit kernel(const std::string& name, library& l)
         {
+            @autoreleasepool {
                 NSString* kernel_name = @(name.c_str());
                 kernel_ =
                         [l.get_base_library() newFunctionWithName:kernel_name];
                 AURA_METAL_CHECK_ERROR(kernel_);
                 initialized_ = true;
+            }
         }
 
         /// Prevent copies.
