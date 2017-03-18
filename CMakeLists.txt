@@ -19,13 +19,15 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/buildprocess/")
 
 
 # Find Boost libraries.
-OPTION(BOOST_TEST_DYN_LINK 
+OPTION(BOOST_TEST_DYN_LINK
        "Link tests against dynamic version of boost unittest library" ON)
 IF (WIN32)
         SET(Boost_USE_STATIC_LIBS ON)
 ELSE ()
         IF (BOOST_TEST_DYN_LINK)
                 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
+        ELSE ()
+                set(Boost_USE_STATIC_LIBS ON)
         ENDIF ()
 ENDIF()
 FIND_PACKAGE(Boost COMPONENTS system thread filesystem unit_test_framework regex python)
