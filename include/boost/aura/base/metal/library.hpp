@@ -125,9 +125,13 @@ public:
 
 private:
         /// Create a library from a string.
-        void create_from_string(const std::string& kernelstring,
-                const std::string& opt, bool inject_aura_preamble)
+        void create_from_string(
+            const std::string& kernelstring,
+            const std::string& opt,
+            bool inject_aura_preamble
+        )
         {
+            @autoreleasepool {
                 boost::ignore_unused(opt);
                 shared_alang_header salh;
                 alang_header alh;
@@ -156,6 +160,7 @@ private:
                         NSLog(@"Error: %@ %@", err, [err userInfo]);
                 }
                 AURA_METAL_CHECK_ERROR(library_);
+            }
         }
 
         /// Initialized flag

@@ -72,12 +72,14 @@ public:
         /// @copydoc boost::aura::base::cuda::feed::synchronize()
         inline void synchronize()
         {
+            @autoreleasepool {
                 if (command_buffers_.empty())
                 {
                         return;
                 }
                 [command_buffers_.back().command_buffer waitUntilCompleted];
                 command_buffers_.clear();
+            }
         }
 
         /// @copydoc boost::aura::base::cuda::device::get_base_device()
@@ -102,10 +104,12 @@ public:
         /// @return New command buffer.
         detail::command_buffer& get_command_buffer()
         {
+            @autoreleasepool {
                 command_buffers_.emplace_back(detail::command_buffer());
                 command_buffers_.back().command_buffer = [feed_ commandBuffer];
                 AURA_METAL_CHECK_ERROR(command_buffers_.back().command_buffer);
                 return command_buffers_.back();
+            }
         }
 
 private:
