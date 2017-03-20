@@ -70,8 +70,10 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
 {
         d.activate();
         typename device_ptr<T>::base_type m;
-        AURA_CUDA_SAFE_CALL(cuMemAlloc(&m.device_buffer, size * sizeof(T)));
+        auto size_bytes = size * sizeof(T);
+        AURA_CUDA_SAFE_CALL(cuMemAlloc(&m.device_buffer, size_bytes));
         d.deactivate();
+        d.allocation_tracker.add(m.device_buffer, size_bytes);
         return device_ptr<T>(m, d, tag);
 }
 
@@ -80,7 +82,9 @@ template <typename T>
 void device_free(device_ptr<T>& ptr)
 {
         ptr.get_device().activate();
-        AURA_CUDA_SAFE_CALL(cuMemFree(ptr.get_base_ptr().device_buffer));
+        auto buffer = ptr.get_base_ptr().device_buffer;
+        ptr.get_device().allocation_tracker.remove(buffer);
+        AURA_CUDA_SAFE_CALL(cuMemFree(buffer));
         ptr.get_device().deactivate();
         ptr.reset();
 }

@@ -135,3 +135,46 @@ BOOST_AUTO_TEST_CASE(basic_zero)
         }
         boost::aura::finalize();
 }
+
+BOOST_AUTO_TEST_CASE(basic_resize)
+{
+        boost::aura::initialize();
+        {
+                boost::aura::device d(AURA_UNIT_TEST_DEVICE);
+                d.allocation_tracker.activate();
+                boost::aura::feed f(d);
+
+                {
+                        boost::aura::device_array<float> dev(1024, d);
+
+                        BOOST_CHECK(dev.size() == 1024);
+
+                        dev.resize(512, d, false);
+                        BOOST_CHECK(dev.size() == 512);
+                        BOOST_CHECK(dev.bounds() == boost::aura::bounds({512}));
+
+                        // Resize with no shrink should have not re-allocated.
+                        BOOST_CHECK(d.allocation_tracker.count_active() == 1);
+                        BOOST_CHECK(d.allocation_tracker.count_old() == 0);
+                }
+                {
+                        boost::aura::device_array<float> dev(
+                                {2, 3, 4, 5},
+                                d
+                        );
+                        BOOST_CHECK(
+                                dev.bounds() ==
+                                boost::aura::bounds({2, 3, 4, 5})
+                        );
+                        BOOST_CHECK(dev.size() == 2 * 3 * 4 * 5);
+
+                        dev.resize({5,6}, d, true);
+                        BOOST_CHECK(
+                                dev.bounds() ==
+                                boost::aura::bounds({5, 6})
+                        );
+                        BOOST_CHECK(dev.size() == 5 * 6);
+                }
+        }
+        boost::aura::finalize();
+}
