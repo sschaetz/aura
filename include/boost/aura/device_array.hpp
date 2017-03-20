@@ -63,6 +63,18 @@ public:
                 allocate(product(b), d);
         }
 
+        /// Create multi-dimensional array from initializer list.
+        device_array(
+                const std::initializer_list<
+                        typename BoundsType::value_type
+                >& dimensions,
+                device& d)
+                : bounds_(dimensions)
+        {
+                allocate(product(bounds_), d);
+        }
+
+
         /// destroy object
         ~device_array() {}
 
@@ -82,9 +94,21 @@ public:
                 bounds_ = BoundsType({size});
         }
 
-        /// Resize vector (optionally disallow shrinking).
         void resize(const BoundsType& b, device& d, bool shrink=true)
         {
+                resize_impl(product(b), d, shrink);
+                bounds_ = b;
+        }
+
+        void resize(
+                const std::initializer_list<
+                        typename BoundsType::value_type
+                >& dimensions,
+                device& d,
+                bool shrink=true
+        )
+        {
+                boost::aura::bounds b(dimensions);
                 resize_impl(product(b), d, shrink);
                 bounds_ = b;
         }
