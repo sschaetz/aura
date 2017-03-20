@@ -141,6 +141,7 @@ BOOST_AUTO_TEST_CASE(basic_resize)
         boost::aura::initialize();
         {
                 boost::aura::device d(AURA_UNIT_TEST_DEVICE);
+                d.allocation_tracker.activate();
                 boost::aura::feed f(d);
 
                 {
@@ -148,13 +149,13 @@ BOOST_AUTO_TEST_CASE(basic_resize)
 
                         BOOST_CHECK(dev.size() == 1024);
 
-                        auto dev_base_ptr = dev.get_base_ptr();
                         dev.resize(512, d, false);
                         BOOST_CHECK(dev.size() == 512);
                         BOOST_CHECK(dev.bounds() == boost::aura::bounds({512}));
 
                         // Resize with no shrink should have not re-allocated.
-                        BOOST_CHECK(dev_base_ptr == dev.get_base_ptr());
+                        BOOST_CHECK(d.allocation_tracker.count_active() == 1);
+                        BOOST_CHECK(d.allocation_tracker.count_old() == 0);
                 }
                 {
                         boost::aura::device_array<float> dev(

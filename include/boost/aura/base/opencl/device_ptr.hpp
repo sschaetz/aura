@@ -99,10 +99,12 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
 {
         int errorcode = 0;
         typename device_ptr<T>::base_type m;
+        auto size_bytes = size * sizeof(T);
         m.device_buffer = clCreateBuffer(d.get_base_context(),
-                translate_memory_access_tag(tag), size * sizeof(T), 0,
+                translate_memory_access_tag(tag), size_bytes, 0,
                 &errorcode);
         AURA_OPENCL_CHECK_ERROR(errorcode);
+        d.allocation_tracker.add(m.device_buffer, size_bytes);
         return device_ptr<T>(m, d, tag);
 }
 
@@ -110,8 +112,9 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
 template <typename T>
 void device_free(device_ptr<T>& ptr)
 {
-        AURA_OPENCL_SAFE_CALL(
-                clReleaseMemObject(ptr.get_base_ptr().device_buffer));
+        auto buffer = ptr.get_base_ptr().device_buffer;
+        ptr.get_device().allocation_tracker.remove(buffer);
+        AURA_OPENCL_SAFE_CALL(clReleaseMemObject(buffer));
         ptr.reset();
 }
 

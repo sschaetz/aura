@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/aura/base/allocation_tracker.hpp>
 #include <boost/aura/base/check_initialized.hpp>
 #include <boost/aura/base/metal/safecall.hpp>
 
@@ -118,6 +119,9 @@ public:
 
         /// Query initialized state.
         inline bool initialized() const { return initialized_; }
+
+        /// Allocation tracker.
+        boost::aura::detail::allocation_tracker allocation_tracker;
 
 private:
         /// Initialized flag

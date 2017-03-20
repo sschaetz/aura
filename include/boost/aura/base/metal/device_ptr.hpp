@@ -105,11 +105,14 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
                                                   deallocator:nil];
         m.host_ptr = std::shared_ptr<T>(
                 reinterpret_cast<T*>(host_ptr),
-                [](T* ptr)
+                [&, host_ptr](T* ptr)
                 {
+                        d.allocation_tracker.remove(host_ptr);
                         free(ptr);
                 }
         );
+
+        d.allocation_tracker.add(host_ptr, aligned_size);
 
         AURA_METAL_CHECK_ERROR(m.device_buffer);
         return device_ptr<T>(m, d, tag);
