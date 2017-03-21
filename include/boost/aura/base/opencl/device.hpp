@@ -3,6 +3,7 @@
 #include <boost/aura/base/allocation_tracker.hpp>
 #include <boost/aura/base/check_initialized.hpp>
 #include <boost/aura/base/opencl/safecall.hpp>
+#include <boost/aura/platform.hpp>
 
 #define CL_USE_DEPRECATED_OPENCL_1_2_APIS
 
@@ -206,7 +207,7 @@ public:
         /// Shared memory.
         bool is_shared_memory() const
         {
-                return false;
+                return platform::supports_shared_memory;
         }
 
         /// Allocation tracker.

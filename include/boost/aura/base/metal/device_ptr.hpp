@@ -4,6 +4,7 @@
 #include <boost/aura/base/metal/device.hpp>
 #include <boost/aura/base/metal/feed.hpp>
 #include <boost/aura/memory_tag.hpp>
+#include <boost/aura/platform.hpp>
 
 #include <boost/core/ignore_unused.hpp>
 
@@ -79,7 +80,8 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
         memory_access_tag tag = memory_access_tag::rw)
 {
     @autoreleasepool {
-        constexpr std::size_t metal_memory_alignment = 16384;
+        constexpr std::size_t metal_memory_alignment =
+                platform::memory_alignment;
         std::size_t num_bytes = size * sizeof(T);
         // Compute aligned array size.
         size_t aligned_size = num_bytes +
