@@ -120,6 +120,12 @@ public:
         /// Query initialized state.
         inline bool initialized() const { return initialized_; }
 
+        /// Shared memory.
+        bool is_shared_memory() const
+        {
+                return true;
+        }
+
         /// Allocation tracker.
         boost::aura::detail::allocation_tracker allocation_tracker;
 

@@ -74,7 +74,7 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
         AURA_CUDA_SAFE_CALL(cuMemAlloc(&m.device_buffer, size_bytes));
         d.deactivate();
         d.allocation_tracker.add(m.device_buffer, size_bytes);
-        return device_ptr<T>(m, d, tag);
+        return device_ptr<T>(m, d, tag, d.is_shared_memory());
 }
 
 /// Free device memory.

@@ -58,10 +58,6 @@ struct device_ptr_base_type
         {
                 return !(*this == other);
         }
-
-        /// @copydoc
-        /// boost::aura::base::cuda::device_base_ptr::is_shared_memory()
-        bool is_shared_memory() const { return true; }
 };
 
 
@@ -115,7 +111,7 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
         d.allocation_tracker.add(host_ptr, aligned_size);
 
         AURA_METAL_CHECK_ERROR(m.device_buffer);
-        return device_ptr<T>(m, d, tag);
+        return device_ptr<T>(m, d, tag, d.is_shared_memory());
     }
 }
 
@@ -136,6 +132,10 @@ void device_memset(device_ptr<T> ptr, char value, std::size_t num, feed& f)
                 std::memset(reinterpret_cast<void*>(ptr.get_host_ptr()),
                                 value,
                                 num);
+        }
+        else
+        {
+                AURA_METAL_CHECK_ERROR(false);
         }
 }
 

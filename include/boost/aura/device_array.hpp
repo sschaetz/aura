@@ -74,10 +74,6 @@ public:
                 allocate(product(bounds_), d);
         }
 
-
-        /// destroy object
-        ~device_array() {}
-
         /// move constructor, move device_array here, invalidate other
         // @param da device_array to move here
         device_array(device_array&& da)
@@ -86,6 +82,9 @@ public:
         {
                 da.bounds_.clear();
         }
+
+        /// destroy object
+        ~device_array() {}
 
         /// Resize vector (optionally disallow shrinking).
         void resize(std::size_t size, device& d, bool shrink=true)

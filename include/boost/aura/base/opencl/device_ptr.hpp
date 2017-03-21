@@ -105,7 +105,7 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
                 &errorcode);
         AURA_OPENCL_CHECK_ERROR(errorcode);
         d.allocation_tracker.add(m.device_buffer, size_bytes);
-        return device_ptr<T>(m, d, tag);
+        return device_ptr<T>(m, d, tag, d.is_shared_memory());
 }
 
 /// Free device memory.
