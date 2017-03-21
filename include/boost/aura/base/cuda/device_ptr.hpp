@@ -50,9 +50,6 @@ struct device_ptr_base_type
         {
                 return !(*this == other);
         }
-
-        /// Indicate if memory hold by pointer is shared with host or not.
-        bool is_shared_memory() const { return false; }
 };
 
 
@@ -74,7 +71,7 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
         AURA_CUDA_SAFE_CALL(cuMemAlloc(&m.device_buffer, size_bytes));
         d.deactivate();
         d.allocation_tracker.add(m.device_buffer, size_bytes);
-        return device_ptr<T>(m, d, tag, d.is_shared_memory());
+        return device_ptr<T>(m, d, tag, d.supports_shared_memory());
 }
 
 /// Free device memory.

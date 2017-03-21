@@ -205,7 +205,7 @@ public:
         inline bool initialized() const { return initialized_; }
 
         /// Shared memory.
-        bool is_shared_memory() const
+        bool supports_shared_memory() const
         {
                 return platform::supports_shared_memory;
         }

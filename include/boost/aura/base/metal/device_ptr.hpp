@@ -113,7 +113,7 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
         d.allocation_tracker.add(host_ptr, aligned_size);
 
         AURA_METAL_CHECK_ERROR(m.device_buffer);
-        return device_ptr<T>(m, d, tag, d.is_shared_memory());
+        return device_ptr<T>(m, d, tag, d.supports_shared_memory());
     }
 }
 
