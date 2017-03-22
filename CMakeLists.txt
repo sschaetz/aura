@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 
-# If no backend is selected, choose OpenCL as default. 
+# If no backend is selected, choose OpenCL as default.
 IF(NOT AURA_BASE)
         SET(AURA_BASE OPENCL)
 ENDIF()
@@ -34,7 +34,7 @@ FIND_PACKAGE(Boost COMPONENTS system thread filesystem unit_test_framework regex
 
 
 # Find GPU libraries.
-FIND_PACKAGE(CUDA) 
+FIND_PACKAGE(CUDA)
 FIND_PACKAGE(OpenCL)
 
 
@@ -46,14 +46,14 @@ IF (APPLE)
         ENDIF()
 ENDIF()
 
-# Set correct defines for GPU libraries. 
+# Set correct defines for GPU libraries.
 IF (${AURA_BASE} STREQUAL CUDA)
         FIND_CUDA_HELPER_LIBS(nvrtc)
         SET(AURA_BASE_LIBRARIES ${CUDA_LIBRARIES} ${CUDA_nvrtc_LIBRARY})
         SET(AURA_BASE_INCLUDE_DIRS ${CUDA_INCLUDE_DIRS})
         IF (APPLE)
                 SET(AURA_BASE_LINK_DIRS "/usr/local/cuda/lib")
-                SET(AURA_BASE_LIBRARIES ${AURA_BASE_LIBRARIES} 
+                SET(AURA_BASE_LIBRARIES ${AURA_BASE_LIBRARIES}
                                         "cuda")
         ENDIF()
         SET(AURA_BASE_DEFINE "-DAURA_BASE_CUDA")
@@ -114,26 +114,26 @@ IF (${BUILD_DOCUMENTATION})
         FIND_PACKAGE(Doxygen)
         IF (DOXYGEN_FOUND)
                 # Build doxygen XML.
-                CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in 
+                CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in
                         ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-                ADD_CUSTOM_TARGET(doxygen 
-                        ${DOXYGEN_EXECUTABLE} 
+                ADD_CUSTOM_TARGET(doxygen
+                        ${DOXYGEN_EXECUTABLE}
                         ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
                         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                        COMMENT "Generating API documentation with Doxygen" 
+                        COMMENT "Generating API documentation with Doxygen"
                         VERBATIM)
                 # Run sphinx (with breathe).
-                CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/doc/source/conf.py.in 
-                        ${CMAKE_CURRENT_BINARY_DIR}/conf.py 
+                CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/doc/source/conf.py.in
+                        ${CMAKE_CURRENT_BINARY_DIR}/conf.py
                         @ONLY)
                 ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/doc/html
-                        COMMAND sphinx-build -b html -c . 
-                                ${CMAKE_CURRENT_SOURCE_DIR}/doc/source 
+                        COMMAND sphinx-build -b html -c .
+                                ${CMAKE_CURRENT_SOURCE_DIR}/doc/source
                                 ${CMAKE_CURRENT_BINARY_DIR}/doc/html
                         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                         )
                 # Make a target that builds all of the above.
-                ADD_CUSTOM_TARGET(sphinx 
+                ADD_CUSTOM_TARGET(sphinx
                         ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/doc/html)
                 ADD_CUSTOM_TARGET(doc)
                 ADD_DEPENDENCIES(doc doxygen sphinx)

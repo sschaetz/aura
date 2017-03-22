@@ -22,6 +22,8 @@ struct base_device_ptr
         typedef std::ptrdiff_t difference_type;
         typedef T* pointer;
         typedef const T* const_pointer;
+        typedef std::shared_ptr<T> safe_pointer;
+        typedef std::shared_ptr<T> const safe_const_pointer;
         typedef T& reference;
 
         /// Base handle type
@@ -111,29 +113,29 @@ struct base_device_ptr
                 return is_shared_memory_;
         }
 
-        /// Access host pointer if it exists.
+        /// Access host pointer (returns a nullptr if it is not available).
         pointer get_host_ptr()
         {
-                if (is_shared_memory_)
-                {
-                        return memory_.get_host_ptr();
-                }
-                else
-                {
-                        return nullptr;
-                }
+                return memory_.get_host_ptr();
+
         }
 
         const_pointer get_host_ptr() const
         {
-                if (memory_.is_shared_memory())
-                {
-                        return memory_.get_host_ptr();
-                }
-                else
-                {
-                        return nullptr;
-                }
+                return memory_.get_host_ptr();
+
+        }
+
+        safe_pointer get_safe_host_ptr()
+        {
+                return memory_.get_safe_host_ptr();
+
+        }
+
+        safe_const_pointer get_safe_host_ptr() const
+        {
+                return memory_.get_safe_host_ptr();
+
         }
 
         /// Assign operator.

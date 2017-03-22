@@ -48,6 +48,8 @@ struct device_ptr_base_type
         /// Access host ptr.
         T* get_host_ptr() { return host_ptr.get(); }
         const T* get_host_ptr() const { return host_ptr.get(); }
+        std::shared_ptr<T> get_safe_host_ptr() { return host_ptr; }
+        const std::shared_ptr<T> get_safe_host_ptr() const { return host_ptr; }
 
         bool operator==(const device_ptr_base_type<T>& other) const
         {

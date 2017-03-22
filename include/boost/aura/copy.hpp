@@ -55,11 +55,25 @@ void copy(const std::vector<T>& src, device_array<T>& dst, feed& f)
         base::copy(src.begin(), src.end(), dst.begin(), f);
 }
 
+/// copy from std::vector to device ptr
+template <typename T>
+void copy(const std::vector<T>& src, device_ptr<T>& dst, feed& f)
+{
+        base::copy(src.begin(), src.end(), dst, f);
+}
+
 /// copy from device array to std::vector
 template <typename T>
 void copy(const device_array<T>& src, std::vector<T>& dst, feed& f)
 {
         base::copy(src.begin(), src.end(), &dst[0], f);
+}
+
+/// copy from device ptr to std::vector
+template <typename T>
+void copy(const device_ptr<T>& src, std::vector<T>& dst, feed& f)
+{
+        base::copy(src, src + dst.size(), &dst[0], f);
 }
 
 /// copy from device array to device array
@@ -68,7 +82,6 @@ void copy(const device_array<T>& src, device_array<T>& dst, feed& f)
 {
         base::copy(src.begin(), src.end(), dst.begin(), f);
 }
-
 
 using base::copy;
 
