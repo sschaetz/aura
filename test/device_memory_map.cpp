@@ -24,18 +24,28 @@ BOOST_AUTO_TEST_CASE(basic)
         {
                 device d(AURA_UNIT_TEST_DEVICE);
                 feed f(d);
-                device_array<float> ar0(1024, d);
-                ar0.zero(f);
+                for (auto numel : {1024, 1024 * 128})
                 {
-                        auto m0 = ar0.map(f);
+                        device_array<float> ar0(numel, d);
+                        ar0.zero(f);
+                        {
+                                auto m0 = ar0.map(f);
+
+                                // Fill map with values.
+                                std::fill(m0.begin(), m0.end(), 42.0f);
+                        }
+                        std::vector<float> vec(numel, 0.0f);
+                        boost::aura::copy(ar0, vec, f);
                         f.synchronize();
-                        // Fill map with values.
-                        std::fill(m0.begin(), m0.end(), 42.0f);
+
+                        BOOST_CHECK(
+                                std::all_of(
+                                        vec.begin(),
+                                        vec.end(),
+                                        [](float v) { return v == 42.0f; }
+                                )
+                        );
                 }
-                std::vector<float> vec(1024, 0.0f);
-                boost::aura::copy(ar0, vec, f);
-                f.synchronize();
-                BOOST_CHECK(std::all_of(vec.begin(), vec.end(), [](float v) { return v == 42.0f; } ));
         }
         finalize();
 }

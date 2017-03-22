@@ -264,11 +264,13 @@ public:
                                 memory_access_tag_ == memory_access_tag::ro)
                         {
                                 copy(array_, host_data_.get(), feed_);
+                                feed_.synchronize();
                         }
                 }
         }
         mapped_device_memory(mapped_device_memory&& other)
                 : array_(other.array_)
+                , host_data_(other.host_data_)
                 , feed_(other.feed_)
                 , memory_access_tag_(other.memory_access_tag_)
         {
@@ -282,6 +284,7 @@ public:
                         memory_access_tag_ == memory_access_tag::wo)
                 {
                         copy(host_data_.get(), array_, feed_);
+                        feed_.synchronize();
                 }
         }
 

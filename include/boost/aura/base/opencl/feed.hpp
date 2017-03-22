@@ -12,7 +12,6 @@ namespace base_detail
 namespace opencl
 {
 
-
 class feed
 {
 public:
