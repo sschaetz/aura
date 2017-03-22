@@ -22,6 +22,8 @@ struct base_device_ptr
         typedef std::ptrdiff_t difference_type;
         typedef T* pointer;
         typedef const T* const_pointer;
+        typedef std::shared_ptr<T> safe_pointer;
+        typedef std::shared_ptr<T> const safe_const_pointer;
         typedef T& reference;
 
         /// Base handle type
@@ -38,6 +40,7 @@ struct base_device_ptr
                 , offset_(0)
                 , device_(nullptr)
                 , tag_(memory_access_tag::rw)
+                , is_shared_memory_(false)
         {
         }
 
@@ -47,6 +50,7 @@ struct base_device_ptr
                 , offset_(0)
                 , device_(nullptr)
                 , tag_(memory_access_tag::rw)
+                , is_shared_memory_(false)
         {
         }
 
@@ -54,11 +58,13 @@ struct base_device_ptr
         /// @param m Memory that identifies device memory
         /// @param d Device the memory is allocated on
         base_device_ptr(base_type& m, device& d,
-                memory_access_tag tag = memory_access_tag::rw)
+                memory_access_tag tag = memory_access_tag::rw,
+                bool is_shared_memory = false)
                 : memory_(m)
                 , offset_(0)
                 , device_(&d)
                 , tag_(tag)
+                , is_shared_memory_(is_shared_memory)
         {
         }
 
@@ -67,11 +73,13 @@ struct base_device_ptr
         /// @param o Offset of memory object
         /// @param d Device the memory is allocated on
         base_device_ptr(const_base_type& m, const std::size_t& o, device& d,
-                memory_access_tag tag = memory_access_tag::rw)
+                memory_access_tag tag = memory_access_tag::rw,
+                bool is_shared_memory = false)
                 : memory_(m)
                 , offset_(o)
                 , device_(&d)
                 , tag_(tag)
+                , is_shared_memory_(is_shared_memory)
         {
         }
 
@@ -82,6 +90,7 @@ struct base_device_ptr
                 offset_ = 0;
                 memory_.reset();
                 tag_ = memory_access_tag::rw;
+                is_shared_memory_ = false;
         }
 
         /// Returns a pointer to the device memory.
@@ -98,35 +107,35 @@ struct base_device_ptr
         /// Returns the memory tag.
         memory_access_tag get_memory_access_tag() const { return tag_; }
 
-        /// Indicate if memory hold by pointer is shared with host or not.
+        /// Indicate if memory held by pointer is shared with host or not.
         bool is_shared_memory() const
         {
-                return memory_.is_shared_memory();
+                return is_shared_memory_;
         }
 
-        /// Access host pointer if it exists.
+        /// Access host pointer (returns a nullptr if it is not available).
         pointer get_host_ptr()
         {
-                if (memory_.is_shared_memory())
-                {
-                        return memory_.get_host_ptr();
-                }
-                else
-                {
-                        return nullptr;
-                }
+                return memory_.get_host_ptr();
+
         }
 
         const_pointer get_host_ptr() const
         {
-                if (memory_.is_shared_memory())
-                {
-                        return memory_.get_host_ptr();
-                }
-                else
-                {
-                        return nullptr;
-                }
+                return memory_.get_host_ptr();
+
+        }
+
+        safe_pointer get_safe_host_ptr()
+        {
+                return memory_.get_safe_host_ptr();
+
+        }
+
+        safe_const_pointer get_safe_host_ptr() const
+        {
+                return memory_.get_safe_host_ptr();
+
         }
 
         /// Assign operator.
@@ -137,6 +146,7 @@ struct base_device_ptr
                 offset_ = b.offset_;
                 device_ = b.device_;
                 tag_ = b.tag_;
+                is_shared_memory_ = b.is_shared_memory_;
                 return *this;
         }
 
@@ -151,7 +161,8 @@ struct base_device_ptr
         base_device_ptr<T, BaseType> operator+(const std::size_t& b) const
         {
                 return base_device_ptr<T, BaseType>(
-                        memory_, offset_ + b, *device_, tag_);
+                        memory_, offset_ + b, *device_, tag_,
+                        is_shared_memory_);
         }
 
         std::ptrdiff_t operator+(const base_device_ptr<T, BaseType>& b) const
@@ -177,7 +188,8 @@ struct base_device_ptr
         base_device_ptr<T, BaseType> operator++(int)
         {
                 return base_device_ptr<T, BaseType>(
-                        memory_, offset_ + 1, *device_);
+                        memory_, offset_ + 1, *device_, tag_,
+                        is_shared_memory_);
         }
 
         /// subtraction operator
@@ -208,7 +220,8 @@ struct base_device_ptr
         base_device_ptr<T, BaseType> operator--(int)
         {
                 return base_device_ptr<T, BaseType>(
-                        memory_, offset_ - 1, *device_, tag_);
+                        memory_, offset_ - 1, *device_, tag_,
+                        is_shared_memory_);
         }
 
         /// equal to operator
@@ -218,14 +231,16 @@ struct base_device_ptr
                 {
                         return (nullptr == device_ && nullptr == b.device_ &&
                                 offset_ == b.offset_ && memory_ == b.memory_ &&
-                                tag_ == b.tag_);
+                                tag_ == b.tag_ &&
+                                is_shared_memory_ == b.is_shared_memory_);
                 }
                 else
                 {
                         return (device_->get_ordinal() ==
                                         b.device_->get_ordinal() &&
                                 offset_ == b.offset_ && memory_ == b.memory_ &&
-                                tag_ == b.tag_);
+                                tag_ == b.tag_ &&
+                                is_shared_memory_ == b.is_shared_memory_);
                 }
         }
 
@@ -254,6 +269,9 @@ private:
 
         /// read+write readonly writeonly?
         memory_access_tag tag_;
+
+        /// is memory shared beween GPU and CPU?
+        bool is_shared_memory_;
 };
 
 

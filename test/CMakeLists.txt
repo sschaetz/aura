@@ -18,10 +18,13 @@ FUNCTION(ADD_AURA_TEST TEST_NAME)
                 "${PROJECT_SOURCE_DIR}/")
 ENDFUNCTION()
 
+ADD_DEFINITIONS(-DNDEBUG)
+
 ADD_AURA_TEST(test.alang alang.cpp alang.cpp)
 ADD_AURA_TEST(test.copy copy.cpp)
 ADD_AURA_TEST(test.device device.cpp)
 ADD_AURA_TEST(test.device_array device_array.cpp)
+ADD_AURA_TEST(test.device_memory_map device_memory_map.cpp)
 ADD_AURA_TEST(test.device_ptr device_ptr.cpp)
 ADD_AURA_TEST(test.feed feed.cpp)
 ADD_AURA_TEST(test.invoke invoke.cpp)

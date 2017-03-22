@@ -28,6 +28,9 @@ struct device_array_deleter
 
 } // namespace detail
 
+template <typename T, typename BoundsType>
+class mapped_device_memory;
+
 /// Device array, owns device memory, can have multiple dimensions.
 template <typename T, typename BoundsType = bounds>
 class device_array
@@ -74,10 +77,6 @@ public:
                 allocate(product(bounds_), d);
         }
 
-
-        /// destroy object
-        ~device_array() {}
-
         /// move constructor, move device_array here, invalidate other
         // @param da device_array to move here
         device_array(device_array&& da)
@@ -85,6 +84,15 @@ public:
                 , data_(std::move(da.data_))
         {
                 da.bounds_.clear();
+        }
+
+        /// destroy object
+        ~device_array() {}
+
+        mapped_device_memory<T, BoundsType> map(feed& f,
+                memory_access_tag mat = memory_access_tag::rw)
+        {
+                return mapped_device_memory<T, BoundsType>(*this, f, mat);
         }
 
         /// Resize vector (optionally disallow shrinking).
@@ -158,6 +166,17 @@ public:
 
         const T* get_host_ptr() const { return data_.get()->get_host_ptr(); }
 
+        std::shared_ptr<T> get_safe_host_ptr()
+        {
+                return data_.get()->get_safe_host_ptr();
+        }
+
+        const std::shared_ptr<T> get_safe_host_ptr() const
+        {
+                return data_.get()->get_safe_host_ptr();
+        }
+
+
         /// Indicate if memory hold by array is shared with host or not.
         bool is_shared_memory() const
         {
@@ -209,6 +228,115 @@ private:
         /// Holds data
         data_t data_;
 };
+
+/// Device memory mapped to the host.
+template <typename T, typename BoundsType = bounds>
+class mapped_device_memory
+{
+public:
+        /// Convenience types
+        typedef T* iterator;
+        typedef const T* const_iterator;
+        typedef T value_type;
+
+        // Prevent copies
+        mapped_device_memory(const mapped_device_memory&) = delete;
+        void operator=(const mapped_device_memory&) = delete;
+
+        /// Create one-dimensional memory_map of size on device
+        mapped_device_memory(device_array<T, BoundsType>& da,
+                feed& f,
+                memory_access_tag mat)
+                : array_(da)
+                , feed_(f)
+                , memory_access_tag_(mat)
+        {
+                // If memory is shared, get the host ptr and store it.
+                if (array_.is_shared_memory())
+                {
+                        host_data_ = array_.get_safe_host_ptr();
+                }
+                else
+                {
+                        allocate(array_.size());
+                        // If read or read-write, copy data to host.
+                        if (memory_access_tag_ == memory_access_tag::rw ||
+                                memory_access_tag_ == memory_access_tag::ro)
+                        {
+                                copy(array_, host_data_.get(), feed_);
+                                feed_.synchronize();
+                        }
+                }
+        }
+        mapped_device_memory(mapped_device_memory&& other)
+                : array_(other.array_)
+                , host_data_(other.host_data_)
+                , feed_(other.feed_)
+                , memory_access_tag_(other.memory_access_tag_)
+        {
+        }
+
+        /// destroy object
+        ~mapped_device_memory()
+        {
+                // Copy memory back if write, read-write.
+                if (memory_access_tag_ == memory_access_tag::rw ||
+                        memory_access_tag_ == memory_access_tag::wo)
+                {
+                        copy(host_data_.get(), array_, feed_);
+                        feed_.synchronize();
+                }
+        }
+
+        /// move assignment, move mapped_device_memory here, invalidate other
+        /// @param dmm mapped_device_memory to move here
+        mapped_device_memory& operator=(mapped_device_memory&& other)
+        {
+                return *this;
+        }
+
+        /// Access bounds and size
+        BoundsType bounds() const { return array_.bounds_; }
+
+        std::size_t size() const { return product(array_.bounds_); }
+
+        /// Begin
+        iterator begin() { return host_data_.get(); }
+        const_iterator begin() const { return *host_data_.get(); }
+
+        /// End
+        iterator end() { return host_data_.get() + array_.size(); }
+        const_iterator end() const { return host_data_.get() + array_.size(); }
+
+private:
+        /// Allocate (if no direct access is possible).
+        void allocate(std::size_t numel)
+        {
+                void* ptr = std::malloc(numel * sizeof(T));
+                // TODO: Check for allocation error.
+                host_data_ = std::shared_ptr<T>(reinterpret_cast<T*>(ptr),
+                        [](T* ptr)
+                        {
+                                // If this object goes out of scope
+                                // data is freed.
+                                free(ptr);
+                        }
+                );
+        }
+
+        /// Device array (stored so we can copy data back).
+        device_array<T, BoundsType>& array_;
+
+        /// Mapped data (either a copy or directly mapped).
+        std::shared_ptr<T> host_data_;
+
+        /// Used for copy operations.
+        feed& feed_;
+
+        /// Used to avoid copy operations if they are not necessary.
+        memory_access_tag memory_access_tag_;
+};
+
 
 } // namespace aura
 } // namespace boost

@@ -39,6 +39,8 @@ struct device_ptr_base_type
         /// Access host ptr.
         T* get_host_ptr() { return nullptr; }
         const T* get_host_ptr() const { return nullptr; }
+        std::shared_ptr<T> get_safe_host_ptr() { return std::shared_ptr<T>(); }
+        const std::shared_ptr<T> get_safe_host_ptr() const { return std::shared_ptr<T>(); }
 
         /// Comparison operators
         bool operator==(const device_ptr_base_type<T>& other) const
@@ -50,9 +52,6 @@ struct device_ptr_base_type
         {
                 return !(*this == other);
         }
-
-        /// Indicate if memory hold by pointer is shared with host or not.
-        bool is_shared_memory() const { return false; }
 };
 
 
@@ -74,7 +73,7 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
         AURA_CUDA_SAFE_CALL(cuMemAlloc(&m.device_buffer, size_bytes));
         d.deactivate();
         d.allocation_tracker.add(m.device_buffer, size_bytes);
-        return device_ptr<T>(m, d, tag);
+        return device_ptr<T>(m, d, tag, d.supports_shared_memory());
 }
 
 /// Free device memory.

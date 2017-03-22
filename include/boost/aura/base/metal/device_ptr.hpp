@@ -4,6 +4,7 @@
 #include <boost/aura/base/metal/device.hpp>
 #include <boost/aura/base/metal/feed.hpp>
 #include <boost/aura/memory_tag.hpp>
+#include <boost/aura/platform.hpp>
 
 #include <boost/core/ignore_unused.hpp>
 
@@ -47,6 +48,8 @@ struct device_ptr_base_type
         /// Access host ptr.
         T* get_host_ptr() { return host_ptr.get(); }
         const T* get_host_ptr() const { return host_ptr.get(); }
+        std::shared_ptr<T> get_safe_host_ptr() { return host_ptr; }
+        const std::shared_ptr<T> get_safe_host_ptr() const { return host_ptr; }
 
         bool operator==(const device_ptr_base_type<T>& other) const
         {
@@ -58,10 +61,6 @@ struct device_ptr_base_type
         {
                 return !(*this == other);
         }
-
-        /// @copydoc
-        /// boost::aura::base::cuda::device_base_ptr::is_shared_memory()
-        bool is_shared_memory() const { return true; }
 };
 
 
@@ -83,7 +82,8 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
         memory_access_tag tag = memory_access_tag::rw)
 {
     @autoreleasepool {
-        constexpr std::size_t metal_memory_alignment = 16384;
+        constexpr std::size_t metal_memory_alignment =
+                platform::memory_alignment;
         std::size_t num_bytes = size * sizeof(T);
         // Compute aligned array size.
         size_t aligned_size = num_bytes +
@@ -115,7 +115,7 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
         d.allocation_tracker.add(host_ptr, aligned_size);
 
         AURA_METAL_CHECK_ERROR(m.device_buffer);
-        return device_ptr<T>(m, d, tag);
+        return device_ptr<T>(m, d, tag, d.supports_shared_memory());
     }
 }
 
@@ -136,6 +136,10 @@ void device_memset(device_ptr<T> ptr, char value, std::size_t num, feed& f)
                 std::memset(reinterpret_cast<void*>(ptr.get_host_ptr()),
                                 value,
                                 num);
+        }
+        else
+        {
+                AURA_METAL_CHECK_ERROR(false);
         }
 }
 

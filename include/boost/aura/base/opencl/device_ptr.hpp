@@ -38,6 +38,8 @@ struct device_ptr_base_type
         /// Access host ptr.
         T* get_host_ptr() { return nullptr; }
         const T* get_host_ptr() const { return nullptr; }
+        std::shared_ptr<T> get_safe_host_ptr() { return std::shared_ptr<T>(); }
+        const std::shared_ptr<T> get_safe_host_ptr() const { return std::shared_ptr<T>(); }
 
         bool operator==(const device_ptr_base_type<T>& other) const
         {
@@ -48,10 +50,6 @@ struct device_ptr_base_type
         {
                 return !(*this == other);
         }
-
-        /// @copydoc
-        /// boost::aura::base::cuda::device_base_ptr::is_shared_memory()
-        bool is_shared_memory() const { return false; }
 };
 
 /// Specialize base_device_ptr for specific backend.
@@ -91,7 +89,6 @@ inline cl_mem_flags translate_memory_access_tag(memory_access_tag tag)
         }
 }
 
-
 /// Allocate device memory.
 template <typename T>
 device_ptr<T> device_malloc(std::size_t size, device& d,
@@ -105,7 +102,7 @@ device_ptr<T> device_malloc(std::size_t size, device& d,
                 &errorcode);
         AURA_OPENCL_CHECK_ERROR(errorcode);
         d.allocation_tracker.add(m.device_buffer, size_bytes);
-        return device_ptr<T>(m, d, tag);
+        return device_ptr<T>(m, d, tag, d.supports_shared_memory());
 }
 
 /// Free device memory.
