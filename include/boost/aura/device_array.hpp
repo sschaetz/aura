@@ -288,13 +288,6 @@ public:
                 }
         }
 
-        /// move assignment, move mapped_device_memory here, invalidate other
-        /// @param dmm mapped_device_memory to move here
-        mapped_device_memory& operator=(mapped_device_memory&& other)
-        {
-                return *this;
-        }
-
         /// Access bounds and size
         BoundsType bounds() const { return array_.bounds_; }
 
