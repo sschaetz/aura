@@ -244,6 +244,35 @@ struct base_device_ptr
                 }
         }
 
+        /// Less than operator.
+        bool operator <(const base_device_ptr<T, BaseType>& b) const
+        {
+                if (nullptr == device_ && nullptr != b.device_)
+                {
+                        // This is no initialized, is always smaller.
+                        return true;
+                }
+                else if (nullptr == b.device_)
+                {
+                        // Both are not initialied (equal).
+                        return false;
+                }
+                else if (memory_ < b.memory_)
+                {
+                        // Compare pointers.
+                        return true;
+                }
+                else if (memory_ == b.memory_)
+                {
+                        // Same ptr, compare offset.
+                        return offset_ < b.offset_;
+                }
+                else
+                {
+                        return false;
+                }
+        }
+
         bool operator==(std::nullptr_t) const
         {
                 return (nullptr == device_ && 0 == offset_ && 0 == memory_);
