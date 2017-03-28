@@ -18,9 +18,13 @@ struct device_allocator
         using pointer = device_ptr<T>;
         using const_pointer = const device_ptr<T>;
 
+        /// Construct empty allocator.
+        device_allocator()
+        {}
+
         /// Construct allocator.
         device_allocator(device& d)
-                : device_(d)
+                : device_(&d)
         {}
 
         /// Copy construct allocator.
@@ -29,22 +33,35 @@ struct device_allocator
                 : device_(other.device_)
         {}
 
+        /// Move construct allocator.
+        template <class U>
+        device_allocator(device_allocator<U>&& other)
+                : device_(other.device_)
+        {
+                other.device_ = nullptr;
+        }
+
         /// Allocate memory.
         pointer allocate(std::size_t n)
         {
-                return device_malloc<T>(n, device_);
+                assert(device_);
+                return device_malloc<T>(n, *device_);
         }
 
         /// Deallocate memory.
         void deallocate(pointer& p, std::size_t n)
         {
+                assert(device_);
                 boost::ignore_unused(n);
                 device_free(p);
         }
 
 private:
         /// Device we allocate memory from.
-        device& device_;
+        device* device_;
+
+        /// Flag that indicates if allocator is initialized or not.
+        bool initialized_ { false };
 };
 
 } // namespace aura
