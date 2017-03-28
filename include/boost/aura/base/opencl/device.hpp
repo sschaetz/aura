@@ -46,19 +46,7 @@ public:
                 std::size_t num_devices = 0;
                 for (unsigned int i = 0; i < num_platforms; i++)
                 {
-                        unsigned int num_devices_platform = 0;
-                        auto ret = clGetDeviceIDs(platforms[i],
-                                CL_DEVICE_TYPE_ALL,
-                                0, 0, &num_devices_platform);
-                        if (ret == CL_DEVICE_NOT_FOUND)
-                        {
-                                continue;
-                        }
-                        else
-                        {
-                                AURA_OPENCL_CHECK_ERROR(ret);
-                        }
-                        num_devices += num_devices_platform;
+                        num_devices += device::get_num_devices_platform(platforms[i]);
                 }
                 return num_devices;
         }
@@ -87,10 +75,12 @@ public:
                 unsigned int num_devices = 0;
                 for (unsigned int i = 0; i < num_platforms; i++)
                 {
-                        unsigned int num_devices_platform = 0;
-                        AURA_OPENCL_SAFE_CALL(
-                                clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_ALL,
-                                        0, 0, &num_devices_platform));
+                        unsigned int num_devices_platform =
+                                device::get_num_devices_platform(platforms[i]);
+                        if (num_devices_platform < 1)
+                        {
+                                continue;
+                        }
 
                         // Check if we found the device we want.
                         if (num_devices + num_devices_platform >
@@ -104,6 +94,7 @@ public:
 
                                 device_ = devices[ordinal - num_devices];
                         }
+                        num_devices += num_devices_platform;
                 }
 
                 int errorcode = 0;
@@ -117,6 +108,23 @@ public:
                 AURA_OPENCL_CHECK_ERROR(errorcode);
 #endif // CL_VERSION_1_2
                 initialized_ = true;
+        }
+
+        /// For a given platform id, return the number of devices.
+        static unsigned int
+        get_num_devices_platform(const cl_platform_id platform)
+        {
+                unsigned int num_devices_platform = 0;
+                auto ret = clGetDeviceIDs(platform,
+                        CL_DEVICE_TYPE_ALL,
+                        0, 0, &num_devices_platform);
+                // Device not found is a valid return value
+                // next to success which is checked by the macro.
+                if (ret != CL_DEVICE_NOT_FOUND)
+                {
+                        AURA_OPENCL_CHECK_ERROR(ret);
+                }
+                return num_devices_platform;
         }
 
         /// Prevent copies.
