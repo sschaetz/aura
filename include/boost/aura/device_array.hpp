@@ -24,19 +24,21 @@ public:
         device_array_deleter()
         {}
 
-        device_array_deleter(Allocator& allocator)
+        device_array_deleter(Allocator& allocator, std::size_t size)
                 : allocator_(&allocator)
+                , size_(size)
         {}
 
         void operator()(device_ptr<T>* p) const
         {
                 assert(allocator);
-                allocator_->deallocate(*p, 0);
+                allocator_->deallocate(*p, size_);
                 free(p);
         }
 
 private:
         Allocator* allocator_;
+        std::size_t size_;
 };
 
 } // namespace detail
@@ -236,7 +238,7 @@ private:
         void allocate(std::size_t size, device& d)
         {
                 data_ = data_t(new device_ptr<T>(allocator_.allocate(size)),
-                        deleter_t(allocator_));
+                        deleter_t(allocator_, size));
                 initialized_ = true;
         }
 
