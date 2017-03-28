@@ -1,7 +1,5 @@
 #pragma once
 
-#include <boost/core/ignore_unused.hpp>
-
 #include <boost/aura/device.hpp>
 #include <boost/aura/device_ptr.hpp>
 
@@ -49,10 +47,9 @@ struct device_allocator
         }
 
         /// Deallocate memory.
-        void deallocate(pointer& p, std::size_t n)
+        void deallocate(pointer& p, std::size_t)
         {
                 assert(device_);
-                boost::ignore_unused(n);
                 device_free(p);
         }
 

@@ -17,14 +17,26 @@ namespace detail
 {
 
 /// Deleter used for unique ptr to deallocate device data.
-template <typename T>
-struct device_array_deleter
+template <typename T, typename Allocator>
+class device_array_deleter
 {
+public:
+        device_array_deleter()
+        {}
+
+        device_array_deleter(Allocator& allocator)
+                : allocator_(&allocator)
+        {}
+
         void operator()(device_ptr<T>* p) const
         {
-                device_free(*p);
+                assert(allocator);
+                allocator_->deallocate(*p, 0);
                 free(p);
         }
+
+private:
+        Allocator* allocator_;
 };
 
 } // namespace detail
@@ -215,7 +227,7 @@ private:
         }
 
         /// Deleter type
-        typedef detail::device_array_deleter<T> deleter_t;
+        typedef detail::device_array_deleter<T, Allocator> deleter_t;
 
         /// Data type
         typedef std::unique_ptr<device_ptr<T>, deleter_t> data_t;
@@ -224,7 +236,7 @@ private:
         void allocate(std::size_t size, device& d)
         {
                 data_ = data_t(new device_ptr<T>(allocator_.allocate(size)),
-                        deleter_t());
+                        deleter_t(allocator_));
                 initialized_ = true;
         }
 
