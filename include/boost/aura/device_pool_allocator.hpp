@@ -63,7 +63,9 @@ struct device_pool_allocator
         pointer allocate(std::size_t n)
         {
                 assert(device_);
+                assert(n < max_elements_);
                 pointer ptr;
+
                 // Check if we have available memory of that size.
                 auto it = available_memory_.find(n);
 
@@ -88,9 +90,14 @@ struct device_pool_allocator
                 }
                 else
                 {
-                        auto ptr = device_malloc<T>(n, *device_);
+                        ptr = device_malloc<T>(n, *device_);
                         num_elements_ += n;
                         in_use_memory_[ptr] = n;
+                        if (num_elements_ >= max_elements_)
+                        {
+                                assert(!available_memory_.empty());
+                                purge_();
+                        }
                 }
                 return ptr;
         }
@@ -99,12 +106,12 @@ struct device_pool_allocator
         void deallocate(pointer& p, std::size_t n)
         {
                 assert(device_);
-
                 auto it = in_use_memory_.find(p);
 
                 // in_use_memory_ must contain this pointer.
                 if (it != in_use_memory_.end())
                 {
+
                         assert(it->second == n);
                         auto it2 = available_memory_.find(n);
                         if (it2 != available_memory_.end())
@@ -129,20 +136,21 @@ private:
         /// Methos used to purge the allocator if it has grown too big.
         void purge_()
         {
-                /*
-                if (num_elements_ >= max_elements_)
+                while (num_elements_ > max_elements_)
                 {
-                        for (auto ptrs : available_memory_)
-                        {
-                                for (auto ptr : ptrs->second)
-                                {
-                                        device_free(ptr);
-                                        num_elements_ -= ptrs->first();
-                                }
-                        }
+                        auto available_it = available_memory_.begin();
+                        auto ptr_it = available_it->second.begin();
+                        device_free(*ptr_it);
+                        num_elements_ -= available_it->first;
+                        available_it->second.erase(ptr_it);
 
+                        // If this size is not available any longer, remove everythinig.
+                        if (available_it->second.size() < 1)
+                        {
+                                available_memory_.erase(available_it);
+                        }
                 }
-                */
+
         }
 
         /// A single allocation is stored as it's size and a pointer.

@@ -4,7 +4,6 @@
 #include <boost/aura/memory_tag.hpp>
 
 #include <cstddef>
-
 namespace boost
 {
 namespace aura
@@ -254,7 +253,7 @@ struct base_device_ptr
                 }
                 else if (nullptr == b.device_)
                 {
-                        // Both are not initialied (equal).
+                        // The other is not initialized.
                         return false;
                 }
                 else if (memory_ < b.memory_)
