@@ -71,22 +71,10 @@ struct device_pool_allocator
 
                 if (it != available_memory_.end())
                 {
-                        ptr = it->second.back();
-
+                        ptr = it->second;
                         // Add to in_use.
-                        in_use_memory_[ptr] = it->first;
-
-                        // Erase from free.
-                        if (it->second.size() == 1)
-                        {
-                                // Remove this size entirely.
-                                available_memory_.erase(it);
-                        }
-                        else
-                        {
-                                // Only remove this one pointer from size.
-                                it->second.pop_back();
-                        }
+                        in_use_memory_[it->second] = it->first;
+                        available_memory_.erase(it);
                 }
                 else
                 {
@@ -111,19 +99,8 @@ struct device_pool_allocator
                 // in_use_memory_ must contain this pointer.
                 if (it != in_use_memory_.end())
                 {
-
                         assert(it->second == n);
-                        auto it2 = available_memory_.find(n);
-                        if (it2 != available_memory_.end())
-                        {
-                                // Add to existing vector.
-                                it2->second.push_back(it->first);
-                        }
-                        else
-                        {
-                                // Create new vector.
-                                available_memory_[it->second] = {it->first};
-                        }
+                        available_memory_.emplace(std::make_pair(n, it->first));
                         in_use_memory_.erase(it);
                 }
                 else
@@ -139,18 +116,10 @@ private:
                 while (num_elements_ > max_elements_)
                 {
                         auto available_it = available_memory_.begin();
-                        auto ptr_it = available_it->second.begin();
-                        device_free(*ptr_it);
+                        device_free(available_it->second);
                         num_elements_ -= available_it->first;
-                        available_it->second.erase(ptr_it);
-
-                        // If this size is not available any longer, remove everythinig.
-                        if (available_it->second.size() < 1)
-                        {
-                                available_memory_.erase(available_it);
-                        }
+                        available_memory_.erase(available_it);
                 }
-
         }
 
         /// A single allocation is stored as it's size and a pointer.
@@ -169,7 +138,8 @@ private:
         std::size_t num_elements_ = { 0 };
 
         /// List of free storage elements.
-        std::map<std::size_t, std::vector<pointer>> available_memory_;
+        std::unordered_multimap<std::size_t, pointer>
+        available_memory_;
 
         /// List of in-use storage elements.
         std::unordered_map<pointer, std::size_t> in_use_memory_;
