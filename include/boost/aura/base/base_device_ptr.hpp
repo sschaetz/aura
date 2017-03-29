@@ -248,16 +248,7 @@ struct base_device_ptr
         {
                 if (nullptr == device_)
                 {
-                        if (nullptr != b.device_)
-                        {
-                                // If lhs is not initialized but rhs is => <
-                                return true;
-                        }
-                        else
-                        {
-                                // If both are not initialized => not <
-                                return false;
-                        }
+                        return nullptr != b.device_;
                 }
 
                 if (nullptr == b.device_)
