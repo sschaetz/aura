@@ -246,17 +246,27 @@ struct base_device_ptr
         /// Less than operator.
         bool operator <(const base_device_ptr<T, BaseType>& b) const
         {
-                if (nullptr == device_ && nullptr != b.device_)
+                if (nullptr == device_)
                 {
-                        // This is no initialized, is always smaller.
-                        return true;
+                        if (nullptr != b.device_)
+                        {
+                                // If lhs is not initialized but rhs is => <
+                                return true;
+                        }
+                        else
+                        {
+                                // If both are not initialized => not <
+                                return false;
+                        }
                 }
-                else if (nullptr == b.device_)
+
+                if (nullptr == b.device_)
                 {
-                        // The other is not initialized.
+                        // If rhs not initialized => not <
                         return false;
                 }
-                else if (memory_ < b.memory_)
+
+                if (memory_ < b.memory_)
                 {
                         // Compare pointers.
                         return true;

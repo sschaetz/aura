@@ -65,3 +65,32 @@ BOOST_AUTO_TEST_CASE(shared)
         }
         boost::aura::finalize();
 }
+
+BOOST_AUTO_TEST_CASE(less_comparison)
+{
+        boost::aura::initialize();
+        {
+                boost::aura::device d(AURA_UNIT_TEST_DEVICE);
+                boost::aura::device_ptr<float> ptr_null0;
+                boost::aura::device_ptr<float> ptr_null1;
+
+                auto ptr0 = boost::aura::device_malloc<float>(4, d);
+
+                BOOST_CHECK(!(ptr_null0 < ptr_null1));
+                BOOST_CHECK(!(ptr_null1 < ptr_null0));
+
+                BOOST_CHECK(ptr_null0 < ptr0);
+                BOOST_CHECK(!(ptr0 < ptr_null0));
+
+                auto ptr1 = ptr0;
+                BOOST_CHECK(!(ptr0 < ptr1));
+                BOOST_CHECK(!(ptr1 < ptr0));
+
+                ptr1 += 5;
+                BOOST_CHECK(ptr0 < ptr1);
+                BOOST_CHECK(!(ptr1 < ptr0));
+
+                boost::aura::device_free(ptr0);
+        }
+        boost::aura::finalize();
+}
