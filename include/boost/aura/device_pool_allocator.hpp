@@ -5,6 +5,7 @@
 #include <boost/aura/device.hpp>
 #include <boost/aura/device_ptr.hpp>
 
+#include <mutex>
 #include <unordered_map>
 #include <vector>
 
@@ -34,25 +35,35 @@ struct device_pool_allocator
                 , max_elements_(max_elements)
         {}
 
-        /// Copy construct allocator.
-        template <class U>
-        device_pool_allocator(const device_pool_allocator<U>& other)
-                : device_(other.device_)
-                , max_elements_(other.max_elements_)
-        {}
-
         /// Move construct allocator.
         template <class U>
         device_pool_allocator(device_pool_allocator<U>&& other)
-                : device_(other.device_)
-                , max_elements_(other.max_elements_)
         {
+                std::lock(mutex_, other.mutex_);
+                std::lock_guard<std::mutex> guard0(
+                        mutex_, std::adopt_lock
+                );
+                std::lock_guard<std::mutex> guard1(
+                        other.mutex_, std::adopt_lock
+                );
+
+                device_ = other.device_;
+                max_elements_ = other.max_elements;
+                initialized_ = other.initialized_;
+                num_elements_ = other.num_elements_;
+                available_memory_ = other.available_memory_;
+                in_use_memory_ = other.in_use_memory_;
+
                 other.device_ = nullptr;
-                other.max_elements_ = 0;
+                other.initialized_ = false;
+                other.num_elements = 0;
+                other.available_memory_.clear();
+                other.in_use_memory_.clear();
         }
 
         ~device_pool_allocator()
         {
+                std::lock_guard<std::mutex> guard(mutex_);
                 assert(in_use_memory_.size() == 0);
                 // Allow no elements in the object and purge.
                 max_elements_= 0;
@@ -62,6 +73,7 @@ struct device_pool_allocator
         /// Allocate memory.
         pointer allocate(std::size_t n)
         {
+                std::lock_guard<std::mutex> guard(mutex_);
                 assert(device_);
                 assert(n < max_elements_);
                 pointer ptr;
@@ -93,6 +105,7 @@ struct device_pool_allocator
         /// Deallocate memory.
         void deallocate(pointer& p, std::size_t n)
         {
+                std::lock_guard<std::mutex> guard(mutex_);
                 assert(device_);
                 auto it = in_use_memory_.find(p);
 
@@ -121,6 +134,8 @@ private:
                         available_memory_.erase(available_it);
                 }
         }
+
+        std::mutex mutex_;
 
         /// A single allocation is stored as it's size and a pointer.
         using available_storage_t = std::tuple<std::size_t, pointer>;
