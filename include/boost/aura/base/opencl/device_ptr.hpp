@@ -55,6 +55,12 @@ struct device_ptr_base_type
         {
                 return device_buffer < other.device_buffer;
         }
+
+        std::size_t hash() const
+        {
+                // cl_mem is like a file handle
+                return reinterpret_cast<std::size_t>(device_buffer);
+        }
 };
 
 /// Specialize base_device_ptr for specific backend.

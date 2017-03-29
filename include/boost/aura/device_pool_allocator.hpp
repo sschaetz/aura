@@ -5,7 +5,7 @@
 #include <boost/aura/device.hpp>
 #include <boost/aura/device_ptr.hpp>
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 namespace boost
@@ -172,7 +172,7 @@ private:
         std::map<std::size_t, std::vector<pointer>> available_memory_;
 
         /// List of in-use storage elements.
-        std::map<pointer, std::size_t> in_use_memory_;
+        std::unordered_map<pointer, std::size_t> in_use_memory_;
 };
 
 } // namespace aura
