@@ -14,7 +14,25 @@ namespace boost
 namespace aura
 {
 
-/// General allocator for device memory.
+/// device_pool_allocator
+/// There is not really a pool in this allocator.
+/// This is more of a memoization: if a user
+/// alloc(1024), free(1024) and alloc(1024)
+/// the second alloc will just return the freed memory from before
+/// (it is not really freed). The allocator memoizes up to a limit;
+/// if the limit is hit it starts evicting/puring memory.
+///
+/// In real-time pipelines allocation sizes are typically very similar
+/// (low to no variance) so this allocator should give a speed-up as
+/// subsequent alloc calls are cached.
+///
+/// The allocator stores a multimapmap<size, vector<ptr>> for free memory
+/// blocks size can be looked up and the pointer can be looked up immediately.
+/// It can store multiple pointers for a specific size because there might be
+/// identical. It stores a multimap<pointer, size_t> for in-use memory so
+/// pointers can be looked up quickly when deallocation should occur and move
+/// the pointer over to the free map.
+/// @tparam T Type the allocator allocates.
 template <class T>
 struct device_pool_allocator
 {
@@ -120,6 +138,7 @@ struct device_pool_allocator
                 {
                         assert(false);
                 }
+                p.reset();
         }
 
 private:
@@ -129,16 +148,15 @@ private:
                 while (num_elements_ > max_elements_)
                 {
                         auto available_it = available_memory_.begin();
-                        device_free(available_it->second);
+                        auto ptr = available_it->second;
                         num_elements_ -= available_it->first;
                         available_memory_.erase(available_it);
+                        device_free(ptr);
                 }
         }
 
+        /// Mutex used to allow multi-threaded access to class.
         std::mutex mutex_;
-
-        /// A single allocation is stored as it's size and a pointer.
-        using available_storage_t = std::tuple<std::size_t, pointer>;
 
         /// Device we allocate memory from.
         device* device_;

@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(pool_allocator_multiple_sizes)
                                         a.deallocate(ptr0, 1024);
                                         a.deallocate(ptr1, 2*1024);
                                 }
-                                // Make sure we only allocated once.
+                                // We had to allocate twice.
                                 BOOST_CHECK(
                                         d.allocation_tracker.count_active() ==
                                         2
@@ -112,6 +112,35 @@ BOOST_AUTO_TEST_CASE(pool_allocator_multiple_sizes)
                                         d.allocation_tracker.count_old() ==
                                         0
                                 );
+                        }
+                }
+                BOOST_CHECK(d.allocation_tracker.count_active() == 0);
+                BOOST_CHECK(d.allocation_tracker.count_old() == 2);
+
+        }
+        boost::aura::finalize();
+}
+
+BOOST_AUTO_TEST_CASE(pool_allocator_force_purge)
+{
+        boost::aura::initialize();
+        {
+                boost::aura::device d(AURA_UNIT_TEST_DEVICE);
+                d.allocation_tracker.activate();
+                {
+                        boost::aura::device_pool_allocator<float> a(d, 20);
+                        BOOST_CHECK(d.allocation_tracker.count_active() == 0);
+                        {
+                                auto ptr0 = a.allocate(10);
+                                a.deallocate(ptr0, 10);
+
+                                auto ptr1 = a.allocate(11);
+                                // This alloc should have triggered a purge.
+                                BOOST_CHECK(
+                                        d.allocation_tracker.count_old() ==
+                                        1
+                                );
+                                a.deallocate(ptr1, 11);
                         }
                 }
                 BOOST_CHECK(d.allocation_tracker.count_active() == 0);
