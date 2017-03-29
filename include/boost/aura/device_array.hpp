@@ -24,15 +24,21 @@ public:
         device_array_deleter()
         {}
 
-        device_array_deleter(Allocator& allocator, std::size_t size)
-                : allocator_(&allocator)
+        device_array_deleter(Allocator* allocator, std::size_t size)
+                : allocator_(allocator)
                 , size_(size)
         {}
 
         void operator()(device_ptr<T>* p) const
         {
-                assert(allocator);
-                allocator_->deallocate(*p, size_);
+                if (allocator_)
+                {
+                        allocator_->deallocate(*p, size_);
+                }
+                else
+                {
+                        device_free(*p);
+                }
                 free(p);
         }
 
@@ -43,17 +49,16 @@ private:
 
 } // namespace detail
 
-template <typename T, typename BoundsType>
+template <typename T, typename Allocator, typename BoundsType>
 class mapped_device_memory;
 
 /// Device array, owns device memory, can have multiple dimensions.
 template <typename T,
-        typename BoundsType = bounds,
-        typename Allocator = device_allocator<T>
+        typename Allocator = device_allocator<T>,
+        typename BoundsType = bounds
 >
 class device_array
 {
-
 public:
         /// Convenience types
         typedef device_ptr<T> iterator;
@@ -74,7 +79,16 @@ public:
         /// Create one-dimensional array of size on device
         device_array(std::size_t size, device& d)
                 : bounds_({size})
-                , allocator_(d)
+                , allocator_(nullptr)
+        {
+                allocate(size, d);
+        }
+
+        /// Create one-dimensional array of size with allocator on device
+        device_array(std::size_t size,
+                Allocator& allocator, device& d)
+                : bounds_({size})
+                , allocator_(&allocator)
         {
                 allocate(size, d);
         }
@@ -82,7 +96,17 @@ public:
         /// Create multi-dimensional array of of bound size b on device
         device_array(const BoundsType& b, device& d)
                 : bounds_(b)
-                , allocator_(d)
+                , allocator_(nullptr)
+        {
+                allocate(product(b), d);
+        }
+
+        /// Create multi-dimensional array of of bound size b
+        /// with allocator on device
+        device_array(const BoundsType& b,
+                Allocator& allocator, device& d)
+                : bounds_(b)
+                , allocator_(&allocator)
         {
                 allocate(product(b), d);
         }
@@ -94,7 +118,7 @@ public:
                 >& dimensions,
                 device& d)
                 : bounds_(dimensions)
-                , allocator_(d)
+                , allocator_(nullptr)
         {
                 allocate(product(bounds_), d);
         }
@@ -107,15 +131,18 @@ public:
                 , allocator_(std::move(da.allocator_))
         {
                 da.bounds_.clear();
+                da.allocator_ = nullptr;
         }
 
         /// destroy object
         ~device_array() {}
 
-        mapped_device_memory<T, BoundsType> map(feed& f,
+        mapped_device_memory<T, Allocator, BoundsType> map(feed& f,
                 memory_access_tag mat = memory_access_tag::rw)
         {
-                return mapped_device_memory<T, BoundsType>(*this, f, mat);
+                return mapped_device_memory<
+                                T, Allocator, BoundsType
+                        >(*this, f, mat);
         }
 
         /// Resize vector (optionally disallow shrinking).
@@ -237,8 +264,22 @@ private:
         /// Allocation helper function
         void allocate(std::size_t size, device& d)
         {
-                data_ = data_t(new device_ptr<T>(allocator_.allocate(size)),
-                        deleter_t(allocator_, size));
+                if (allocator_)
+                {
+                        data_ = data_t(new device_ptr<T>(
+                                        allocator_->allocate(size)
+                                ),
+                                deleter_t(allocator_, size)
+                        );
+                }
+                else
+                {
+                        data_ = data_t(new device_ptr<T>(
+                                        device_malloc<T>(size, d)
+                                ),
+                                deleter_t(allocator_, size)
+                        );
+                }
                 initialized_ = true;
         }
 
@@ -252,11 +293,14 @@ private:
         data_t data_;
 
         /// Allocator used to manage memory.
-        Allocator allocator_;
+        Allocator* allocator_;
 };
 
 /// Device memory mapped to the host.
-template <typename T, typename BoundsType = bounds>
+template <typename T,
+        typename Allocator = device_allocator<T>,
+        typename BoundsType = bounds
+>
 class mapped_device_memory
 {
 public:
@@ -270,7 +314,7 @@ public:
         void operator=(const mapped_device_memory&) = delete;
 
         /// Create one-dimensional memory_map of size on device
-        mapped_device_memory(device_array<T, BoundsType>& da,
+        mapped_device_memory(device_array<T, Allocator, BoundsType>& da,
                 feed& f,
                 memory_access_tag mat)
                 : array_(da)
@@ -344,7 +388,7 @@ private:
         }
 
         /// Device array (stored so we can copy data back).
-        device_array<T, BoundsType>& array_;
+        device_array<T, Allocator, BoundsType>& array_;
 
         /// Mapped data (either a copy or directly mapped).
         std::shared_ptr<T> host_data_;

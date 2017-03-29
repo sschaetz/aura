@@ -25,8 +25,15 @@ namespace base = base_detail::metal;
 #endif
 
 /// copy to device array from an iterator
-template <typename T, typename Iterator>
-void copy(Iterator src, device_array<T>& dst, base::feed& f)
+template <typename Iterator,
+        typename T,
+        typename Allocator,
+        typename BoundsType
+>
+void copy(Iterator src,
+        device_array<T, Allocator, BoundsType>& dst,
+        base::feed& f
+)
 {
         typedef typename std::iterator_traits<Iterator>::value_type T2;
         static_assert(std::is_same<T, T2>::value,
@@ -35,22 +42,40 @@ void copy(Iterator src, device_array<T>& dst, base::feed& f)
 }
 
 /// copy to device array
-template <typename T>
-void copy(const T* src, device_array<T>& dst, base::feed& f)
+template <typename T,
+        typename Allocator,
+        typename BoundsType
+>
+void copy(const T* src,
+        device_array<T, Allocator, BoundsType>& dst,
+        base::feed& f
+)
 {
         base::copy(src, src + dst.size(), dst.begin(), f);
 }
 
 /// copy from device array
-template <typename T>
-void copy(const device_array<T>& src, T* dst, feed& f)
+template <typename T,
+        typename Allocator,
+        typename BoundsType
+>
+void copy(const device_array<T, Allocator, BoundsType>& src,
+        T* dst,
+        feed& f
+)
 {
         base::copy(src.begin(), src.end(), dst, f);
 }
 
 /// copy from std::vector to device array
-template <typename T>
-void copy(const std::vector<T>& src, device_array<T>& dst, feed& f)
+template <typename T,
+        typename Allocator,
+        typename BoundsType
+>
+void copy(const std::vector<T>& src,
+        device_array<T, Allocator, BoundsType>& dst,
+        feed& f
+)
 {
         base::copy(src.begin(), src.end(), dst.begin(), f);
 }
@@ -63,8 +88,14 @@ void copy(const std::vector<T>& src, device_ptr<T>& dst, feed& f)
 }
 
 /// copy from device array to std::vector
-template <typename T>
-void copy(const device_array<T>& src, std::vector<T>& dst, feed& f)
+template <typename T,
+        typename Allocator,
+        typename BoundsType
+>
+void copy(const device_array<T, Allocator, BoundsType>& src,
+        std::vector<T>& dst,
+        feed& f
+)
 {
         base::copy(src.begin(), src.end(), &dst[0], f);
 }
@@ -77,8 +108,14 @@ void copy(const device_ptr<T>& src, std::vector<T>& dst, feed& f)
 }
 
 /// copy from device array to device array
-template <typename T>
-void copy(const device_array<T>& src, device_array<T>& dst, feed& f)
+template <typename T,
+        typename Allocator,
+        typename BoundsType
+>
+void copy(const device_array<T, Allocator, BoundsType>& src,
+        device_array<T, Allocator, BoundsType>& dst,
+        feed& f
+)
 {
         base::copy(src.begin(), src.end(), dst.begin(), f);
 }
