@@ -52,6 +52,17 @@ struct device_ptr_base_type
         {
                 return !(*this == other);
         }
+
+        bool operator <(const device_ptr_base_type<T>& other) const
+        {
+                return device_buffer < other.device_buffer;
+        }
+
+        std::size_t hash() const
+        {
+                // CUdeviceptr is like a file handle
+                return static_cast<std::size_t>(device_buffer);
+        }
 };
 
 

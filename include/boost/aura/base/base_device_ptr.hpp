@@ -4,7 +4,6 @@
 #include <boost/aura/memory_tag.hpp>
 
 #include <cstddef>
-
 namespace boost
 {
 namespace aura
@@ -244,9 +243,39 @@ struct base_device_ptr
                 }
         }
 
+        /// Less than operator.
+        bool operator <(const base_device_ptr<T, BaseType>& b) const
+        {
+                if (nullptr == device_)
+                {
+                        return nullptr != b.device_;
+                }
+
+                if (nullptr == b.device_)
+                {
+                        // If rhs not initialized => not <
+                        return false;
+                }
+
+                if (memory_ < b.memory_)
+                {
+                        // Compare pointers.
+                        return true;
+                }
+                else if (memory_ == b.memory_)
+                {
+                        // Same ptr, compare offset.
+                        return offset_ < b.offset_;
+                }
+                else
+                {
+                        return false;
+                }
+        }
+
         bool operator==(std::nullptr_t) const
         {
-                return (nullptr == device_ && 0 == offset_ && 0 == memory_);
+                return (nullptr == device_);
         }
 
         /// not equal to operator
