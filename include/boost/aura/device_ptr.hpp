@@ -44,6 +44,11 @@ struct hash<boost::aura::device_ptr<T>>
         {
                 result_type hash = 0;
 
+                if (s == nullptr)
+                {
+                        return hash;
+                }
+
                 const result_type h0 = s.get_base_ptr().hash();
                 boost::hash_combine(hash, h0);
 

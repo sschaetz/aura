@@ -284,7 +284,7 @@ struct base_device_ptr
 
         bool operator==(std::nullptr_t) const
         {
-                return (nullptr == device_ && 0 == offset_ && 0 == memory_);
+                return (nullptr == device_);
         }
 
         /// not equal to operator
