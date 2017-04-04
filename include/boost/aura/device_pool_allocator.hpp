@@ -82,10 +82,11 @@ struct device_pool_allocator
         ~device_pool_allocator()
         {
                 std::lock_guard<std::mutex> guard(mutex_);
-                assert(in_use_memory_.size() == 0);
+
                 // Allow no elements in the object and purge.
                 max_elements_= 0;
                 purge_();
+                purge_in_use_memory_();
         }
 
         /// Allocate memory.
@@ -142,10 +143,11 @@ struct device_pool_allocator
         }
 
 private:
-        /// Methos used to purge the allocator if it has grown too big.
+        /// Method used to purge the allocator if it has grown too big.
         void purge_()
         {
-                while (num_elements_ > max_elements_)
+                while (num_elements_ > max_elements_ &&
+                        !available_memory_.empty())
                 {
                         auto available_it = available_memory_.begin();
                         auto ptr = available_it->second;
@@ -153,6 +155,17 @@ private:
                         available_memory_.erase(available_it);
                         device_free(ptr);
                 }
+        }
+
+        /// Method used to free all memory in case the allocator is destroyed.
+        void purge_in_use_memory_()
+        {
+                for (auto memory : in_use_memory_)
+                {
+                        auto ptr = memory.first;
+                        device_free(ptr);
+                }
+                in_use_memory_.clear();
         }
 
         /// Mutex used to allow multi-threaded access to class.
