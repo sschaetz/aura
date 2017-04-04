@@ -149,3 +149,32 @@ BOOST_AUTO_TEST_CASE(pool_allocator_force_purge)
         }
         boost::aura::finalize();
 }
+
+BOOST_AUTO_TEST_CASE(pool_allocator_force_shutdown)
+{
+        boost::aura::initialize();
+        {
+                boost::aura::device d(AURA_UNIT_TEST_DEVICE);
+                d.allocation_tracker.activate();
+                {
+                        boost::aura::device_pool_allocator<float> a(d);
+                        BOOST_CHECK(d.allocation_tracker.count_active() == 0);
+                        {
+                                auto ptr0 = a.allocate(10);
+                                boost::ignore_unused(ptr0);
+                                a.deallocate(ptr0, 10);
+
+                                auto ptr1 = a.allocate(11);
+                                boost::ignore_unused(ptr1);
+                                BOOST_CHECK(
+                                        d.allocation_tracker.count_old() ==
+                                        0
+                                );
+                        }
+                }
+                BOOST_CHECK(d.allocation_tracker.count_active() == 0);
+                BOOST_CHECK(d.allocation_tracker.count_old() == 2);
+
+        }
+        boost::aura::finalize();
+}
