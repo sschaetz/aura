@@ -82,7 +82,7 @@ void copy(const std::vector<T>& src,
 
 /// copy from std::vector to device ptr
 template <typename T>
-void copy(const std::vector<T>& src, device_ptr<T>& dst, feed& f)
+void copy(const std::vector<T>& src, const device_ptr<T>& dst, feed& f)
 {
         base::copy(src.begin(), src.end(), dst, f);
 }
